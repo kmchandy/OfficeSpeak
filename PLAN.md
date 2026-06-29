@@ -394,14 +394,22 @@ Estimate: ~half a day.
 **Step 5 — Per-vertex prompt orchestrator.**
 
 Driver script that:
-- Iterates over the graph's LLM vertices
+- Runs SCC analysis on the graph (one call to
+  `networkx.strongly_connected_components`) to classify every
+  vertex as DAG or cyclic.
+- Iterates over the graph's LLM vertices.
 - For each vertex, calls Claude with the vertex's role +
-  purpose to generate the agent's prompt body
+  purpose to generate the agent's prompt body. For cyclic
+  vertices, the meta-prompt to Claude includes the extra clause
+  from translation table §2.3 ("on a re-entry, the message may
+  already contain fields you normally produce — treat them as
+  feedback and produce a refined value").
 - Calls `create_agent_from_prompt` (the wrapper from smoke
-  test 1) to write the role.md file
+  test 1) to write the role.md file.
 
-This uses infrastructure we already have; the new piece is
-the orchestration loop.
+This uses infrastructure we already have; the new pieces are
+the orchestration loop and the SCC-based DAG/cyclic
+classification.
 
 Estimate: ~1 day.
 

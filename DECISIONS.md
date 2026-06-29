@@ -305,30 +305,46 @@ demonstration.
 The honest gain: massively simpler decision-making; pipelines
 are the natural shape of pseudocode; success rate increases.
 
-## 17. Four patterns total in the translation table
+## 17. Three primitives; patterns are emergent
 
-Replaces the older "5 libraries" / "pattern catalog" framing.
-The catalog is now a **translation table** with four
-pseudocode-construct → graph-construct entries, plus refinement
-patterns. Single document, always loaded into Claudette's
-context.
+The pseudocode language has **three primitives**, not four named
+patterns:
 
-| Pseudocode construct | Graph construct | Pattern name |
+| Primitive | Pseudocode form | Role |
 |---|---|---|
-| `for each ... step 1 → step 2 → step 3` | Sequential edges through vertices | **pipeline** |
-| `if X then send to A elif Y then send to B` | Vertex with named outports, one edge per branch | **router** |
-| `while not done: ... send back to upstream` | Back-edge from later vertex to earlier vertex | **feedback** |
-| Multiple `flow <name>:` blocks → same sink | Multiple chains converging at one sink | **multi-flow** |
+| **Sequence** | The `for each` body — one step line per row | Order-dependent processing chain |
+| **Branch** | `if/elif/else` after a classifier step | Conditional routing |
+| **Send-to** | `send to <target>` | Edge to a sink (registered name) or to a vertex (declared step ID) |
 
-Plus refinement patterns:
-- `dedup-at-front` — add deduplicator before expensive processing
-- `threshold-alert` — numeric threshold with binary downstream
-- (others as they prove needed)
+From these three primitives, common graph shapes *emerge* — they
+are not separately identified by Claudette:
 
-This replaces what we had been calling the "pattern catalog."
-The new framing is honest: these aren't abstract patterns
-Claudette must recognise; they're literal translation
-correspondences between pseudocode and graph.
+| Emergent shape | How it appears in the pseudocode |
+|---|---|
+| **Pipeline** | A `for each` body with sequential steps and no branching |
+| **Router** | A `for each` body where an `if/elif/else` directs messages to different sinks |
+| **Feedback** | A `for each` body where an `if/elif/else` sends a message back to an earlier vertex |
+| **Multi-flow** (Phase 2) | Multiple top-level `flow <name>:` blocks |
+
+Earlier framings of this work treated pattern recognition (*"this
+is a diamond"*, *"this is a feedback loop"*) as a separate
+cognitive step that Claudette had to perform before writing the
+graph. That framing is superseded. There is no
+pattern-identification step. Claudette writes pseudocode using the
+three primitives; the graph's shape is whatever the pseudocode
+produces.
+
+Specifically, the "diamond" (broadcast to N enrichers + a
+synchronizer) is **not expressible** in this grammar at all. Per
+§16, independent enrichments are sequentialized into a pipeline.
+If true parallel processing is ever needed, it will be a Phase 2
+extension (multi-flow with explicit synchronization), not a Phase
+1 construct.
+
+Refinement patterns (`dedup-at-front`, `threshold-alert`, etc.)
+remain useful labels for human discussion but are not separate
+constructs in the grammar. They are post-hoc names for
+combinations of the three primitives.
 
 ## 18. Pseudocode language grammar
 
@@ -336,27 +352,68 @@ The pseudocode Claudette produces uses a small fixed grammar:
 
 ```
 inputs:
-  - <var>: <source_registry_name>(<optional_args>)
+  <var>: <source_registry_name>(<arg>=<value>, ...)     # primitive input
+  <var>: merge(<var>[, <var>]*)                         # derived input (1+ args)
   ...
-
-[FLOW BLOCK — one or more]:
 
 for each <item> from <var>:
-  <step_id>: <verb> <object> → [reads <field>,] produces <field>
+  <step_id>: <verb> <object> → [reads <field>,] enriches <field>
   ...
-  [send to <sink_registry_name>(<optional_args>)]
+  [if <condition>:
+     <body>
+   [elif <condition>:
+     <body>]*
+   [else:
+     <body>]]
+  send to <target>(<arg>=<value>, ...)
   ...
-
-# Variations:
-# - if/elif/else after a classifier step (router)
-# - while not <condition>: ... break/continue (feedback)
-# - multiple `flow <name>:` blocks (multi-flow)
 ```
 
-The `→ reads X, produces Y` annotations are required. They
-flow to the per-vertex prompt-generation step (the agent's
-prompt is told *"you'll receive a message with field X; produce
-a message with field Y added"*).
+Where:
+
+- `<var>` is a pseudocode-level identifier (local to the pseudocode;
+  does not appear in the graph).
+- `<source_registry_name>` and `<target>` (when targeting a sink)
+  are names in DSL's source/sink registries.
+- `<target>` may also be a vertex step ID declared earlier in the
+  loop body — in which case the resulting edge is a back-edge
+  (feedback). See §24.
+- `<step_id>` is a local identifier for a step line; renamed to a
+  positional vertex ID (`v0, v1, ...`) by the wrapper.
+- `<verb> <object>` is a noun-phrasable pair like `extract entities`
+  that becomes a role name (`entity_extractor`).
+- `enriches <field>` is the only step verb. It writes one field to
+  the message (overwriting on re-entry — see §24).
+
+The grammar deliberately does **not** include:
+
+- `while not <condition>:` — feedback is expressed via `if + send
+  to <vertex_id>`, not a separate looping construct.
+- `produces <field>` — earlier proposals had a second verb meaning
+  "replace the message with a fresh dict." Dropped to keep the
+  grammar minimal. The corresponding architectural rule is below.
+- `flow <name>:` blocks — multi-flow is Phase 2.
+
+**Agent and sink contracts (the rule that makes `produces`
+unnecessary):**
+
+- **Every processing vertex enriches.** A vertex receives a JSON
+  message, sets one field on it (per its `enriches X` clause), and
+  forwards the **full enriched message** to its outport(s). No
+  vertex ever drops fields. Pass-through is automatic and total.
+- **Sinks project.** A sink receives the full message and reads
+  whichever fields it needs — typically just the latest
+  enrichment (`briefing`, `verdict`, etc.) plus identifying
+  metadata (`url`, `source`). The other fields are ignored.
+- **Consequence.** Pat does not need to think about "which fields
+  flow forward." All of them do. Pat only thinks about which
+  field each vertex adds and which fields each sink consumes. This
+  is what removes the `produces` distinction.
+
+The `→ reads X, enriches Y` annotation is required on every step
+line. It flows to the per-vertex prompt-generation step (the
+agent's prompt is told *"you receive a message with field X; set
+field Y on the message"*).
 
 Why pseudocode is the right intermediate:
 
@@ -469,7 +526,7 @@ Updated lineup (replaces earlier mix):
 | **situation_room** | Pipeline (default; was diamond, now sequential per #16) | Canonical text-enrichment baseline |
 | **loudness_monitor** | Pipeline with numeric agents + threshold-alert refinement | Canonical Python-agent example; tests pseudocode language on non-LLM agents |
 | **inbox_triage** | Router (required deviation: pipeline cannot do routing) | Demonstrates the if/elif/else → named-outports translation |
-| **debate** | Feedback (required deviation: pipeline cannot do cycles) | Demonstrates the while-loop → back-edge translation; only case where DSL's distributed-systems algorithms matter |
+| **debate** | Feedback (required deviation: pipeline cannot do cycles) | Demonstrates `if + send to <earlier_vertex>` → back-edge translation (see §24); only case where DSL's distributed-systems algorithms matter |
 | **periodic_brief_pro** | Multi-flow (required deviation: pipeline cannot do independent flows sharing sink) | Demonstrates `flow X / flow Y / flow Z` → shared sink translation |
 
 Five examples, each demonstrating one of the four patterns
@@ -479,11 +536,60 @@ loudness_monitor for pipeline coverage.
 
 ---
 
+## 24. Feedback by back-edge with overwrite semantics
+
+When the pseudocode contains `if ... send to <vertex_id>` where
+the vertex was declared earlier in the loop body, the wrapper
+emits a back-edge in the graph. The result is a cyclic graph —
+messages circulate from later vertices back to earlier ones.
+
+The semantics on re-entry are:
+
+- **Message shape is unchanged.** A message is still a
+  scalar-valued JSON dict (same as DAG apps). No lists, no
+  versioned keys, no embedded history.
+- **`enriches X` overwrites X.** On every write — first pass or
+  re-entry — the value of field X is replaced by the agent's
+  output. The previous value is lost.
+- **Termination is the pseudocode author's responsibility.** The
+  grammar does not enforce termination. Pat expresses it via
+  convergence conditions (`if verdict == "approved": send to k0
+  else: send to v0`) or an explicit iteration counter (a counter
+  step plus `if iter >= 3: send to k0 else: send to v0`).
+- **Debug tracing is a future runtime feature.** Full per-message
+  history is not part of the message shape. It will be captured
+  by an opt-in runtime trace layer (enable with `DSL_TRACE=1`),
+  separate from message semantics. Until that is built, only the
+  latest state of each field is visible at runtime.
+
+This design choice prioritises pedagogical simplicity (one verb,
+scalar fields, no list-vs-dict cases) and uniformity (DAG and
+feedback apps look identical from an agent's perspective). The
+cost is loss of intermediate history at runtime — recoverable
+later via the trace layer when it ships.
+
+The per-vertex prompt generator (Phase 1 Step 5) detects cyclic
+vertices via SCC analysis on the graph and includes a clause in
+those vertices' prompts noting that fields may be present from a
+previous iteration. Non-cyclic (DAG) vertices have unchanged
+prompts.
+
+Of the 11 gallery apps in the demonstration lineup, 10 are DAGs
+and only debate has a cycle. The overwrite semantics is sufficient
+for all 11. (This was the empirical check that motivated choosing
+this design over the append-only-list alternative discussed in
+BRAINSTORM.md.)
+
+This decision supersedes the `while not <condition>:` construct
+proposed in earlier drafts of §18.
+
+---
+
 ## Status
 
 Decisions 1–14 are committed (from earlier sessions).
-Decisions 15–23 are committed (from 2026-06-28 brainstorm) and
-supersede where they overlap with 1–14.
+Decisions 15–24 are committed (from 2026-06-28 / 2026-06-29
+brainstorms) and supersede where they overlap with 1–14.
 
 Open questions and ideas explored but not committed live in
 BRAINSTORM.md. Implementation plan is in PLAN.md.
