@@ -1,0 +1,15 @@
+inputs:
+  problems: starter
+
+for each problem from problems:
+  s0: count iter        -> enriches iter
+  s1: propose solution  -> reads problem, iter, enriches solution
+  s2: critique solution -> reads solution, enriches critique
+  s3: judge             -> reads critique, enriches verdict
+
+  if verdict == "approved":
+    send to jsonl_recorder_archive(path="approved.jsonl")
+  elif iter > 2:
+    send to jsonl_recorder_discard(path="gave_up.jsonl")
+  else:
+    send to s0

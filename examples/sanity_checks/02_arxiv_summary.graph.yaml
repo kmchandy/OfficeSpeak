@@ -1,0 +1,41 @@
+sources:
+- id: s0
+  name: arxiv_cs_ai
+  params:
+    max_articles: 5
+- id: s1
+  name: arxiv_cs_cl
+  params:
+    max_articles: 5
+vertices:
+- id: v0
+  role: paper_summarizer
+  purpose: Read paper; set `summary`.
+  reads:
+  - paper
+  enriches: summary
+  cyclic: false
+sinks:
+- id: k0
+  name: jsonl_recorder
+  params:
+    path: papers.jsonl
+edges:
+- from:
+  - s0
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - s1
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - v0
+  - out
+  to:
+  - k0
+  - in_

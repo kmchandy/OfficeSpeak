@@ -404,12 +404,18 @@ class _Parser:
             raise ParseError(f"duplicate input variable {var_name!r}", line=line.num)
 
         call = _RE_CALL.match(expr)
-        if not call:
+        if call:
+            func_name, args_str = call.group(1), call.group(2)
+        elif expr.isidentifier():
+            # Bare-identifier source (no parens), e.g. `starter`. DSL allows
+            # this for sources that take no arguments.
+            func_name, args_str = expr, ""
+        else:
             raise ParseError(
-                f"expected '<func>(...)' on RHS of '{var_name}:', got {expr!r}",
+                f"expected '<func>(...)' or bare identifier on RHS of "
+                f"'{var_name}:', got {expr!r}",
                 line=line.num,
             )
-        func_name, args_str = call.group(1), call.group(2)
 
         if func_name == "merge":
             args = _split_top_level_commas(args_str)

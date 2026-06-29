@@ -1,0 +1,54 @@
+sources:
+- id: s0
+  name: gmail
+  params:
+    unread_only: true
+    max_emails: 20
+vertices:
+- id: v0
+  role: urgency_classifier
+  purpose: Read email.body; set `urgency`.
+  reads:
+  - email.body
+  enriches: urgency
+  cyclic: false
+  outports:
+  - urgent
+  - normal
+  - else
+sinks:
+- id: k0
+  name: intelligence_display
+  params: {}
+- id: k1
+  name: jsonl_recorder_archive
+  params:
+    path: email_archive.jsonl
+- id: k2
+  name: discard
+  params: {}
+edges:
+- from:
+  - s0
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - v0
+  - urgent
+  to:
+  - k0
+  - in_
+- from:
+  - v0
+  - normal
+  to:
+  - k1
+  - in_
+- from:
+  - v0
+  - else
+  to:
+  - k2
+  - in_

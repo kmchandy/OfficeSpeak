@@ -1,0 +1,42 @@
+sources:
+- id: s0
+  name: weather
+  params:
+    poll_interval: 600
+vertices:
+- id: v0
+  role: severity_classifier
+  purpose: Read report; set `severity`.
+  reads:
+  - report
+  enriches: severity
+  cyclic: false
+  outports:
+  - severe
+  - else
+sinks:
+- id: k0
+  name: intelligence_display
+  params: {}
+- id: k1
+  name: discard
+  params: {}
+edges:
+- from:
+  - s0
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - v0
+  - severe
+  to:
+  - k0
+  - in_
+- from:
+  - v0
+  - else
+  to:
+  - k1
+  - in_
