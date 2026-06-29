@@ -368,6 +368,18 @@ Output: graph dict (DECISIONS.md §19 schema). Deterministic,
 with unit tests covering each construct from the translation
 table.
 
+Public API:
+
+```python
+def parse(pseudocode: str) -> tuple[Graph, list[Warning]]:
+    """Pure function: text → (graph dict, warnings). Raises ParseError on malformed input."""
+```
+
+Plus a CLI wrapper that reads a pseudocode file, calls `parse()`,
+and writes `graph.yaml`. The persisted YAML file is part of the
+inspectability chain (DECISIONS.md §25) — not just a debugging
+artifact, but a durable record of Stage B's output.
+
 Estimate: ~2 days.
 
 **Step 3 — Graph → office.md generator.**

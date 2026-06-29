@@ -13,6 +13,14 @@ If Claudette can express Pat's task in this pseudo-language, the
 wrapper produces a graph; the graph compiles to an office; the
 office runs.
 
+**The graph is a persisted artifact.** Stage B writes the graph
+to `graph.yaml` in the app directory, alongside `spec.pseudo`,
+`office.md`, and the role files. The YAML form is the canonical
+serialised representation of the graph; the in-memory Python dict
+is the working form for the parser and the prompt orchestrator.
+The two are isomorphic. See DECISIONS.md §25 for why graph.yaml is
+part of the inspectability chain.
+
 ---
 
 ## 0. Scope and what's deferred

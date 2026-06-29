@@ -1,0 +1,20 @@
+# Pseudocode for a small debate-style feedback app.
+# Demonstrates the back-edge pattern: `send to s0` returns the
+# message to an earlier step, creating a cycle.
+# An explicit iter counter bounds the loop.
+
+inputs:
+  problems: problem_stream()
+
+for each problem from problems:
+  s0: count iter        -> enriches iter
+  s1: propose solution  -> reads problem, iter, enriches solution
+  s2: critique solution -> reads solution, enriches critique
+  s3: judge             -> reads critique, enriches verdict
+
+  if verdict == "approved":
+    send to answers
+  elif iter > 2:
+    send to gave_up
+  else:
+    send to s0

@@ -583,12 +583,65 @@ BRAINSTORM.md.)
 This decision supersedes the `while not <condition>:` construct
 proposed in earlier drafts of §18.
 
+## 25. The persistent artifact chain
+
+The "multi-level inspectability" claim in §20 is not a slogan; it
+is realised by **a chain of durable files on disk** that Claudette
+produces and any reader can open.
+
+After Claudette finishes building an app, the app directory
+contains:
+
+| File | Stage | What it is |
+|---|---|---|
+| `spec.md` (or `spec.txt`) | Input | Pat's English description (the prompt Claudette was given) |
+| `spec.pseudo` | Stage A | The pseudocode Claudette wrote — her externalised decomposition reasoning |
+| `graph.yaml` | Stage B | The mechanical reduction of the pseudocode to a flat graph (sources / vertices / sinks / edges) |
+| `office.md` | Stage B' | DSL's office file, generated from the graph; what `dsl build` reads |
+| `<role>.md` (one per vertex) | Stage C | The per-vertex agent prompts (or, for Python vertices, the role wrapper) |
+
+Each file is human-inspectable. Each file explains the file
+immediately below it:
+
+- `spec.md` → why the pseudocode looks the way it does.
+- `spec.pseudo` → why the graph has the vertices and edges it has.
+- `graph.yaml` → what office.md must contain.
+- `office.md` → what roles must exist and how they connect.
+- `<role>.md` → what each agent does, in English (the contract for
+  the LLM).
+
+This is the operational meaning of "Claude explains what she does."
+A reader can pick any level of the chain and audit it. A reader
+who disagrees with a design choice can point at the specific file
+where the choice was made.
+
+**Contrast with CoT.** Chain-of-Thought reasoning is visible during
+a single inference but does not survive it. The reasoning trace is
+not part of the system being built; if you delete it, the system
+still runs (and was never described). In NoT, the artifacts *are*
+the system: deleting `spec.pseudo` deletes the design rationale;
+deleting `graph.yaml` deletes the structural specification;
+deleting `office.md` deletes the executable instructions. None of
+these files is optional.
+
+**Implementation commitment.** All five files are persisted to disk
+by default. None is hidden behind a debug flag. The end-to-end
+driver (Phase 1 Step 6) writes the full chain on every successful
+build. Removing any one of them from default output would weaken
+the inspectability claim and is not allowed without an explicit
+decision to do so.
+
+This decision means we keep `graph.yaml` as a persisted artifact
+(not just an in-memory data structure between parser and office
+writer). It is part of the contribution, not just an internal
+implementation detail.
+
 ---
 
 ## Status
 
 Decisions 1–14 are committed (from earlier sessions).
-Decisions 15–24 are committed (from 2026-06-28 / 2026-06-29
+Decisions 15–25 are committed (from 2026-06-28 / 2026-06-29
 brainstorms) and supersede where they overlap with 1–14.
 
 Open questions and ideas explored but not committed live in
