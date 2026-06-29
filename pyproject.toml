@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "network-of-thought"
+version = "0.1.0"
+description = "NetworkOfThought (NoT): a methodology and toolchain for using Claude (Claudette) to build persistent multi-agent sense-and-respond systems from English descriptions."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [
+    { name = "K. Mani Chandy", email = "kmchandy@gmail.com" },
+]
+license = { text = "MIT" }
+keywords = ["llm", "agents", "distributed-systems", "claude", "sense-and-respond"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+# DisSysLab is a sibling repo installed as an editable dependency:
+#   cd ~/Documents/DisSysLab && pip install -e .
+# We don't declare it here because it's not on PyPI.
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+llm = [
+    "anthropic>=0.34.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["claudette*"]
+exclude = ["tests*", "outputs*", "archive*"]
+
+[tool.pytest.ini_options]
+testpaths = ["claudette/tests"]
+python_files = ["test_*.py"]

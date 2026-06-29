@@ -1,0 +1,79 @@
+# Claudette's example library — index.
+#
+# Lists the apps Claudette consults during precedent search
+# (Stage 2 of the builder pipeline). The metadata files for each
+# app live alongside the app itself — most are in the DSL
+# gallery; external apps (e.g., Nyasha's) live under
+# `external/` in this directory.
+#
+# Each entry's `path` is resolved relative to the directory
+# containing this INDEX.yaml file.
+#
+# Adding an entry here makes the app available to Claudette as
+# a precedent. Removing an entry hides it. Editing the
+# leave_one_out rules controls which apps are filtered when
+# rebuilding a specific target.
+
+gallery_apps:
+  - name: periodic_brief
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/periodic_brief
+    status: complete
+    notes: First example to use the consolidated layout. Format template.
+
+  # The following are scheduled to be added; each needs the
+  # metadata files (task.md, rationale.md, failures.md,
+  # meta.yaml, samples/) to be authored in its gallery folder.
+  - name: situation_room
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/situation_room
+    status: pending
+    notes: Next to do — different topology (diamond) for format validation.
+
+  - name: job_hunter
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/job_hunter
+    status: pending
+
+  - name: inbox_triage
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/inbox_triage
+    status: pending
+
+  - name: kalshi_market_watch
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/kalshi_market_watch
+    status: pending
+
+  - name: stocks_monitor
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/stocks_monitor
+    status: pending
+
+  - name: wardrobe_assistant
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/wardrobe_assistant
+    status: pending
+
+  - name: arxiv_radar
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/arxiv_radar
+    status: pending
+
+  - name: weather_monitor
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/weather_monitor
+    status: pending
+
+  - name: loudness_monitor
+    path: ../../../../DisSysLab/dissyslab/gallery/apps/loudness_monitor
+    status: pending
+
+external_apps:
+  # Apps outside the DSL gallery. Each has its own folder under
+  # this directory with the full set of metadata files.
+  # (Nyasha's apps go here if we don't bring simplified versions
+  # into the gallery.)
+
+# Leave-one-out exclusion rules.
+# When Claudette is rebuilding a target named here, the matching
+# entry above is filtered out of the precedent set so the build
+# tests reasoning from analogous examples, not copying.
+leave_one_out:
+  - rebuild_target: situation_room
+    exclude_examples: [situation_room]
+  - rebuild_target: job_hunter
+    exclude_examples: [job_hunter]
+  # No exclusions needed for: news_brief, box_office, fluview
+  # (they are not in the example library).
