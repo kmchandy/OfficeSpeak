@@ -316,10 +316,10 @@ sources:
 vertices:
   - id: v0
     role: entity_extractor
-    purpose: "Extract named entities from article.body and add to the message as `entities`."
+    purpose: "Read article.body; set `entities` (named entities from the article body)."
   - id: v1
     role: severity_classifier
-    purpose: "Read article.body; produce a severity rating and add to the message as `severity`."
+    purpose: "Read article.body; set `severity` (one of LOW/MEDIUM/HIGH/CRITICAL)."
 
 sinks:
   - id: k0
@@ -445,23 +445,26 @@ not expressible in this grammar at all.
 ```
 <step_id>: <verb> <object> → reads <field>, enriches <field>
 if <field> == "<value_1>":
-  send to <sink_1>
+  send to <target_1>
 elif <field> == "<value_2>":
-  send to <sink_2>
+  send to <target_2>
 else:
-  send to <sink_default>
+  send to <target_default>
 ```
 
-or with downstream steps before the sink:
+**Grammar restriction — if-body contains only `send to` lines.**
 
-```
-<step_id>: classify <X> → reads <field>, enriches <X>
-if <X> == "urgent":
-  s_urgent_1: ...
-  send to <urgent_sink>
-else:
-  send to <default_sink>
-```
+The body of each `if/elif/else` branch is restricted to one or more
+`send to` lines. Step lines (`<id>: <verb> ... enriches ...`) are
+**not allowed** inside branches. All transformations happen at the
+top level of the `for each` body, where they run unconditionally on
+every message; the branches only decide where each message goes.
+
+This matches §1.4's "agents enrich and forward" rule: every vertex
+runs on every message; conditionality applies only to routing, not
+to transformation. If Pat wants conditional enrichment, she adds
+the enrichment unconditionally and lets the relevant sink read it
+only when it cares.
 
 **Translation rule:**
 
@@ -470,8 +473,8 @@ The step that the `if` reads from becomes a **router vertex** with
 is the literal `<value>` from the comparison; the `else` branch's
 outport is named `else` (or `default`, equivalently).
 
-Each `send to` (or downstream sub-pipeline) attaches its edges to
-the corresponding named outport, not to `out`.
+Each `send to <target>` in a branch attaches its edge to the
+corresponding named outport, not to `out`.
 
 **Default rule:** binary `if/else` produces outports `true` and
 `false` if the condition is a predicate (e.g., `if is_urgent`); or
@@ -503,7 +506,7 @@ sources:
 vertices:
   - id: v0
     role: ticket_classifier
-    purpose: "Read ticket.body; add `category` field (one of billing/technical/other)."
+    purpose: "Read ticket.body; set `category` (one of billing/technical/other)."
     outports: [billing, technical, else]
 
 sinks:
@@ -538,7 +541,7 @@ Graph (vertices + edges only):
 vertices:
   - id: v0
     role: fraud_risk_scorer
-    purpose: "Read transaction; add `fraud_score` ∈ [0, 1]."
+    purpose: "Read transaction; set `fraud_score` (in [0, 1])."
     outports: [true, false]   # binary predicate: fraud_score > 0.8
 
 edges:
@@ -733,10 +736,10 @@ sources:
 vertices:
   - id: v0
     role: severity_classifier
-    purpose: "Read article.body; add `severity` ∈ {low, medium, high, critical}."
+    purpose: "Read article.body; set `severity` (one of low/medium/high/critical)."
   - id: v1
     role: geolocator
-    purpose: "Read article.body; add `location` (country and city if possible)."
+    purpose: "Read article.body; set `location` (country and city if possible)."
   - id: v2
     role: briefing_writer
     purpose: "Read article.body, severity, location; set `briefing` (short prose)."
