@@ -90,12 +90,21 @@ def _render_output_discipline(
     """
     schema_block = _format_schema_lines(output_schema)
     if len(outports) == 1:
-        send_line = f"Always send to {outports[0]}."
+        send_block = f"Always send to {outports[0]}."
     else:
         port_list = ", ".join(f"`{p}`" for p in outports)
-        send_line = (
-            f"Set the `send_to` field to one of: {port_list}. "
-            "Choose based on the routing logic above."
+        # DSL's role parser extracts outport names by scanning for the
+        # literal phrase "send to <name>". For multi-outport routing,
+        # emit an explicit phrase per outport (as a bulleted list of
+        # choices) so the parser can extract them. The agent picks ONE
+        # by setting the `send_to` field in its JSON output.
+        explicit_choices = "\n".join(f"- send to {p}" for p in outports)
+        send_block = (
+            f"Set the `send_to` field to exactly ONE of: {port_list}. "
+            "Choose based on the routing logic in the prompt body above.\n"
+            "\n"
+            "Possible outports (the `send_to` value must be one of):\n"
+            f"{explicit_choices}"
         )
     lines = [
         "## CRITICAL: Output Format",
@@ -111,7 +120,7 @@ def _render_output_discipline(
         "",
         schema_block,
         "",
-        send_line,
+        send_block,
     ]
     return "\n".join(lines)
 

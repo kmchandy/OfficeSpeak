@@ -1,0 +1,12 @@
+inputs:
+  emails: gmail(unread_only=True, max_emails=20)
+
+for each email from emails:
+  s1: classify urgency -> reads email.body, enriches urgency
+
+  if urgency == "urgent":
+    send to intelligence_display
+  elif urgency == "normal":
+    send to jsonl_recorder_archive(path="normal_emails.jsonl")
+  else:
+    send to discard

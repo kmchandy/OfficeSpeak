@@ -1,0 +1,10 @@
+inputs:
+  weather_reports: weather(poll_interval=600)
+
+for each report from weather_reports:
+  s1: classify severity -> reads report, enriches severity
+
+  if severity == "severe":
+    send to intelligence_display
+  else:
+    send to discard
