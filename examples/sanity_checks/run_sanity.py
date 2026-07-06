@@ -21,8 +21,8 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO_ROOT))
 
-from claudette.parser import parse, ParseError  # noqa: E402
-from claudette.office_writer import write_office_md  # noqa: E402
+from officespeak.parser import parse, ParseError  # noqa: E402
+from officespeak.office_writer import write_office_md  # noqa: E402
 
 import yaml  # noqa: E402
 

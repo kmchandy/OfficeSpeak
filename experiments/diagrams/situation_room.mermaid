@@ -1,0 +1,35 @@
+flowchart TD
+    s0(["bbc"]):::source
+    s1(["npr"]):::source
+    s2(["al_jaz"]):::source
+    v0["v0: classify_severity"]:::agent
+    v1["v1: identify_location"]:::agent
+    v2["v2: write_briefing"]:::agent
+    v3["v3: severitytally"]:::agent
+    v4{{"v4: synchronizer"}}:::sync
+    v5{"v5: router"}:::router
+    k0[("jsonl_recorder")]:::sink
+    k1[("intelligence_display")]:::sink
+
+    s0 --> v0
+    s1 --> v0
+    s2 --> v0
+    s0 --> v1
+    s1 --> v1
+    s2 --> v1
+    s0 --> v2
+    s1 --> v2
+    s2 --> v2
+    v0 -->|severity| v4
+    v1 -->|location| v4
+    v2 -->|briefing| v4
+    v4 --> k0
+    v4 --> v5
+    v5 -->|critical| k1
+    v4 --> v3
+
+    classDef source fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef sink fill:#ede7f6,stroke:#5e35b1,color:#311b92;
+    classDef sync fill:#fff3e0,stroke:#ef6c00,color:#e65100;
+    classDef router fill:#fce4ec,stroke:#c2185b,color:#880e4f;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;

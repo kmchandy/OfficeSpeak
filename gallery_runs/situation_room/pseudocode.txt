@@ -1,0 +1,14 @@
+inputs:
+  bbc:      bbc_world(max_articles=3)
+  npr:      npr_news(max_articles=3)
+  al_jaz:   al_jazeera(max_articles=3)
+  articles: merge(bbc, npr, al_jaz)
+for each article from articles:
+  s1: classify severity -> reads article.body, enriches severity
+  send to s2
+  s2: identify location -> reads article.body, enriches location
+  send to s3
+  s3: write briefing    -> reads article.body, severity, location, enriches briefing
+  if severity == "critical":
+    send to intelligence_display
+  send to jsonl_recorder_briefing(path="briefings.jsonl")

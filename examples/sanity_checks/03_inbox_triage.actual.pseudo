@@ -7,6 +7,6 @@ for each email from emails:
   if urgency == "urgent":
     send to intelligence_display
   elif urgency == "normal":
-    send to jsonl_recorder_archive(path="normal_emails.jsonl")
+    send to jsonl_recorder_archive(path="email_archive.jsonl")
   else:
     send to discard

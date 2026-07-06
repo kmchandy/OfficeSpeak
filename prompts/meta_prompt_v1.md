@@ -59,7 +59,9 @@ inputs:
 
 for each <item> from <var>:
   <step_id>: <verb> <object> -> [reads <field>[, <field>]*,] enriches <field>
+  send to <step_id_or_target>                     # route this step's output
   ...
+  <last_step>: <verb> <object> -> ... enriches <field>
   [if <condition>:
      send to <target>[(<arg>=<value>, ...)]
      [send to <target>[(<arg>=<value>, ...)]]*
@@ -81,8 +83,13 @@ for each <item> from <var>:
   `classify severity`, `tag topic`, `identify location`, `write briefing`,
   `score sentiment`, `propose solution`.
 - **`enriches <field>`** is the only verb in step lines. It means "set
-  this one field on the message and forward the full enriched message
-  downstream."
+  this one field on the message"; the step does **not** forward on its
+  own.
+- **Every step routes its output explicitly.** Immediately after a step,
+  write one or more `send to <target>` lines (or an `if/elif/else` whose
+  branches send). In a straight pipeline, each step sends to the next
+  (`send to s2`). A step whose output nothing consumes is an error —
+  there is no implicit "fall through to the next step".
 - **`<condition>`** is either `<field> == "<value>"` (equality, named
   outports) or `<field> <op> <value>` (comparison, true/false outports)
   or a bare identifier (predicate, true/false outports).
@@ -109,9 +116,10 @@ These rules tell you *what design to make*, not what syntax to use.
 ### Rule 1 — Pipeline is the default
 
 If Pat describes a sequence of operations on each item from a source,
-write a straight pipeline (a `for each` body with a list of step
-lines). Do not introduce conditionals or back-edges unless Pat's
-description structurally requires them.
+write a straight pipeline: a list of step lines, each followed by a
+`send to <next_step>`, with the last step sending to the sink(s). Do
+not introduce conditionals or back-edges unless Pat's description
+structurally requires them.
 
 A request like *"for each article, extract entities, classify
 severity, and write a briefing"* is a three-step pipeline, even if the
@@ -119,7 +127,8 @@ three operations could in principle run in parallel.
 
 ### Rule 2 — Agents enrich; sinks project
 
-Every step `enriches` one field and forwards the full message. No
+Every step `enriches` one field; its `send to` forwards the full
+message. No
 step ever drops or replaces fields. Sinks read whichever fields they
 need from the message.
 
@@ -356,9 +365,10 @@ inputs:
 
 for each article from articles:
   s1: classify severity -> reads article.body, enriches severity
+  send to s2
   s2: identify location -> reads article.body, enriches location
+  send to s3
   s3: write briefing    -> reads article.body, severity, location, enriches briefing
-
   if severity == "critical":
     send to intelligence_display
   send to jsonl_recorder_briefing(path="briefings.jsonl")
@@ -370,6 +380,8 @@ for each article from articles:
   one `merge`.
 - One operation per article → `for each article from articles:`.
 - Three operations Pat mentioned → three step lines.
+- Every step routes its output explicitly: `s1` sends to `s2`, `s2`
+  sends to `s3`. There is no implicit "fall through to the next step".
 - "Show critical … save all" → an `if severity == "critical": send to
   intelligence_display` for the conditional display, plus an
   unconditional `send to jsonl_recorder_briefing` for the
@@ -379,7 +391,48 @@ for each article from articles:
 
 ---
 
-## 8. Failure-mode guards
+## 8. Worked example (router)
+
+This shows the `if / elif / else` routing shape: one classifier, then
+messages sent to different destinations based on the classified field.
+
+### Pat's task description
+
+> *"Watch my unread email. Classify each one by how urgent it is. Show
+> the urgent ones in my terminal, archive the normal ones to a file,
+> and drop everything else."*
+
+### Your output
+
+```
+inputs:
+  emails: gmail(unread_only=True, max_emails=20)
+
+for each email from emails:
+  s1: classify urgency -> reads email.body, enriches urgency
+
+  if urgency == "urgent":
+    send to intelligence_display
+  elif urgency == "normal":
+    send to jsonl_recorder_archive(path="email_archive.jsonl")
+  else:
+    send to discard
+```
+
+### Why this is correct (you do NOT include this section in your output)
+
+- One classification Pat asked for → one step line (`classify urgency`).
+- Three destinations chosen by the classified field → an
+  `if / elif / else`, each branch a single `send to`.
+- `discard` is the registry sink for "drop it"; it is the explicit
+  `else`, so no message falls through unhandled.
+- The branch bodies contain **only** `send to` lines — routing, not
+  more processing. Any per-item work happens in step lines above the
+  `if`, never inside a branch.
+
+---
+
+## 9. Failure-mode guards
 
 Common mistakes to avoid:
 
@@ -429,36 +482,54 @@ outside the block will confuse the downstream parser. If you feel
 the urge to explain a design choice, resist it. The pseudocode is
 the explanation.
 
-### Don't reuse a sink registry name with different arguments
+### Writing to files: one sink per file, not one per branch
 
-DSL requires sink registry names to be unique within an office. If
-you need two JSONL outputs (e.g., approved vs. gave-up), pick two
-**distinct registry names** from §6:
+A sink's registry name is also its identity in the office, so the rule
+is about *files*, not *branches*.
 
-✗ Wrong:
+**Several branches writing to the SAME file** → use ONE generic
+`jsonl_recorder(path="...")` and `send to` it from every branch. The
+branches fan in to the single sink. Do **not** invent a separate sink
+per branch for one file.
+
+✓ Right — matches and rejects audited in one file:
 ```
-send to jsonl_recorder(path="approved.jsonl")
-send to jsonl_recorder(path="gave_up.jsonl")
+if fit == "match":
+  send to intelligence_display
+  send to jsonl_recorder(path="jobs.jsonl")
+else:
+  send to jsonl_recorder(path="jobs.jsonl")
 ```
 
-✓ Right:
+✗ Wrong — two sink names for one file:
 ```
-send to jsonl_recorder_archive(path="approved.jsonl")
-send to jsonl_recorder_discard(path="gave_up.jsonl")
+if fit == "match":
+  send to jsonl_recorder_briefing(path="jobs.jsonl")
+else:
+  send to jsonl_recorder_discard(path="jobs.jsonl")
 ```
 
-The registry includes several variants for exactly this case:
+**Writing to DIFFERENT files** → each file needs a distinct sink name,
+because a registry name may appear only once per office. Use the named
+variants for this case:
 `jsonl_recorder`, `jsonl_recorder_briefing`, `jsonl_recorder_archive`,
-`jsonl_recorder_discard`, `jsonl_recorder_raw`. Similar variants exist
-for `slack_sink_*` and `gmail_sink_*`. Pick whichever describes the
-purpose.
+`jsonl_recorder_discard`, `jsonl_recorder_raw` (similar `slack_sink_*`
+and `gmail_sink_*` variants exist).
 
-The same rule applies to sources: two sources with the same registry
-name but different parameters are not allowed in one office.
+✓ Right — approved and gave-up in separate files:
+```
+if verdict == "approved":
+  send to jsonl_recorder_archive(path="approved.jsonl")
+elif iter > 2:
+  send to jsonl_recorder_discard(path="gave_up.jsonl")
+```
+
+The same rule applies to sources: the same registry name with different
+parameters may not appear twice in one office.
 
 ---
 
-## 9. One feedback-style example for reference
+## 10. One feedback-style example for reference
 
 This shows the back-edge + iteration counter pattern.
 
@@ -477,21 +548,28 @@ inputs:
 
 for each problem from problems:
   s0: count iter        -> enriches iter
+  send to s1
   s1: propose solution  -> reads problem, iter, enriches solution
+  send to s2
   s2: critique solution -> reads solution, enriches critique
+  send to s3
   s3: judge             -> reads critique, enriches verdict
-
   if verdict == "approved":
-    send to jsonl_recorder(path="approved.jsonl")
+    send to jsonl_recorder_archive(path="approved.jsonl")
   elif iter > 2:
-    send to jsonl_recorder(path="gave_up.jsonl")
+    send to jsonl_recorder_discard(path="gave_up.jsonl")
   else:
     send to s0
 ```
 
-Note: the explicit `count iter` step is what makes the bound
-(`iter > 2`) work. The back-edge `send to s0` returns the message
-to the counter, which increments iter on the next pass.
+Note: the forward edges are explicit (`send to s1`, `s2`, `s3`), and so
+is the back-edge — `send to s0` is just another `send to`, which is why
+feedback needs no special syntax. The explicit `count iter` step is what
+makes the bound (`iter > 2`) work: the back-edge returns the message to
+the counter, which increments iter on the next pass. The two JSONL sinks
+use distinct registry names (`jsonl_recorder_archive` /
+`jsonl_recorder_discard`) because a registry name may appear only once
+per office.
 
 ---
 

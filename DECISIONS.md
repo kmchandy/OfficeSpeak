@@ -4,6 +4,68 @@ Distilled from a multi-hour brainstorm on 2026-06-25.
 For full reasoning behind each decision, see BRAINSTORM.md.
 For the work that follows from these decisions, see PLAN.md.
 
+## Goal (2026-07-02)
+
+Empower an end user — *Pat*, a student or small-business owner, not a
+programmer — to **develop and execute distributed systems** by
+conversing with Claude in plain English.
+
+Pat describes, in ordinary language, an *office*: a persistent network
+of stateful agents that sense, deliberate, decide, and act. Claude
+turns that description into a runnable office (a graph of message-passing
+agents), and explains the office back to Pat in plain English; Pat
+confirms or corrects; they iterate until the office is what Pat wants.
+The office runs with the distributed-systems machinery Pat should never
+have to think about — termination detection, checkpointing, and
+deterministic coordination of shared state — so the system Pat gets is
+not only runnable but reproducible and trustworthy.
+
+The end-user contribution (a non-expert commanding a distributed system
+in English, through a build → explain-back → correct loop) rests on a
+systems contribution (making an LLM-generated stateful office correct
+and reproducible). The second is what makes the first real.
+
+## Status update (2026-07-01)
+
+Three refinements, all consistent with the pseudocode-first workflow
+(§15) below:
+
+- **Canonical form is `graph.yaml`.** office.md is a derived, Pat-facing
+  view, no longer generated on the execution path; the graph compiles
+  directly to a DSL network (`officespeak/graph_to_dsl.py`).
+- **The asyncio front-end was explored and dropped.** We briefly tried
+  having Claude write an asyncio program and translating *that* to the
+  graph. Recovering a dataflow graph from an imperative program is a
+  compilation problem — precisely what the pseudocode Stage A exists to
+  avoid, because asyncio hides the dataflow inside control flow. Stage A
+  produces pseudocode; asyncio is not part of the pipeline.
+- **No diamond.** Independent enrichers sequentialize into a pipeline
+  (§16), so `situation_room` is a pipeline, not a broadcast-and-combine
+  diamond. True parallelism is deferred to a later phase.
+- **Explicit `send to` after every step.** A step `enriches` (adds
+  fields) but does not forward on its own; each step routes its output
+  with an explicit `send to`. This makes feedback and branching uniform
+  (a back-edge is just another `send to`) and removes implicit
+  fall-through.
+- **Enrich-only, correctness-first; efficiency deferred.** Agents only
+  add key–value pairs — messages grow monotonically and are never
+  pruned mid-pipeline (only sinks project). Consequences are accepted:
+  fat messages at the ends of long pipelines, and work done on items
+  that are later discarded (an agent cannot be applied conditionally).
+  These are bandwidth/compute costs, never correctness costs, because
+  sinks read only the fields they need. Efficiency mechanisms
+  (projection, conditional application) are a later phase.
+- **Custom output sinks are hand-authored, outside spec→graph.** The
+  generator maps English to a topology over a *fixed* sink vocabulary
+  (terminal display + a generic `jsonl_recorder(path=…)`). Novel output
+  targets Pat wants — databases, bespoke formats — are ordinary sink
+  components she writes with Claude's help (message in → I/O) and plugs
+  in at the editable graph. Topology generation (the research claim)
+  stays automated; custom I/O adapters are conventional software and are
+  explicitly out of scope for the automated pipeline. This is the same
+  "fixed vocabulary + on-demand local components" pattern already used
+  for roles (Stage C generation) and sources (app-local).
+
 ---
 
 ## 1. Research direction

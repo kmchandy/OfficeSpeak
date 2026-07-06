@@ -1,5 +1,14 @@
 # Adaptive DSL — brainstorm notes
 
+> **Status update (2026-07-01).** The pseudocode-first direction below
+> held up. One detour worth recording: we tried having Claude write an
+> asyncio program and translating that to the graph, and learned the
+> hard way that recovering a dataflow graph from an imperative program
+> is a compilation problem — the very thing the pseudocode Stage A
+> exists to avoid. asyncio is dropped; `spec → pseudocode → graph.yaml
+> → run` is the committed pipeline, with `graph.yaml` canonical and the
+> diamond sequentialized to a pipeline.
+
 Captured 2026-06-25 over a multi-hour brainstorm. The previous
 research direction (forced advocacy on MCQ) was killed by the
 stage1_sanity experiment; this is the replacement direction.

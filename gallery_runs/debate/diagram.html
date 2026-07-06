@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>debate</title>
+<style>
+  body { font-family: -apple-system, Helvetica, Arial, sans-serif;
+         margin: 2rem; color: #1b1b1b; }
+  h1 { font-size: 1.1rem; font-weight: 600; color: #444; }
+  .diagram { display: flex; justify-content: center; }
+</style>
+</head>
+<body>
+<h1>debate</h1>
+<div class="diagram">
+<pre class="mermaid">
+flowchart TD
+    s0(["starter"]):::source
+    v0["v0: iter_counter"]:::agent
+    v1["v1: solution_proposer"]:::agent
+    v2["v2: solution_critic"]:::agent
+    v3["v3: judge"]:::agent
+    k0[("jsonl_recorder_archive")]:::sink
+    k1[("jsonl_recorder_discard")]:::sink
+
+    s0 --> v0
+    v0 --> v1
+    v1 --> v2
+    v2 --> v3
+    v3 -->|approved| k0
+    v3 -->|true| k1
+    v3 -->|else| v0
+
+    classDef source fill:#e3f2fd,stroke:#1565c0,color:#0d47a1;
+    classDef sink fill:#ede7f6,stroke:#5e35b1,color:#311b92;
+    classDef sync fill:#fff3e0,stroke:#ef6c00,color:#e65100;
+    classDef router fill:#fce4ec,stroke:#c2185b,color:#880e4f;
+    classDef agent fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+
+</pre>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({ startOnLoad: true, securityLevel: "loose" });</script>
+</body>
+</html>

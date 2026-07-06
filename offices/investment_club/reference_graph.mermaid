@@ -1,0 +1,20 @@
+%% investment_club — corrected reference graph (the diagram Pat sees, point (2))
+%% Shapes: [] worker · {{}} gate · (( )) fair_merge/merge_synch · [( )] record · [/ /] sink
+flowchart TD
+  yahoo[Yahoo]:::src --> FM(("fair_merge"))
+  bloomberg[Bloomberg]:::src --> FM
+  news[news feeds]:::src --> FM
+  FM --> Gus{{"Gus — gate: one at a time"}}
+  Gus --> Warren["Warren — value analyst"]
+  Gus --> Bill["Bill — opportunities analyst"]
+  Warren -->|"item + argument"| Meg(("Meg — merge_synch: wait for both, carry item"))
+  Bill -->|"item + argument"| Meg
+  Meg -->|"item + both arguments"| Don["Don — decides"]
+  Don <-->|"propose action + item / tax + fees"| Herb["Herb — tax & fees"]
+  Warren <--> Rachel[("Rachel — shared records")]
+  Bill <--> Rachel
+  Herb <--> Rachel
+  Don <--> Rachel
+  Don --> decisions[/"decisions"/]
+  Don -. "done" .-> Gus
+  classDef src fill:#eef,stroke:#88a;

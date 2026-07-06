@@ -1,0 +1,89 @@
+sources:
+- id: s0
+  name: starter
+  params: {}
+vertices:
+- id: v0
+  role: iter_counter
+  purpose: Read the message; set `iter`.
+  reads: []
+  enriches: iter
+  cyclic: true
+- id: v1
+  role: solution_proposer
+  purpose: Read problem, iter; set `solution`.
+  reads:
+  - problem
+  - iter
+  enriches: solution
+  cyclic: true
+- id: v2
+  role: solution_critic
+  purpose: Read solution; set `critique`.
+  reads:
+  - solution
+  enriches: critique
+  cyclic: true
+- id: v3
+  role: judge
+  purpose: Read critique; set `verdict`.
+  reads:
+  - critique
+  enriches: verdict
+  cyclic: true
+  outports:
+  - approved
+  - 'true'
+  - else
+sinks:
+- id: k0
+  name: jsonl_recorder_archive
+  params:
+    path: approved.jsonl
+- id: k1
+  name: jsonl_recorder_discard
+  params:
+    path: gave_up.jsonl
+edges:
+- from:
+  - s0
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - v0
+  - out
+  to:
+  - v1
+  - in_
+- from:
+  - v1
+  - out
+  to:
+  - v2
+  - in_
+- from:
+  - v2
+  - out
+  to:
+  - v3
+  - in_
+- from:
+  - v3
+  - approved
+  to:
+  - k0
+  - in_
+- from:
+  - v3
+  - 'true'
+  to:
+  - k1
+  - in_
+- from:
+  - v3
+  - else
+  to:
+  - v0
+  - in_

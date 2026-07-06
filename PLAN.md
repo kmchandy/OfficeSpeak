@@ -4,6 +4,16 @@ Implementation plan for the Phase A paper.
 For the *decisions* this plan implements, see DECISIONS.md.
 For the *reasoning* behind those decisions, see BRAINSTORM.md.
 
+## Status update (2026-07-01)
+
+The pipeline is `spec → pseudocode → graph.yaml → run`. `graph.yaml` is
+canonical (office.md is a derived view, no longer generated); an asyncio
+front-end was explored and dropped (control-flow → dataflow is
+compilation, which the pseudocode Stage A exists to avoid). The diamond
+is dropped: independent enrichers sequentialize into a pipeline, so
+`situation_room` is a pipeline. Gallery runs of the pseudocode pipeline
+are logged under `gallery_runs/`.
+
 Estimated total time: ~10–12 weeks of focused work plus paper
 writing. Aspirational — reality is often 1.5–2× plan estimates,
 particularly the earlier phases.
@@ -36,7 +46,7 @@ complexity*:
 
 | Gallery app | Topology pattern | Why include |
 |---|---|---|
-| `situation_room` | Diamond (4-way enrichment) → writer | Canonical broadcast-and-combine; multi-RSS news |
+| `situation_room` | Pipeline (sequential enrichers) → writer | Multi-RSS news; enrichers sequentialize (no diamond) |
 | `periodic_brief` | Pipeline | Simpler daily aggregation pattern |
 | `job_hunter` | Filter pipeline | Classification + matching with personal data |
 | `inbox_triage` | Classifier + router | Queue processing pattern |

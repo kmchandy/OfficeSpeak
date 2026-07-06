@@ -1,8 +1,8 @@
 inputs:
-  ai_papers: arxiv_cs_ai(max_articles=5)
-  cl_papers: arxiv_cs_cl(max_articles=5)
-  papers:    merge(ai_papers, cl_papers)
+  ai:     arxiv_cs_ai(max_articles=5)
+  cl:     arxiv_cs_cl(max_articles=5)
+  papers: merge(ai, cl)
 
 for each paper from papers:
-  s1: write summary -> reads paper.title, paper.abstract, enriches summary
+  s1: summarize paper -> reads paper, enriches summary
   send to jsonl_recorder(path="papers.jsonl")

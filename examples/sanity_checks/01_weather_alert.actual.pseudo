@@ -1,7 +1,7 @@
 inputs:
-  weather_reports: weather(poll_interval=600)
+  conditions: weather(poll_interval=600)
 
-for each report from weather_reports:
+for each report from conditions:
   s1: classify severity -> reads report, enriches severity
 
   if severity == "severe":

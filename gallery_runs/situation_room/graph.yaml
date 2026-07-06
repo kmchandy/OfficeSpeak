@@ -1,0 +1,97 @@
+sources:
+- id: s0
+  name: bbc_world
+  params:
+    max_articles: 3
+- id: s1
+  name: npr_news
+  params:
+    max_articles: 3
+- id: s2
+  name: al_jazeera
+  params:
+    max_articles: 3
+vertices:
+- id: v0
+  role: severity_classifier
+  purpose: Read article.body; set `severity`.
+  reads:
+  - article.body
+  enriches: severity
+  cyclic: false
+- id: v1
+  role: geolocator
+  purpose: Read article.body; set `location`.
+  reads:
+  - article.body
+  enriches: location
+  cyclic: false
+- id: v2
+  role: briefing_writer
+  purpose: Read article.body, severity, location; set `briefing`.
+  reads:
+  - article.body
+  - severity
+  - location
+  enriches: briefing
+  cyclic: false
+  outports:
+  - critical
+  - else
+sinks:
+- id: k0
+  name: intelligence_display
+  params: {}
+- id: k1
+  name: jsonl_recorder_briefing
+  params:
+    path: briefings.jsonl
+edges:
+- from:
+  - s0
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - s1
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - s2
+  - out
+  to:
+  - v0
+  - in_
+- from:
+  - v0
+  - out
+  to:
+  - v1
+  - in_
+- from:
+  - v1
+  - out
+  to:
+  - v2
+  - in_
+- from:
+  - v2
+  - critical
+  to:
+  - k0
+  - in_
+- from:
+  - v2
+  - critical
+  to:
+  - k1
+  - in_
+- from:
+  - v2
+  - else
+  to:
+  - k1
+  - in_

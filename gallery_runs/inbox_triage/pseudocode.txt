@@ -1,0 +1,6 @@
+# PLACEHOLDER — paste Claudette's pseudocode here.
+#
+# 1. python gallery_runs/run_pipeline.py --prompt inbox_triage
+# 2. paste gallery_runs/inbox_triage/prompt.txt into a fresh Claude chat
+# 3. replace this file's contents with the fenced pseudocode Claude returns
+# 4. python gallery_runs/run_pipeline.py inbox_triage
