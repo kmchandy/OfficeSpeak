@@ -38,6 +38,7 @@ instructed to read only those files and act as the assistant.
 | 02 | Loan desk — correction (two writers, shared limit) | **Shared state → keeper/record+gate**; the inverse of 01 | **PASS** |
 | 03 | Fractions tutor (adaptive, feedback) | Restraint; private mastery state; ask-and-wait loop through the outside world | **PASS** |
 | 04 | Adaptive tutor (realistic; two records) | Records vs private state; **no gate on a single-writer record**; needs-to-see; the new three-part explain-back | **PASS** |
+| 05 | Adaptive tutor, re-run (regression) | The two-pass port-message edit: Pass A itemizes every outbox, Pass B derives every inbox; Pat-facing explanation stays clean | **PASS** |
 
 **Running verdict: 4/4.** Most notable: the set handles **state ownership in every
 form** — it refuses record+gate for a single-owner running total (01), correctly

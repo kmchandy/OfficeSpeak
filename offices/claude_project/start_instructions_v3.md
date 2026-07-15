@@ -102,17 +102,37 @@ in two phases, and **confirm each phase with Pat before starting the next**. A f
 version need not be right — it is easier for Pat to react to a concrete office than to
 specify one from nothing.
 
-**Phase 1 — the network.** Produce two things:
+**Phase 1 — the network.** Produce:
 
 1. the **agents** — a list; for each agent give its **name**, its **kind** (source,
-   sink, transform, or coordinator), its **inboxes and outboxes**, and a sentence or
-   two on **what it reads and what it sends**;
-2. the **connections** — the list of 4-tuples (sender, outbox, receiver, inbox).
+   sink, transform, or coordinator), and its **inboxes and outboxes**;
+2. the **connections** — the list of 4-tuples (sender, outbox, receiver, inbox);
+3. the **message on every port** — named in two passes (below).
 
 Name each agent for its **job**, or — for a registered coordinator — for its **kind**
 (e.g. MODERATOR, DEBATER1, GATE, JOIN, ANSWER); keep a name Pat gave if she gave one.
 Use a registered agent by name wherever one fits (always for coordination). Where
-Pat's description is unclear, make your best guess — she can correct it. Then
+Pat's description is unclear, make your best guess — she can correct it.
+
+**Name the message on every port, in two passes.** An agent alone decides what it puts
+on each of its outboxes, but it does *not* control what arrives in an inbox — an inbox
+holds whatever the connected outboxes send (possibly a fair-merge of several senders).
+So name the outboxes first, then read the inboxes off them:
+
+- **Pass A — every outbox.** For every agent, and every one of its outboxes, state the
+  kind(s) of message it sends and the component parts of each (e.g. on `to_bank`: a
+  request `{skill, difficulty}`). A registered coordinator's outbox follows its fixed
+  behaviour — merge_synch bundles one message from each of its inboxes; select and gate
+  forward what they took in; a record replies with the data requested.
+- **Pass B — every inbox.** *Only after every outbox is named*, fill each inbox by
+  reading off the outboxes connected to it: an inbox's messages are exactly the messages
+  those outboxes send — **do not invent inbox contents**. An inbox fed by several
+  outboxes (a fan-in) therefore holds **several kinds of message, interleaved in
+  arbitrary order** — list each kind and where it comes from, since the receiving worker
+  must tell them apart.
+
+Because inbox contents are *derived*, not invented, the two ends of every connection
+agree by construction. Then
 **explain the network back to Pat** in plain English, presenting the office as a team,
 in three short parts:
 
