@@ -1,0 +1,14 @@
+{"day": 1, "forecast": 23.0, "weights": {"met_no": 0.5, "open_meteo": 0.5}}
+{"day": 2, "forecast": 24.1, "weights": {"met_no": 0.5, "open_meteo": 0.5}}
+{"day": 3, "forecast": 24.6, "weights": {"met_no": 0.5, "open_meteo": 0.5}}
+{"day": 4, "forecast": 24.4, "weights": {"met_no": 0.5, "open_meteo": 0.5}}
+{"day": 5, "forecast": 23.5, "weights": {"met_no": 0.5, "open_meteo": 0.5}}
+{"day": 6, "forecast": 22.0, "weights": {"met_no": 0.5, "open_meteo": 0.5}}
+{"day": 7, "forecast": 20.5, "weights": {"met_no": 0.5, "open_meteo": 0.5}}
+{"day": 8, "forecast": 18.0, "weights": {"met_no": 0.0, "open_meteo": 1.0}}
+{"day": 9, "forecast": 17.4, "weights": {"met_no": 0.0, "open_meteo": 1.0}}
+{"day": 10, "forecast": 17.4, "weights": {"met_no": 0.0, "open_meteo": 1.0}}
+{"day": 11, "forecast": 18.2, "weights": {"met_no": 0.0, "open_meteo": 1.0}}
+{"day": 12, "forecast": 19.5, "weights": {"met_no": 0.0, "open_meteo": 1.0}}
+{"day": 13, "forecast": 20.9, "weights": {"met_no": 0.0, "open_meteo": 1.0}}
+{"day": 14, "forecast": 22.3, "weights": {"met_no": 0.0, "open_meteo": 1.0}}

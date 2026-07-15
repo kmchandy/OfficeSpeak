@@ -1,0 +1,270 @@
+{
+ "head": [
+  {
+   "in": {
+    "day": 1,
+    "forecasts": {
+     "open_meteo": 21.7,
+     "met_no": 24.4
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.5,
+     "open_meteo": 0.5
+    },
+    "graded_days": 0
+   },
+   "out": {
+    "forecast": 23.0
+   }
+  },
+  {
+   "in": {
+    "day": 2,
+    "forecasts": {
+     "open_meteo": 22.8,
+     "met_no": 25.5
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.5,
+     "open_meteo": 0.5
+    },
+    "graded_days": 0
+   },
+   "out": {
+    "forecast": 24.1
+   }
+  },
+  {
+   "in": {
+    "day": 3,
+    "forecasts": {
+     "open_meteo": 23.3,
+     "met_no": 26.0
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.5,
+     "open_meteo": 0.5
+    },
+    "graded_days": 0
+   },
+   "out": {
+    "forecast": 24.6
+   }
+  },
+  {
+   "in": {
+    "day": 4,
+    "forecasts": {
+     "open_meteo": 23.0,
+     "met_no": 25.7
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.5,
+     "open_meteo": 0.5
+    },
+    "graded_days": 0
+   },
+   "out": {
+    "forecast": 24.4
+   }
+  },
+  {
+   "in": {
+    "day": 5,
+    "forecasts": {
+     "open_meteo": 22.1,
+     "met_no": 24.8
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.5,
+     "open_meteo": 0.5
+    },
+    "graded_days": 0
+   },
+   "out": {
+    "forecast": 23.5
+   }
+  },
+  {
+   "in": {
+    "day": 6,
+    "forecasts": {
+     "open_meteo": 20.7,
+     "met_no": 23.4
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.5,
+     "open_meteo": 0.5
+    },
+    "graded_days": 0
+   },
+   "out": {
+    "forecast": 22.0
+   }
+  },
+  {
+   "in": {
+    "day": 7,
+    "forecasts": {
+     "open_meteo": 19.2,
+     "met_no": 21.9
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.5,
+     "open_meteo": 0.5
+    },
+    "graded_days": 0
+   },
+   "out": {
+    "forecast": 20.5
+   }
+  },
+  {
+   "in": {
+    "day": 8,
+    "forecasts": {
+     "open_meteo": 18.0,
+     "met_no": 20.7
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.0,
+     "open_meteo": 1.0
+    },
+    "graded_days": 1
+   },
+   "out": {
+    "forecast": 18.0
+   }
+  },
+  {
+   "in": {
+    "day": 9,
+    "forecasts": {
+     "open_meteo": 17.4,
+     "met_no": 20.1
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.0,
+     "open_meteo": 1.0
+    },
+    "graded_days": 2
+   },
+   "out": {
+    "forecast": 17.4
+   }
+  },
+  {
+   "in": {
+    "day": 10,
+    "forecasts": {
+     "open_meteo": 17.4,
+     "met_no": 20.1
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.0,
+     "open_meteo": 1.0
+    },
+    "graded_days": 3
+   },
+   "out": {
+    "forecast": 17.4
+   }
+  },
+  {
+   "in": {
+    "day": 11,
+    "forecasts": {
+     "open_meteo": 18.2,
+     "met_no": 20.9
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.0,
+     "open_meteo": 1.0
+    },
+    "graded_days": 4
+   },
+   "out": {
+    "forecast": 18.2
+   }
+  },
+  {
+   "in": {
+    "day": 12,
+    "forecasts": {
+     "open_meteo": 19.5,
+     "met_no": 22.2
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.0,
+     "open_meteo": 1.0
+    },
+    "graded_days": 5
+   },
+   "out": {
+    "forecast": 19.5
+   }
+  },
+  {
+   "in": {
+    "day": 13,
+    "forecasts": {
+     "open_meteo": 20.9,
+     "met_no": 23.6
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.0,
+     "open_meteo": 1.0
+    },
+    "graded_days": 6
+   },
+   "out": {
+    "forecast": 20.9
+   }
+  },
+  {
+   "in": {
+    "day": 14,
+    "forecasts": {
+     "open_meteo": 22.3,
+     "met_no": 25.0
+    }
+   },
+   "state": {
+    "weights": {
+     "met_no": 0.0,
+     "open_meteo": 1.0
+    },
+    "graded_days": 7
+   },
+   "out": {
+    "forecast": 22.3
+   }
+  }
+ ]
+}

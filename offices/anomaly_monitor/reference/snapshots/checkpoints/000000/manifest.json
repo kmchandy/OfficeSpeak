@@ -1,0 +1,31 @@
+{
+  "office": "anomaly_monitor",
+  "N": 0,
+  "timestamp": "2026-07-06T19:29:07",
+  "agents": [
+    "anomaly_monitor::alerts",
+    "anomaly_monitor::deduper",
+    "anomaly_monitor::metrics",
+    "anomaly_monitor::monitor"
+  ],
+  "edges": [
+    [
+      "anomaly_monitor::metrics",
+      "out_",
+      "anomaly_monitor::monitor",
+      "in_"
+    ],
+    [
+      "anomaly_monitor::monitor",
+      "out_",
+      "anomaly_monitor::deduper",
+      "in_"
+    ],
+    [
+      "anomaly_monitor::deduper",
+      "out_",
+      "anomaly_monitor::alerts",
+      "in_"
+    ]
+  ]
+}

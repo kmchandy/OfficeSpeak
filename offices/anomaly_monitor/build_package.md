@@ -1,7 +1,7 @@
 # Phase B — build package (paste into a fresh Cowork/Claude chat)
 
 Held-out: paste everything below into a clean chat. It is the message-passing
-office-builder prompt followed by Pat's trading-desk description. Do NOT paste our
+office-builder prompt followed by Pat's anomaly-monitor description. Do NOT paste our
 review or predictions. Save what Claude produces (the office graph + the
 explanation) and hand it back for scoring.
 
@@ -39,15 +39,14 @@ Name a worker for each job Pat describes, with a one-line job description
 (most workers are driven by an LLM prompt; a few are simple code). For
 coordination, use these ready-made agents by name:
 
-- **source(name, …)** — brings information in (a news feed, market data).
+- **source(name, …)** — brings information in.
 - **fair_merge** — combines several sources into one stream, taking
   whichever message arrives first. Use *only* to merge sources.
 - **merge_synch(inports: […])** — waits for one message on each named
   inport, combines them, and emits one message. Use when a worker needs
   several inputs *for the same item*.
 - **select** — a worker that reads whichever input its current state
-  points to, updating that state as messages arrive. Use for ask-and-wait
-  (send a request, wait for the reply).
+  points to. Use for ask-and-wait (send a request, wait for the reply).
 - **gate** — admits one item at a time and waits for a "done" signal
   before admitting the next.
 - **router** — sends each message to exactly one place based on a
@@ -70,12 +69,11 @@ Notes:
 
 Rules of thumb:
 - One worker per job Pat names.
-- No shared memory: if several agents need the same information, give one
-  agent the job of keeping it and answering requests, or broadcast it.
 - If a worker needs several inputs for the same item, use **merge_synch**.
 - If a worker must send a request and wait for an answer, use **select**.
 - If an agent that *owns* shared information is updated while handling
   each item, put a **gate** so its memory stays consistent.
+- Use only the coordination the description needs — not every building block.
 - Use only the sources and sinks Pat's description implies. Do not invent
   extra jobs Pat did not ask for.
 
@@ -107,55 +105,33 @@ Use the exact worker names and the reads/sends you declared in the office.
 
 ## Overview
 
-I want a desk that watches the market in real time and *suggests* trades — buy or
-sell — for a handful of stocks we follow, with a short reason for each suggestion.
-People on the desk read the suggestions and decide for themselves; the office only
-proposes.
+I want an office that watches our services' health and alerts me when something looks
+abnormal.
 
 ## Inputs
 
-1. A live stream of **price updates** for the stocks we follow. These arrive
-   continuously and quickly.
-2. **News from two independent feeds**, arriving asynchronously and in bursts:
-   posts from **X** (social media) and **Bloomberg's** newswire. Both carry
-   market-moving headlines — Fed announcements, analyst reports, breaking stories.
-
-The price feed and the two news feeds arrive independently and at different rates.
+A continuous stream of **health readings** — for each of our services (web, db,
+cache), a number arrives regularly (say, a response time).
 
 ## Outputs
 
-A running log of suggested trades — each with the stock, buy or sell, and a short
-reason — written to a file, TRADES.
+**Alerts** written to a file, ALERTS — each naming the service, the abnormal reading,
+and how far out of the normal range it was.
 
 ## Workers
 
-- **chart-analyst** — a technical analyst who watches prices and signals a trade
-  when a stock breaks out of its recent moving average.
-- **news-analyst** — an analyst who reads the news and signals a trade when a story
-  looks likely to move a stock.
-- **head-trader** — decides whether to actually suggest a trade, and how big.
-- **risk-manager** — keeps the desk's book (current positions, cash, and risk
-  limits) and approves or rejects a proposed trade.
+- **monitor** — for each service, learns what "normal" looks like over a recent
+  window and flags a reading that is far outside it.
+- **deduper** — groups repeated alerts for the same service so I get one message, not
+  twenty in a row.
+- **router** — sends each alert to whoever owns that service.
 
 ## What each worker does
 
-- **chart-analyst.** Watches the price stream. For each stock it keeps a
-  **30-minute moving average** of the price. When the price crosses from below to
-  above that average it signals **buy** to the head-trader; when it crosses from
-  above to below, it signals **sell**. It signals only at the moment of the
-  crossing, not on every tick. This is a computational job — plain arithmetic on
-  the price stream.
-- **news-analyst.** Reads each news headline as it arrives. Given the headline and
-  the list of stocks we follow, it decides whether the news is likely to push one of
-  those stocks up or down soon. If so, it signals **buy** (likely up) or **sell**
-  (likely down) for that stock to the head-trader, with a one-sentence reason; if the
-  headline isn't clearly relevant, it does nothing. This is a judgment job — reading
-  and interpreting text — so it is handled by an LLM.
-- **head-trader.** Receives signals from the chart-analyst and the news-analyst as
-  they come in — whichever fires first — and, using the current price, decides
-  whether to propose a trade and how big. Sends the proposed trade to the
-  risk-manager and waits for approval; if approved, writes the suggestion to TRADES.
-- **risk-manager.** Keeps the desk's book — current positions, cash, and risk
-  limits. When the head-trader proposes a trade, checks it against the book and the
-  limits, approves or rejects it, and if approved updates the book. Handles one
-  proposal at a time so the book stays consistent.
+- **monitor.** For each service separately, keeps a recent window of readings and its
+  average and spread. When a new reading is more than a few standard deviations from
+  that service's recent average, it raises an alert (service, value, how far out) to
+  the deduper. Otherwise it stays quiet. Plain arithmetic per service.
+- **deduper.** Keeps track of when it last alerted for each service; if the same
+  service alerts again right away, it suppresses the repeat and passes only the first.
+- **router.** Looks up who owns the service and sends the alert to that owner.

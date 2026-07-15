@@ -1,104 +1,142 @@
-# Offices: Letting Non-Programmers Command Stateful, Persistent Multi-Agent Systems in Plain English
+# Non-Programmers Build and Maintain Persistent Multi-Agent Systems in English
 
-*Draft v1 — approach (b): the paper begins from a structured-but-plain English
-office description (the document a successful onboarding conversation would
-produce) and centers on the build → explain → correct loop. The onboarding
-conversation itself is described as context and future work.*
-
-Status of evidence: the worked example and the portability result are real; the
-explain-back discrimination result is one true-positive plus one clean negative
-control, with a pre-registered plant-a-gap protocol whose full run is pending.
-Marked [PENDING] where numbers are not yet in.
-
----
 
 ## Abstract
 
-Large language models can generate code, but the systems ordinary people most
-need — persistent, stateful services that watch for information and react to it —
-are concurrent and history-dependent, exactly where naive generation is unreliable
-and unrepeatable. We present **offices**: a way for a non-programmer to command a
-running multi-agent system by describing it in structured-but-plain English. The
-user describes a small *team of workers with jobs*; a language model turns the
-description into an executable graph of message-passing agents and *explains the
-graph back* in plain English; the user confirms or corrects; they iterate. The
-generated office runs on a small library of *trusted coordination primitives*
-(a gate, a synchronizer, an ask-and-wait selector, a shared record/clerk, a source
-merge, a router) that make coordination correct by construction and make the office
-deterministic wherever determinism is wanted — without restricting what the user
-can express. Because coordination lives in the library and only worker *bodies* are
-generated, a model error is a *content* error the user can catch, never a
-coordination error. We show the loop on a worked example (an investment-club
-office), give a preliminary evaluation of substrate portability and of whether the
-explain-back lets a non-programmer catch real defects, and argue that the approach
-separates cleanly into a wiring layer (checkable) and an agent-specification layer
-(the user's to confirm).
+Distributed systems — programs that run continuously, keep state, react to
+asynchronous inputs, and coordinate several agents — have been used by 
+corporations for decades.
+Individuals, such as small business owners, with limited programming skills,
+can benefit from them too.
+A challenge for non-programmers is not only to build distributed systems, but also to 
+debug and maintain them.
+Large language models can generate code, but generating stateful, concurrent systems
+is more difficult than generating sequential programs.
+This paper presents **OfficeSpeak**, a system that lets
+non-programmers build, understand, debug, and maintain distributed systems through
+English conversations. The user describes an *office* — a team of workers, each with a role
+stated in English. OfficeSpeak assembles a network of message-passing agents and
+explains the network to the user in English; the user makes corrections or asks for an explanation
+and iterates. Then the user proceeds to debugging and maintenance.
+Users can build complex offices by connecting simpler offices.
+OfficeSpeak generates code for agents but not for their coordination.
+Instead it manages concurrency by using a small collection of trusted coordination primitives. 
+As a consequence, the systems that OfficeSpeak generates can be analyzed using theories of 
+networks of processes. OfficeSpeak uses the theory to structure conversations that help
+in debugging and maintenance.
+The generated systems have features such distributed termination detection and consistent global-snapshot checkpoints that the user does not specify. The paper has examples of OfficeSpeak building, debugging, and running different types of
+distributed systems.
 
 ## 1. Introduction
 
-Most people who could benefit from software automation cannot build it, and the
-software they would benefit from most is rarely a one-shot script. It is a
-*persistent service*: watch my club's market data and news and recommend what to
-do; watch our customer emails and draft replies from each customer's history; watch
-our services and flag unusual behavior. These systems are **stateful** (they
-remember), **concurrent** (many things happen at once), and **history-dependent**
-(what they do depends on what came before). This is precisely the regime in which
-directly generating code from a prompt is fragile: the correctness bugs are
-race conditions, lost updates, and mis-synchronized joins, and they are neither
-visible in a single output nor reliably reproducible across runs.
+Organizations, such as banks, have long used distributed systems for applications such
+as credit-card processing. Individuals can benefit from them too.
+A member of a local investment club wants a system that watches market
+data, economic news, and social feeds, weighs different investment strategies and makes
+recommendations. A facilities manager wants one that fuses HVAC readings, utility
+sensors, and email into plan updates. These apps are smaller and simpler than an organization's; but they are persistent, multi-agent, and stateful. 
 
-Such systems also contain **feedback loops that may not terminate** — a scorer that
-sends a draft back to a writer "until the score is high enough" may loop forever. This
-is not a program to forbid; it is a common and useful pattern. But it is exactly what
-makes a persistent, concurrent substrate *necessary* rather than convenient: only a
-runtime with **termination detection** and **checkpointing** can notice a runaway loop,
-preserve state, and surface it for the person to correct (say, cap the rounds). And an
-arbitrary loop **cannot be compiled away into a sequential script** — this is a
-fundamental limit. So the distributed machinery is not incidental to the contribution;
-it is what makes possibly-non-terminating offices buildable and debuggable at all, and
-it is what a general code-generating agent does not provide.
+How can a non-programmer build, debug, and maintain a distributed system for herself?
+A solution is to use large language models to generate systems from English
+descriptions; however, code to create and coordinate multiple concurrent agents is tricky. 
+The hard problems of distributed systems —  fundamental concurrency constructs, distributed algorithms, and theories of correctness — have been solved over the decades. This work was carried out by computer scientists for 
+computer scientists. OfficeSpeak is an attempt to make the results usable by everyone. 
 
-We take a different route. Instead of asking a language model to emit correct
-concurrent code, we ask it to *assemble a system out of trusted parts* and to
-*explain the result back* to the person in their own terms. Concretely:
+[Diagram showing OfficeSpeak in the middle with users on the left and systems (graphs) on
+the right with OfficeSpeak talking to users in English and talking "computer science" to
+graphs.]
 
-- The person — a non-programmer we call **Pat** — describes what she wants as a
-  small **office**: a team of workers, each with a job, that runs on its own. She
-  writes in structured-but-plain English (what the office is for, who the workers
-  are, what each does and needs), not in any formal language.
-- A language model turns that description into an executable **graph** of
-  message-passing agents, drawing coordination from a fixed **library** of
-  primitives.
-- The model **explains the graph back** to Pat in plain English — who does what,
-  who waits for whom, what is assumed — and Pat confirms or corrects it. They
-  iterate until it matches her intent.
+Next we discuss the following issues. What should the structure of distributed systems generated by OfficeSpeak be? What should be the mental model used by non-programmers to describe distributed systems in English? How does computer science theory get surfaced to non-programmers?
 
-Two design commitments make this work. First, **coordination is not generated**:
-the primitives that control concurrency (serialize, synchronize, ask-and-wait,
-share state) are hand-written and trusted, so the model's job is to *choose and
-connect* them, not to implement them. Second, **the explanation is a first-class
-artifact**: it is how a person with no systems vocabulary evaluates whether the
-system is right, and — as we show — it is good enough to let her catch genuine
-distributed-data defects.
 
-Framed in classic HCI terms, the two halves bridge Norman's two gulfs. The
-structured-plain description bridges the *gulf of execution* ("how do I say what I
-want?"); the explain-back bridges the *gulf of evaluation* ("did it do what I
-meant?").
+## 2. A Distributed System
+The distributed system generated by OfficeSpeak is a network of processes (Kahn, Misra, Hoare). This model has an extensive literature and many implementations (MQ). A process is either a sequential program or is itself a network of processes. Hereafter we use the term **agent** for process. An agent may have named input mailboxes and output mailboxes. A mailbox is a queue of messages. 
+
+A network is specified by a labeled directed graph in which an edge is directed from an outbox of an agent to the inbox of an agent. Each edge represents a queue of messages; the queue is called a **channel**. 
+
+[diagram of a simple network]
+
+A system is represented by a set of actions with an action for each outbox and an action for each channel. 
+The action for an outbox is: if the outbox is not empty then remove the message at the head of the outbox and append a copy of the message to the tail of every channel to which the outbox is connected.
+The action for a channel is: if the channel is not empty then remove the message at the head of the channel and append the message to the tail of the inbox to which the channel is connected.
+
+
+[diagram showing messages taken out of an outbox and put in channels, and a diagram showing messages taken out of a channel and put in inboxes]
+
+## 3. How Non-Programmers Specify Distributed Systems
+
+The mental model used by non-programmers to describe distributed systems is an **office**: A team of workers, each with a role described in English, and an org chart which specifies how messages flow between agents.
+Each agent has inboxes and outboxes; the agent takes messages from its inboxes, processes them, and places messages in its outboxes. An org chart consists of a set
+of 4-tuples: (sending agent, sender's outbox, receiving agent, receiver's inbox).
+For example, a distributed system that monitors news sources and gives investment advice is represented by an office populated with agents that acquire data, a value-strategy analyst, a growth-strategy analyst, a manager who weighs their advice, and an accountant who prices the trades.
+
+[Diagram showing Investment Club office]
+
+
+## 4. Mapping English Specifications to Systems
+
+English is ambiguous. 
+We cannot prove that the network that is generated is what the user had in mind. We do, however, use concurrency constructs to increase the likelihood that the generated network matches user's expectations. 
+The process for converting an English description of an office to a network of agents takes multiple steps.
+Office
+
+
+OfficeSpeak turns
+that description into a network of message-passing agents and explains the network to the user —
+who communicates with whom, and what the user left unsaid. The
+user reads the explanation and corrects it in English — "the accountant has to see our
+current holdings" — or asks for clarification. The conversation with OfficeSpeak continues
+until the user thinks the office represents what she had in mind; but she isn't done yet.
+
+- Debugging by looking at each input and output of each agent. Driving each agent by itself.
+- Debugging by looking at traces. Relate the debugging to UNITY and Networks of Processes.
+- OfficeSpeak explains a global snapshot to users.
+
+
+Larger offices are built by wiring smaller ones together.
+
+OfficeSpeak is based on two ideas: first, limit the LLM's role; and
+second, serve as a translator of system issues into English.
+The system consists of (1) agents specified (in English) by the user
+and (2) agents that manage message flow between user agents
+or carry out operating-system functions such as
+checkpointing. We call the former user agents and the latter substrate agents.
+LLMs are used to generate user agents but not substrate agents.
+OfficeSpeak has a small set of substrate-agent types.
+The LLM's task is to choose which substrate agents to use — not to implement them.
+
+The user's description of an office, OfficeSpeak's explanation, the user's corrections,
+replay of computations, and explanations of global snapshots
+are all in English. In HCI terms, the description of the office that the user gives
+to OfficeSpeak and the explanations that OfficeSpeak gives the user bridge
+Norman's *gulf of execution* ("how do I say what I want?") and *gulf of evaluation*
+("did it do what I meant?").
 
 **Contributions.**
-1. The **office** interaction: a non-programmer commands a persistent, stateful,
-   concurrent system through a build → explain → correct loop over a
-   structured-but-plain English description.
-2. A small library of **trusted coordination primitives** that make an
-   LLM-assembled office's coordination correct by construction and deterministic
-   where wanted, *without restricting the description language*.
-3. A clean **separation of concerns** — a wiring layer (checkable from
-   per-agent contracts) versus an agent-specification layer (the user confirms) —
-   with the per-agent contract as the seam.
-4. A **preliminary evaluation**: substrate portability of one office across
-   shared-memory and message-passing realizations, and an assessment of whether the
-   explain-back lets a non-programmer catch planted and naturally-occurring defects.
+1. The **office** interaction: a non-programmer builds, understands, corrects,
+   debugs, and maintains a persistent, stateful, concurrent distributed system
+   through an ongoing English conversation.
+2. A small library of **trusted coordination primitives** that the model assembles
+   the system from, rather than generating coordination. The primitives are trusted
+   *mechanisms*: an entire class of concurrency bug — races, lost updates, a
+   deadlocking hand-written gate or queue — cannot arise, because that machinery is
+   library code, not model-written. What the model still decides — which primitive,
+   and how the primitives are wired — is checkable from per-agent contracts and
+   surfaced in the explain-back; whether the office does what the user *meant* comes
+   from iteration. The assembled office also gains distributed termination detection
+   and consistent global-snapshot checkpoints the user never specifies — *without
+   restricting the description language*.
+3. **Debugging by conversation**: record a run, replay it deterministically, and
+   explain any agent's, snapshot's, or episode's behavior in plain English, so a
+   non-expert can localize a bug.
+4. A clean **separation of concerns** — a wiring layer (checkable from per-agent
+   contracts) versus an agent-specification layer (the user confirms), with the
+   contract as the seam — and **composition**: larger offices built by connecting
+   smaller ones.
+5. An **evaluation**: held-out build → explain → correct → debug on offices of
+   several shapes — including one the system had never seen, an office that learns
+   online — showing the generated systems run, terminate, checkpoint, and let a
+   non-expert catch genuine coordination defects.
 
 ## 2. The office abstraction
 
@@ -125,7 +163,9 @@ decides). A few agents are **coordination primitives** drawn from a fixed librar
 - **gate** — admit one item at a time, releasing the next only after a "done"
   signal; used when an agent that owns shared state is updated while handling each
   item.
-- **router** — send each item to exactly one place by a condition.
+
+(Sending an item to one of several places by a condition is *computation*, not
+coordination — an ordinary worker does it — so it is not a primitive.)
 
 **Determinism via coordination, not restriction.** In a network of
 message-passing agents, the only source of nondeterminism is a **merge** — a point
@@ -138,7 +178,7 @@ because it makes the office **testable**: the same inputs produce the same outpu
 so empirical testing is meaningful.
 
 **Coordination is trusted; bodies are generated.** The coordination primitives are
-library code, correct by construction and never generated. Only worker bodies are
+library code — trusted mechanisms, never generated. Only worker bodies are
 produced by the model. The consequence is a sharp bound on where model error can
 land: a wrong body is a *content* error (the analyst reasons poorly) — testable and
 catchable by the user — and can never be a *coordination* error, because the
@@ -321,10 +361,11 @@ it with a plain-English instruction.
 
 Three things do the work.
 
-**Trusted coordination.** Because the gate, join, selector, record, merge, and
-router are library code, the office's coordination is correct whatever the model
-does. The model's freedom is confined to choosing and wiring them and to writing
-worker bodies.
+**Trusted coordination.** The gate, join, selector, record, and merge are library
+code — trusted mechanisms, so the office never contains a hand-generated gate or
+queue that races, loses updates, or deadlocks. The model's remaining freedom —
+which primitive, how they are wired, and the worker bodies — is exactly what the
+static checks and the explain-back are there to cover.
 
 **Determinism where wanted.** With merges controlled, the office is determinate, so
 the same inputs reproduce the same outputs and testing is meaningful. Uncontrolled

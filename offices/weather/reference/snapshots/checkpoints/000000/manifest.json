@@ -1,0 +1,65 @@
+{
+  "office": "weather",
+  "N": 0,
+  "timestamp": "2026-07-07T00:12:16",
+  "agents": [
+    "weather::FORECAST",
+    "weather::Repository",
+    "weather::actuals",
+    "weather::head",
+    "weather::join",
+    "weather::met_no",
+    "weather::open_meteo",
+    "weather::repo_merge"
+  ],
+  "edges": [
+    [
+      "weather::open_meteo",
+      "out_",
+      "weather::join",
+      "in_0"
+    ],
+    [
+      "weather::met_no",
+      "out_",
+      "weather::join",
+      "in_1"
+    ],
+    [
+      "weather::join",
+      "out_",
+      "weather::head",
+      "in_"
+    ],
+    [
+      "weather::head",
+      "to_repo",
+      "weather::repo_merge",
+      "in_0"
+    ],
+    [
+      "weather::actuals",
+      "out_",
+      "weather::repo_merge",
+      "in_1"
+    ],
+    [
+      "weather::repo_merge",
+      "out_",
+      "weather::Repository",
+      "req"
+    ],
+    [
+      "weather::Repository",
+      "reply",
+      "weather::head",
+      "from_repo"
+    ],
+    [
+      "weather::head",
+      "out_",
+      "weather::FORECAST",
+      "in_"
+    ]
+  ]
+}
