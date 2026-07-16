@@ -1,24 +1,23 @@
-# OfficeSpeak — see the fractions tutor run (a first session for Sachin)
+# OfficeSpeak — build a tutor
 
-Hi Sachin,
-
-This walks you from nothing to a running tutor with no setup beyond opening the
-Claude desktop app. You don't install anything, you don't touch a terminal, and
-you don't write code. You describe what you want in plain English and watch it
-run. The example is a fractions tutor — the kind of thing you might want for your
-daughter — and its "grader" is a language model, so it understands answers a kid
-actually types.
-
-Read the picture first, then do the three steps.
+This example shows how to build a tutor app. This example has a single student.
+Later examples show how to extend this app to tutor multiple students concurrently;
+and how to use plain English to test, debug, and deploy your system.
+Don't install anything. See the office that is produced and tailor it to your needs.
 
 ---
 
-## The office at a glance
+## An office
 
 An **office** is a small team of **workers** that pass messages to each other.
 Each worker has **inboxes** (messages arrive) and **outboxes** (messages it
-sends); an arrow is a connection from one worker's outbox to another's inbox.
-Here is the whole tutor:
+sends). An office has an org chart which is a set of **connections**. A
+connection is from one outbox to one inbox. The office repeatedly takes a 
+message from the top (front) of a nonempty outbox and places copies ot the
+message at the bottom of the inboxes to which it is connected. A connection is shown as
+an arrow or directed edge in diagrams.
+
+Here is the diagram of the org chart for the  tutor:
 
 ```mermaid
 flowchart LR
@@ -63,38 +62,34 @@ flowchart LR
 The colours mark the *kind* of each worker: blue = a **source** (feeds messages
 in), grey = a plain **worker**, green = a **record** (a shared file with a
 keeper), orange = a **sink** (an output), and the one **violet ★ box is the
-language model** — the only "smart" part. Everything else is fixed plumbing you
-never write. The whole tutor rests on a single LLM worker with a job description:
-*grade the answer and say something kind.*
+language model**.
 
 Three things the picture shows, which are the ideas behind every office:
 
 - **PLANNER's inbox has several arrows into it** (from SESSION, BANK, PROGRESS,
-  CHECKER). They all land in one in-tray and PLANNER handles them one at a time —
-  you never coordinate that.
-- **BANK and PROGRESS are records** — shared files, each with a keeper. Because
-  only PLANNER talks to each, they stay consistent with no locks.
-- **The office stops itself** when everyone is done. There is no "run loop" to
-  write or stop.
+  CHECKER). They all land in one inbox and PLANNER handles them one at a time.
+- **BANK and PROGRESS are records** — shared files, each with a keeper agent.
+- **The office stops itself** when everyone is done.
 
 ---
 
-## What you do once: open Cowork, connect the folder
+## Step 0: open Cowork
 
 1. Open the **Claude desktop app** and turn on **Cowork**.
 2. Connect the folder that has `DisSysLab` and `OfficeSpeak` (drag it in / pick
    it when asked).
 3. The LLM grader needs a Claude API key. Just paste your key into the chat and
    say *"save my Anthropic key so the tutor can use it"* — Claude will put it in
-   the right place. (No key yet? Get one at console.anthropic.com; ~2 minutes.)
+   the right place. (You can get a key at console.anthropic.com; ~2 minutes.)
 
-That's all the setup there will ever be.
 
 ---
 
-## Step 1 — describe the tutor
+## Step 1 — describe your app in English
 
-Paste this into the chat (this is the "Pat" describing what she wants):
+This is an example of a description of an app.
+
+1.1 **Paste the following into the chat in Cowork.**
 
 > "I want an adaptive practice tutor for a kid learning fractions. It works from a
 > bank of practice questions. It asks one question at a time on the screen and
@@ -102,7 +97,7 @@ Paste this into the chat (this is the "Pat" describing what she wants):
 > track of how the kid is doing and, when the session ends, shows a short
 > encouraging summary and saves a progress report the parent can read later."
 
-Then say: **"Build me this office and explain it back to me."**
+1.2 Enter into chat: **"Build this office and explain it to me."**
 
 **What you see back** — Claude describes the team in plain English, something like:
 
@@ -118,10 +113,6 @@ Then say: **"Build me this office and explain it back to me."**
 > checks it, writes a kind sentence of feedback, and tells the coach how it went.
 > The coach updates progress and picks the next one. At the end, it puts an
 > encouraging summary on the screen and saves your report.
-
-This is the loop we care about most: **the office is always explained back to you
-in plain English**, so you can see whether it matches what you meant before it
-runs. It also shows you the diagram above.
 
 ---
 
@@ -151,60 +142,40 @@ the model each run**, so yours will read a little differently):
 ```
 
 Look at what the kid actually typed for those: **"one"**, **"1"**, **"six"**, and
-**"two quarters"**. A grader that just compared strings would mark three of the
-four wrong. Because the grader is a language model, it accepts *"one"* for 1, and
-*"two quarters"* for 1/2, and it gives a genuine hint on the one real mistake —
-all from the single job description in the violet box. That is the whole point:
-**the thinking part is the model; you didn't write any grading rules.**
+**"two quarters"**. The grader is a language model and so itaccepts *"one"* for 1.
+It gives a hint on a mistake.
 
 ---
 
-## Step 3 — change it, in plain English
+## Step 3 — change the office, in plain English
 
-Everything is changeable by asking. Try any of these and Claude rebuilds and
-reruns the office:
+If the office that is generated does not do what you want it to do then
+tell the chat what you want changed. For example:
 
 - *"Add a question: 3 × 1/3 = ?, answer 1."*
 - *"Give two hints before revealing the answer."*
 - *"Make the summary mention which question was missed."*
 - *"Pull the questions from this list I'm pasting in…"*
 
-You describe the change; the wiring above doesn't change; the office runs again.
-When something doesn't match what you had in mind, say so — that back-and-forth is
-exactly what we're hoping you'll push on.
 
 ---
 
-## Why there's no Python here
+## Later examples
 
-The base case is the language model. The worker that makes a *judgement* — is this
-answer right, what should we tell the kid — is an LLM given a short job
-description, and it plugs into the office like any other worker. The rest (the
-screen, the answer feed, the saved report, the question bank, the progress file,
-and the coach's simple "ask, wait, next" sequencing) is fixed plumbing that comes
-with OfficeSpeak. You never see it as code to write.
+1. Build an app that serves as a tutorial office that trains many students.
+Keep track of each student and student cohorts. Send an alert to a 
+human tutor if a student gives random answers or stops answering.
 
-There is one good reason to bring plain code *back* later, and it's a nice next
-step: a small **watcher** worker that counts wrong answers and, if the kid misses
-too many in a row, **alerts you**. That's a rule you'd want to be exact and
-auditable — "3 misses → message the parent" — not a judgement call, so it's a
-perfect job for a tiny code worker rather than the model. We can add it to this
-same diagram in one step whenever you like.
+1. Run an office in debug mode and then replay computations from global checkpoints.
+   OfficeSpeak explains checkpoints and computations in English.
 
 ---
 
-## What would help us most
+## Questions for you
 
-1. Reading the diagram and the explain-back cold — was it clear what the tutor is
-   and how the pieces fit, before you ran anything?
-2. The run itself — did "describe it, then watch it" feel frictionless, or did you
-   hit anything that made you stop?
-3. The LLM grader accepting "one" and "two quarters" — did that land as obviously
-   useful for a real kid?
-4. A change you asked for in Step 3 — did the result match what you meant?
-
-Rough notes are perfect. And if any office ever hangs instead of stopping, tell us
-right away — that's a bug we want. Thanks for trying it, Sachin.
+1. Did the office that was constructed seem correct to you given the English
+   description? Did the English explanations make sense?
+2. Did you ask chat to modify the office? And did it do as you requested?
 
 *(The runnable office is `offices/phase2_demo/tutor_llm.py`; the exact-match
 version, if you want to compare, is `tutor.py`.)*
