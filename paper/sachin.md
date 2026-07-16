@@ -1,9 +1,9 @@
 # OfficeSpeak — build a tutor
 
-This example shows how to build a tutor app. This example has a single student.
-Later examples show how to extend this app to tutor multiple students concurrently;
-and how to use plain English to test, debug, and deploy your system.
-Don't install anything. See the office that is produced and tailor it to your needs.
+This example shows how to build an app to tutor a single student. 
+Later examples show how to extend this app to tutor multiple students concurrently.
+We show how to use plain English to test, debug, and maintain systems built for you.
+
 
 ---
 
@@ -13,9 +13,39 @@ An **office** is a small team of **workers** that pass messages to each other.
 Each worker has **inboxes** (messages arrive) and **outboxes** (messages it
 sends). An office has an org chart which is a set of **connections**. A
 connection is from one outbox to one inbox. The office repeatedly takes a 
-message from the top (front) of a nonempty outbox and places copies ot the
+message from the top of a nonempty outbox and places copies of the
 message at the bottom of the inboxes to which it is connected. A connection is shown as
-an arrow or directed edge in diagrams.
+an arrow in diagrams.
+
+---
+
+## Step 0: open Cowork
+
+1. Open the **Claude desktop app** and turn on **Cowork**.
+2. Connect the folder that has `DisSysLab` and `OfficeSpeak` (drag it in / pick
+   it when asked).
+3. The LLM grader needs a Claude API key. Just paste your key into the chat and
+   say *"save my Anthropic key so the tutor can use it"* — Claude will put it in
+   the right place. (You can get a key at console.anthropic.com; ~2 minutes.)
+
+---
+
+## Step 1 — describe your app in English
+
+This is an example of a description of an app.
+
+1.1 **Paste the following into the chat in Cowork.**
+
+> "I want an adaptive practice tutor for a kid learning fractions. It works from a
+> bank of practice questions. It asks one question at a time on the screen and
+> waits for an answer; if the answer is wrong it gives a gentle hint. It keeps
+> track of how the kid is doing and, when the session ends, shows a short
+> encouraging summary and saves a progress report the parent can read later."
+
+1.2 Enter into chat: **"Build this office and explain it to me."**
+
+**What you see back** — Claude shows a diagram of the org chart and 
+describes the team in English, something like:
 
 Here is the diagram of the org chart for the  tutor:
 
@@ -71,35 +101,6 @@ Three things the picture shows, which are the ideas behind every office:
 - **BANK and PROGRESS are records** — shared files, each with a keeper agent.
 - **The office stops itself** when everyone is done.
 
----
-
-## Step 0: open Cowork
-
-1. Open the **Claude desktop app** and turn on **Cowork**.
-2. Connect the folder that has `DisSysLab` and `OfficeSpeak` (drag it in / pick
-   it when asked).
-3. The LLM grader needs a Claude API key. Just paste your key into the chat and
-   say *"save my Anthropic key so the tutor can use it"* — Claude will put it in
-   the right place. (You can get a key at console.anthropic.com; ~2 minutes.)
-
-
----
-
-## Step 1 — describe your app in English
-
-This is an example of a description of an app.
-
-1.1 **Paste the following into the chat in Cowork.**
-
-> "I want an adaptive practice tutor for a kid learning fractions. It works from a
-> bank of practice questions. It asks one question at a time on the screen and
-> waits for an answer; if the answer is wrong it gives a gentle hint. It keeps
-> track of how the kid is doing and, when the session ends, shows a short
-> encouraging summary and saves a progress report the parent can read later."
-
-1.2 Enter into chat: **"Build this office and explain it to me."**
-
-**What you see back** — Claude describes the team in plain English, something like:
 
 > *Meet the team.* A **coach** (PLANNER) decides what to ask and keeps the session
 > moving. A **grader** (CHECKER) — this one is the language model — reads the kid's
@@ -116,9 +117,9 @@ This is an example of a description of an app.
 
 ---
 
-## Step 2 — run it and watch
+## Step 2 — run it
 
-Say: **"Run the tutor and show me what the kid sees."**
+Enter into the chat: **"Run the tutor and show me what the kid sees."**
 
 Claude runs the office and shows the session. You get back something like this
 (the questions and score are fixed; the **feedback wording is written fresh by
@@ -142,8 +143,12 @@ the model each run**, so yours will read a little differently):
 ```
 
 Look at what the kid actually typed for those: **"one"**, **"1"**, **"six"**, and
-**"two quarters"**. The grader is a language model and so itaccepts *"one"* for 1.
+**"two quarters"**. The grader is a language model and so it accepts *"one"* for 1.
 It gives a hint on a mistake.
+
+This run inside Cowork is a **demonstration**: the answers are fixed, so you can
+watch the office work without typing. To let a real student type their own answers
+live, see Step 4.
 
 ---
 
@@ -160,13 +165,34 @@ tell the chat what you want changed. For example:
 
 ---
 
+## Step 4 — let a real student try it (type answers live)
+
+The run in Step 2 uses fixed answers so you can watch it. To let an actual
+student sit down and type their own answers, run the **interactive** version in a
+terminal (Cowork runs code without a live keyboard, so this one step happens in a
+normal terminal on your machine — a one-time, two-line setup):
+
+```bash
+cd ~/Documents/DisSysLab && pip install -e .      # once
+cd ~/Documents/OfficeSpeak/offices/phase2_demo
+python tutor_interactive.py
+```
+
+The tutor shows a question, waits for the student to type an answer and press
+Enter, the language model grades what they actually wrote, gives a line of
+feedback, and moves on. At the end it prints an encouraging summary and saves the
+parent report to `parent_report.json`. It's the same office as before — only the
+answer feed and the screen are swapped for one live terminal.
+
+---
+
 ## Later examples
 
 1. Build an app that serves as a tutorial office that trains many students.
 Keep track of each student and student cohorts. Send an alert to a 
 human tutor if a student gives random answers or stops answering.
 
-1. Run an office in debug mode and then replay computations from global checkpoints.
+2. Run an office in debug mode and then replay computations from global checkpoints.
    OfficeSpeak explains checkpoints and computations in English.
 
 ---
