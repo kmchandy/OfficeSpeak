@@ -214,3 +214,16 @@ human tutor if a student gives random answers or stops answering.
 
 *(The runnable office is `offices/phase2_demo/tutor_llm.py`; the exact-match
 version, if you want to compare, is `tutor.py`.)*
+
+---
+
+## The code
+
+For how offices are built and run — the uniform worker contract, the general
+harness, and how a language-model worker and a plain-Python worker meet the same
+interface — see
+[`offices/phase2_demo/README.md`](offices/phase2_demo/README.md).
+
+## License
+
+[MIT](LICENSE).
