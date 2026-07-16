@@ -1,10 +1,14 @@
 # Project handoff — resume OfficeSpeak in a new Cowork session
 
-Written 2026-07-16 to continue this work on a different Claude account. If you are
-a fresh Claude with no memory of the prior conversation: read this file, then the
-linked docs, and you can pick up where we left off. If you are Mani: connect the
-`DisSysLab` and `OfficeSpeak` folders in the new account's Cowork and point Claude
-at this file.
+Written 2026-07-16 (updated same day) to continue this work on a different Claude
+account. If you are a fresh Claude with no memory of the prior conversation: read
+this file, then the linked docs, and you can pick up where we left off. If you are
+Mani: connect the `DisSysLab` and `OfficeSpeak` folders in the new account's
+Cowork and point Claude at this file.
+
+**Both repos are now PUBLIC on GitHub** (`kmchandy/DisSysLab`,
+`kmchandy/OfficeSpeak`). OfficeSpeak has an MIT `LICENSE`. Make sure local commits
+are pushed (`git push`) so the public repos match what's on disk.
 
 ## What the project is
 
@@ -56,25 +60,41 @@ OfficeSpeak `offices/phase2_demo/`:
   errors). `harness_demo.py`, `test_harness.py`, `test_llm_worker.py` pass.
 - Worked offices, all run & terminate: `tutor.py` (Python grader),
   **`tutor_llm.py` (LLM grader — the base case; accepts "one"/"two quarters",
-  gives real hints, 3/4)**, `room_monitor.py`, `triage_swap.py`, `triage_llm.py`.
+  gives real hints, 3/4)**, **`tutor_interactive.py` (a LIVE terminal tutor a
+  real student types answers into — same office as tutor_llm, but the canned
+  answer source + print-only screen are replaced by one interactive TERMINAL
+  worker; all display routed through PLANNER for deterministic ordering; verified
+  live)**, `room_monitor.py`, `triage_swap.py`, `triage_llm.py`.
+- Note on interaction: a Cowork run is non-interactive (no live keyboard), so the
+  in-chat demo uses `tutor_llm.py` (fixed answers); a real student types into
+  `tutor_interactive.py` in a normal terminal.
 
 Phase 1 (start module) and cold tests live under
 `offices/claude_project/` (`start_instructions_v3.md`, `start_gallery/`,
 `cold_tests/` 5/5).
 
+## Onboarding doc = the public README
+
+The tutor walkthrough is now the repo **`README.md`** (it replaced the stale
+NetworkOfThought README; the old `paper/sachin.md` was renamed into it). It is
+generic (no personal references), diagram at the top, Steps 0–4: set up →
+describe in English → run in Cowork (demo) → change in English → run
+`tutor_interactive.py` live in a terminal. The README links to
+`offices/phase2_demo/README.md` for the code details (worker contract, harness,
+LLM worker).
+
 ## Tester
 
 First tester is **Sachin Adlakha** (PhD, avid Claude user, has an API key,
-interested in a tutor for his daughter). His zero-friction walkthrough is
-**`paper/sachin.md`** — network diagram on top, then describe → explain-back →
-run → change, all in Cowork, LLM tutor as the base case. (Mani lightly edited it
-after it was written; keep his edits.)
+interested in a tutor for his daughter). His onboarding is the repo `README.md`
+(above).
 
 ## Immediate next steps (where we were headed)
 
-1. **Pat role-play (next session):** Mani plays a brand-new Pat using
-   `paper/sachin.md` — paste the description, see the explain-back + diagram, run
-   `tutor_llm.py`, then change it in English. Smooth out any friction found.
+1. **Pat role-play (next session):** Mani plays a brand-new Pat using the
+   `README.md` walkthrough — paste the description, see the explain-back +
+   diagram, run `tutor_llm.py`, then change it in English. Smooth out any friction
+   found.
 2. **The parent-alert watcher (point 4):** add a small *Python* worker that counts
    wrong answers and alerts a parent after N misses — the deliberate "add exact,
    auditable code back" example. Add it to the tutor diagram.
