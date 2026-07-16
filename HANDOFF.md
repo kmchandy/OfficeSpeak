@@ -102,6 +102,31 @@ interested in a tutor for his daughter). His onboarding is the repo `README.md`
    hedge-fund non-programmer); debug-mode + checkpoint replay explained in English
    (phase 3, not needed for pilot); paper (`paper/draft_v2.md`).
 
+## Session checkpoint — 2026-07-16 (this Cowork session)
+
+Picked up from this file in a fresh Cowork session. Status to resume from:
+
+- Both `OfficeSpeak` and `DisSysLab` folders are connected in this session, with
+  confirmed read/write access (verified with a write+delete test, cleaned up
+  after).
+- OfficeSpeak had 1 local commit ahead of `origin/main`
+  (`9c59892 Update HANDOFF.md: interactive tutor, README is the onboarding doc,
+  repos public`). **`git push` failed from the sandbox** — proxy returned
+  `403` trying to reach GitHub. This still needs to be pushed from Mani's own
+  machine. DisSysLab was already up to date with origin.
+- Asked Mani which "immediate next step" from this file to tackle (Pat
+  role-play, parent-alert watcher, or a later-stage item). Answer: no
+  preference given yet.
+- Given no preference, leaning toward **the parent-alert watcher** (item 2
+  below) since it's a self-contained coding task; a task list for it was
+  created (5 subtasks) but **no exploration or code changes have been made
+  yet** — work stops right after confirming folder access, before reading
+  `offices/phase2_demo/worker.py`, `harness.py`, `tutor_llm.py`.
+- Next action on resume: either (a) confirm doing the parent-alert watcher and
+  start by reading those three files to learn the Worker contract and
+  `build_office` spec format, or (b) switch to whichever item Mani actually
+  wants.
+
 ## Note on account switch
 
 Conversations don't transfer between personal Claude accounts and can't be
