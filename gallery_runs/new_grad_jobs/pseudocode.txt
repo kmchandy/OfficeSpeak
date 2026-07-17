@@ -1,6 +1,0 @@
-# PLACEHOLDER — paste Claudette's pseudocode here.
-#
-# 1. python gallery_runs/run_pipeline.py --prompt new_grad_jobs
-# 2. paste gallery_runs/new_grad_jobs/prompt.txt into a fresh Claude chat
-# 3. replace this file's contents with the fenced pseudocode Claude returns
-# 4. python gallery_runs/run_pipeline.py new_grad_jobs

@@ -1,4 +1,4 @@
-# Non-Programmers Build and Maintain Persistent Multi-Agent Systems in English
+# Build and Maintain Persistent Multi-Agent Systems in English
 
 
 ## Abstract
@@ -12,20 +12,18 @@ A challenge for non-programmers is not only to build distributed systems, but al
 debug and maintain them.
 Large language models can generate code, but generating stateful, concurrent systems
 is more difficult than generating sequential programs.
-This paper presents **OfficeSpeak**, a system that lets
-non-programmers build, understand, debug, and maintain distributed systems through
-English conversations. The user describes an *office* — a team of workers, each with a role
+This paper presents **OfficeSpeak**, a system that converses in English with
+non-programmers to build, understand, debug, and maintain distributed systems.
+The user describes an *office* — a team of workers, each with a role
 stated in English. OfficeSpeak assembles a network of message-passing agents and
 explains the network to the user in English; the user makes corrections or asks for an explanation
 and iterates. Then the user proceeds to debugging and maintenance.
 Users can build complex offices by connecting simpler offices.
 OfficeSpeak generates code for agents but not for their coordination.
-Instead it manages concurrency by using a small collection of trusted coordination primitives. 
-As a consequence, the systems that OfficeSpeak generates can be analyzed using theories of 
-networks of processes. OfficeSpeak uses the theory to structure conversations that help
-in debugging and maintenance.
-The generated systems have features such distributed termination detection and consistent global-snapshot checkpoints that the user does not specify. The paper has examples of OfficeSpeak building, debugging, and running different types of
-distributed systems.
+Instead it manages concurrency by using a small set of coordination primitives. 
+As a consequence, the systems that OfficeSpeak generates can be analyzed using temporal
+logic and theories of networks of processes.
+The generated systems have features such distributed termination detection and consistent global-snapshot checkpoints that the user does not specify. The paper gives examples of OfficeSpeak building, debugging, and running different types of distributed systems.
 
 ## 1. Introduction
 
