@@ -249,9 +249,104 @@ Explain it back to Pat (plain English, "workers"):
 - **TRANSCRIPT** *(sink)* — append each round's three arguments to a transcript file.
 - **ANSWER** *(sink)* — write the final answer to a file.
 
+## Many of the same kind at once
+
+Pat sometimes describes an office for **one** case — one student's tutoring session,
+one caller, one order — and then asks for it to handle **many of them at the same
+time** (every student who signs in, every caller, every order that comes in), without
+changing what she described.
+
+Do **not** build a separate copy of the office per person. Keep exactly the agents her
+one-case description gives you. Make one change, applied everywhere:
+
+- **Every message names which one it's about.** Give every message a **tag** —
+  whichever person or thing Pat's description repeats (which student, which caller,
+  which order). Pat rarely says this out loud; it's implied by "each student" or
+  "every caller," and you supply it.
+- **Memory becomes one slot per tag.** Any agent that already needed to remember
+  something about the one case (a transform's state, a record's data) now needs a
+  separate slot of memory for each tag instead of one shared slot. Nothing about *what*
+  it remembers or *when* changes — only that it keeps one of each, filed by tag. A
+  record becomes one row per tag; a transform's state becomes one entry per tag.
+- **A new arrival is a message, not a new agent.** A real caller, student, or order
+  joining looks like a **source** handing out a fresh tag and sending a "start" message
+  for it — the same few agents handle it from there. No agent is created or destroyed
+  when someone joins or finishes.
+- **One case can start a message trail under a different tag.** While handling one
+  tagged item, a transform may need to tell someone else about it — e.g., alert a
+  parent about a student, or a manager about an order. That's an ordinary message sent
+  under **its own, different tag** (the parent's, the manager's) to whichever agent
+  handles that audience; the same rule applies to it (its own memory, filed by its own
+  tag).
+
+Ignore, for a first version, whether two tags' messages could ever collide inside the
+same agent's memory (they don't, in the usual case) or whether one shared agent is fast
+enough for everyone — those are refinements Pat can ask for once the simple version
+works, the same as any other over-optimization.
+
+### Worked example — one tutor, many students
+
+> Pat: "I want a tutor that asks a student fraction questions one at a time, grades
+> what they type, and gives kind feedback, keeping a running score. Now let it handle
+> many students at once — each one doing their own session — and let a parent check in
+> on how her child is doing."
+
+Agents:
+
+- **SIGNUP** — *source*. Outbox: `out`. Whenever a student begins, sends a start
+  message naming that student.
+- **BANK** — *record*. Holds the question list; given a question number, replies with
+  that question.
+- **STUDENT** — *transform*. Inbox: `in`. Outbox: `answer`. Shows whichever question or
+  feedback a message names, and sends back what that student typed.
+- **CHECKER** — *transform*. Inbox: `in`. Outbox: `graded`. Given a question, the right
+  answer, and what the student typed, decides if it's correct and writes one line of
+  feedback.
+- **PROGRESS** — *record*. Holds each student's running score.
+- **COACH** — *transform*. Inbox: `in`. Outboxes: `to_bank`, `to_checker`,
+  `to_student`, `to_progress`, `to_parent`. Runs the session: for whichever student a
+  message names, asks the next question, hands the answer to CHECKER, passes the
+  feedback and the next question along, and updates that student's score.
+- **PARENT** — *sink*. Records what COACH sends about how a student is doing.
+
+Connections:
+
+- (SIGNUP, out, COACH, in)
+- (COACH, to_bank, BANK, in)
+- (BANK, reply, COACH, in)
+- (COACH, to_checker, CHECKER, in)
+- (STUDENT, answer, CHECKER, in)
+- (CHECKER, graded, COACH, in)
+- (COACH, to_student, STUDENT, in)
+- (COACH, to_progress, PROGRESS, in)
+- (PROGRESS, reply, COACH, in)
+- (COACH, to_parent, PARENT, in)
+
+What's different from a one-student office: every message COACH sends or receives
+names which student it's about. BANK's questions are the same for everyone, so it
+needs no tag of its own — it just answers whatever it's asked. But COACH and PROGRESS
+each need to remember something between messages (which question a student is on,
+their running score), so each keeps that memory **filed by student**, one entry per
+student, instead of one shared entry. When COACH tells PARENT about a student's
+progress, that message is tagged with the **parent**, not the student — a different
+trail, to a different audience, that PARENT can likewise file by parent if more than
+one parent checks in.
+
+Explain to Pat:
+
+> The same small team handles every student — nobody gets their own copy. Whenever a
+> message is about Amir, the team remembers Amir's own question and score, separate
+> from anyone else's; when it's about Priya, the same workers remember hers. A new
+> student starting is just the team being told "here's a new one," not a new team being
+> hired. And when a parent checks in, that's its own little conversation the team
+> remembers separately from the student's.
+
 ## Rules of thumb
 
 - One agent per job Pat names.
+- Pat describes one case but wants many at once (many students, callers, orders) →
+  keep the same agents, tag every message with which one, and give any agent's memory
+  one slot per tag — never a separate office per person.
 - Several agents need the same information → a registered **record** (or broadcast one
   outbox to many inboxes) — never shared memory.
 - An agent needs several inputs for the same item → a **merge_synch** coordinator in

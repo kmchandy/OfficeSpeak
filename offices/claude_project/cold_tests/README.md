@@ -39,14 +39,22 @@ instructed to read only those files and act as the assistant.
 | 03 | Fractions tutor (adaptive, feedback) | Restraint; private mastery state; ask-and-wait loop through the outside world | **PASS** |
 | 04 | Adaptive tutor (realistic; two records) | Records vs private state; **no gate on a single-writer record**; needs-to-see; the new three-part explain-back | **PASS** |
 | 05 | Adaptive tutor, re-run (regression) | The two-pass port-message edit: Pass A itemizes every outbox, Pass B derives every inbox; Pat-facing explanation stays clean | **PASS** |
+| 06 | Customer returns, many customers at once (new domain) | The new "many of the same kind at once" section: one team (no per-customer copies), every message tagged, a record generalized to one row per tag, restraint on tagging a second audience (manager) | **PASS** (with a gap noted in the test design itself — see case notes) |
 
-**Running verdict: 4/4.** Most notable: the set handles **state ownership in every
+**Running verdict: 6/6.** Most notable: the set handles **state ownership in every
 form** — it refuses record+gate for a single-owner running total (01), correctly
 introduces a shared keeper the moment two workers share that total (02), and refuses a
 gate on a read-and-written *record* touched by a single worker (04). It reasons about
 ownership (accessor count) rather than pattern-matching the examples. Case 04 also
 confirms the **three-part explain-back** (meet the team / org chart / story) works on a
-fresh instance the first time it's in the instructions.
+fresh instance the first time it's in the instructions. Case 06, in a domain unlike any
+gallery example, confirms the new **"many of the same kind at once"** section transfers:
+one team handles everyone, every message is tagged, a record's rows generalize to
+one-per-tag, and — notably — restraint carries over to the new pattern too (it declined
+to tag a second audience by "which one" until Pat implied there was more than one). It
+did not, however, cleanly test whether a *private*, single-accessor, keyed-by-tag memory
+stays private rather than getting promoted to a record — the domain chosen happened to
+need a real shared record for an unrelated reason. That's flagged as a follow-up.
 
 ## Case summaries
 
@@ -85,6 +93,20 @@ reasoning. It produced the new three-part explain-back faithfully and surfaced a
 needs-to-see (the coach sees pass/fail, not the actual wrong answer). Transcript:
 `transcripts/case_04_adaptive_tutor.md`.
 
+**06 — Customer returns, many customers at once (new domain, off-distribution).**
+Pre-registered: one CLERK/HISTORY/TREND team for every customer (no per-customer
+copies), every message tagged by customer, and restraint about tagging the manager side
+unless Pat implies more than one manager. The cold instance produced exactly this: a
+single team, a `HISTORY` record explicitly generalized to "one entry per customer," and
+it *declined* to tag the manager's screen by which manager since Pat only mentioned one
+— stating plainly that several managers would each need their own filed view. It also
+adapted sensibly rather than mechanically: no explicit "session start" message, because
+a return is a one-shot request, not an ongoing session the way the tutor's is. One gap:
+the domain happened to make HISTORY genuinely shared for an unrelated reason (CLERK
+writes it, TREND reads it), so this case didn't isolate whether a truly *private*,
+single-accessor, keyed-by-tag memory would wrongly get promoted to a record — that's
+follow-up work. Transcript: `transcripts/case_06_customer_returns_many_customers.md`.
+
 **Explain-back note.** The instructions' explain-back was tightened (this run onward) to a
 three-part structure — **meet the team → the org chart → the story of one item** →
 "Things I assumed —", re-told after each correction. This is a mental-model device
@@ -107,6 +129,12 @@ Run these cold, same protocol, to broaden the evidence:
   probe robustness and over-engineering under novelty.
 - **A "should terminate?" office** — an office with an internal loop whose halting is
   not obvious (debate-like) in a fresh domain, to see if the loop is modeled cleanly.
+- **Private, single-accessor, keyed-by-tag state, cleanly isolated** — a "many of the
+  same kind at once" case, in a new domain, where the per-tag memory is touched by only
+  one agent and nothing else ever reads it (the shape of the tutor's own PROGRESS).
+  Tests whether the cold instance keeps it private and filed by tag rather than
+  promoting it to a record+gate just because there are now many of something instead of
+  one. Case 06 accidentally required a genuine shared record, so this is still open.
 
 ## Related: gallery README and the Gulf of Execution
 

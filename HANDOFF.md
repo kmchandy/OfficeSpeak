@@ -64,14 +64,16 @@ OfficeSpeak `offices/phase2_demo/`:
   real student types answers into — same office as tutor_llm, but the canned
   answer source + print-only screen are replaced by one interactive TERMINAL
   worker; all display routed through PLANNER for deterministic ordering; verified
-  live)**, `room_monitor.py`, `triage_swap.py`, `triage_llm.py`.
+  live)**, **`tutor_multi.py` (several students through the SAME office at
+  once — see "Multi-student design" below)**, `room_monitor.py`,
+  `triage_swap.py`, `triage_llm.py`.
 - Note on interaction: a Cowork run is non-interactive (no live keyboard), so the
   in-chat demo uses `tutor_llm.py` (fixed answers); a real student types into
   `tutor_interactive.py` in a normal terminal.
 
 Phase 1 (start module) and cold tests live under
 `offices/claude_project/` (`start_instructions_v3.md`, `start_gallery/`,
-`cold_tests/` 5/5).
+`cold_tests/` 6/6 — see "Multi-student design" below for case 06).
 
 ## Onboarding doc = the public README
 
@@ -89,43 +91,95 @@ First tester is **Sachin Adlakha** (PhD, avid Claude user, has an API key,
 interested in a tutor for his daughter). His onboarding is the repo `README.md`
 (above).
 
-## Immediate next steps (where we were headed)
+## Multi-student design — the big addition this session (2026-07-16)
 
-1. **Pat role-play (next session):** Mani plays a brand-new Pat using the
-   `README.md` walkthrough — paste the description, see the explain-back +
-   diagram, run `tutor_llm.py`, then change it in English. Smooth out any friction
-   found.
-2. **The parent-alert watcher (point 4):** add a small *Python* worker that counts
-   wrong answers and alerts a parent after N misses — the deliberate "add exact,
-   auditable code back" example. Add it to the tutor diagram.
-3. **Later:** multi-student tutor; other testers (a journalist with a Claude key; a
-   hedge-fund non-programmer); debug-mode + checkpoint replay explained in English
-   (phase 3, not needed for pilot); paper (`paper/draft_v2.md`).
+A long brainstorm (not skipped to code) worked out how to describe an office that
+handles **many of the same kind of thing at once** (many students, not one) — this
+generalizes past the tutor to any "one case, now many at once" problem.
 
-## Session checkpoint — 2026-07-16 (this Cowork session)
+**The design, settled:**
 
-Picked up from this file in a fresh Cowork session. Status to resume from:
+- Keep exactly the same agents. Do **not** replicate the office per student and do
+  **not** spawn new workers when someone new arrives.
+- **Every message carries a tag** — whichever thing repeats (student_id here).
+- **Any worker's own memory becomes one slot per tag** instead of one shared slot —
+  a mechanical extension of what it already remembered (`state["n"]` becomes
+  `state["n"][student_id]`, etc.). This is the whole idea; nothing else changes.
+  Records generalize the same way (one row per tag).
+- A new arrival is a **message** (a "start" tagged with a fresh id from a listener/
+  roster source), never a new agent.
+- Handling one tagged item can start a **separate message trail under a different
+  tag** toward a different audience (e.g. a parent) — same rule applies to that
+  trail, filed by *its own* tag (parent_id, not student_id).
+- Deliberately punted for now (Mani's call): race conditions at a shared repository,
+  and performance/efficiency splits (e.g. one PLANNER per grade level) — "any office
+  that works" first, refine later.
+- Why this works safely even though many students are "concurrent": the runtime is
+  message-at-a-time per worker already (that's the actor-model foundation
+  room_monitor etc. already rely on) — there's no real race to design around, only
+  the bookkeeping of keying state by tag.
 
-- Both `OfficeSpeak` and `DisSysLab` folders are connected in this session, with
-  confirmed read/write access (verified with a write+delete test, cleaned up
-  after).
-- OfficeSpeak had 1 local commit ahead of `origin/main`
-  (`9c59892 Update HANDOFF.md: interactive tutor, README is the onboarding doc,
-  repos public`). **`git push` failed from the sandbox** — proxy returned
-  `403` trying to reach GitHub. This still needs to be pushed from Mani's own
-  machine. DisSysLab was already up to date with origin.
-- Asked Mani which "immediate next step" from this file to tackle (Pat
-  role-play, parent-alert watcher, or a later-stage item). Answer: no
-  preference given yet.
-- Given no preference, leaning toward **the parent-alert watcher** (item 2
-  below) since it's a self-contained coding task; a task list for it was
-  created (5 subtasks) but **no exploration or code changes have been made
-  yet** — work stops right after confirming folder access, before reading
-  `offices/phase2_demo/worker.py`, `harness.py`, `tutor_llm.py`.
-- Next action on resume: either (a) confirm doing the parent-alert watcher and
-  start by reading those three files to learn the Worker contract and
-  `build_office` spec format, or (b) switch to whichever item Mani actually
-  wants.
+**What got built from this:**
+
+1. `offices/phase2_demo/tutor_multi.py` — a reference implementation: the SAME
+   PLANNER/CHECKER/BANK/PROGRESS/PARENT_REPORT as `tutor_interactive.py`, generalized
+   by keying every worker's state on `student_id`. One real `TERMINAL` (Mani's call,
+   for the demo) plus a `SIM_ANSWERER` worker standing in for other students'
+   own devices, so `python tutor_multi.py` proves several sessions run through the
+   same shared workers with no state bleed. **Verified working** (see below).
+2. `offices/claude_project/start_instructions_v3.md` — added a new section, "Many
+   of the same kind at once," teaching this exact convention (tag every message;
+   memory becomes one-per-tag; new arrival = message not agent; a trail to a new
+   audience gets its own tag), with its own worked example (one tutor, many
+   students) in the same style as the existing debate worked example. Added a
+   matching bullet to "Rules of thumb."
+3. `offices/claude_project/cold_tests/` — **case 06**, a fresh subagent given only
+   the instructions + gallery (no memory of this conversation, no access to
+   `tutor_multi.py`), tested on a **different domain** (customer returns, not
+   tutoring) to check the new section transfers rather than just being recognized
+   from its own worked example. **Verdict: PASS** — it kept one team for every
+   customer, tagged every message, generalized a record to one row per tag, and
+   (notably) showed restraint by *not* tagging the manager side since Pat only
+   mentioned one manager. One real gap, in the test design rather than the
+   instructions: this domain accidentally needed a genuinely shared record anyway
+   (two different agents touch it), so it didn't isolate whether a truly *private*,
+   single-accessor, keyed-by-tag memory would wrongly get promoted to a record. See
+   `cold_tests/README.md`'s scorecard and "Next cases" for the follow-up case still
+   needed (mirrors PROGRESS's shape — touched by only one worker — in a new domain).
+
+**Verification done:** `tutor_multi.py` was run end-to-end in the sandbox with a
+fake grading backend (no network/API key available there) and blank/piped input for
+the "live" student; `live`/`amy`/`ben` each got independently correct scores and
+per-student parent reports, confirming no cross-student state bleed. It has **not**
+been run yet with the real Claude backend in a real terminal — worth Mani doing once
+back at the keyboard (`cd DisSysLab && pip install -e .` once, then
+`cd ../OfficeSpeak/offices/phase2_demo && python tutor_multi.py`).
+
+## Immediate next steps (where we're headed)
+
+1. **Run `tutor_multi.py` for real** (real terminal, real ANTHROPIC_API_KEY) — the
+   sandbox verification used a fake backend since there's no network/API access
+   there.
+2. **The follow-up cold test** noted above: a new-domain case isolating a *private*,
+   single-accessor, keyed-by-tag memory, to confirm the new instructions section
+   doesn't over-promote it to a record.
+3. **The parent-alert-after-N-misses feature** (originally its own task, now a
+   small addition on top of the multi-student design rather than a separate one):
+   PARENT_REPORT currently only fires at session end; add the exact, auditable rule
+   "alert after N wrong answers," per student, using the same id-keyed PLANNER/
+   PROGRESS state.
+4. **Pat role-play:** Mani plays a brand-new Pat using the `README.md` walkthrough.
+5. **Later:** other testers (a journalist with a Claude key; a hedge-fund
+   non-programmer); debug-mode + checkpoint replay explained in English (phase 3,
+   not needed for pilot); paper (`paper/draft_v2.md`) — the multi-student design is
+   good material for it.
+
+## Repo state at end of this session
+
+OfficeSpeak has local commits **not yet pushed** — the sandbox's `git push` fails
+(`403` from the proxy reaching GitHub) every session; this needs to happen from
+Mani's own machine (`cd ~/Documents/OfficeSpeak && git push`). DisSysLab was
+untouched this session (no code changes there).
 
 ## Note on account switch
 
