@@ -23,7 +23,7 @@ OfficeSpeak generates code for agents but not for their coordination.
 Instead it manages concurrency by using a small set of coordination primitives. 
 As a consequence, the systems that OfficeSpeak generates can be analyzed using temporal
 logic and theories of networks of processes.
-The generated systems have features such distributed termination detection and consistent global-snapshot checkpoints that the user does not specify. The paper gives examples of OfficeSpeak building, debugging, and running different types of distributed systems.
+The generated systems have features such distributed termination detection and global-snapshot checkpoints that are required to run distributed systems, but aren't specified by users. The paper gives examples of OfficeSpeak building, debugging, and running different types of distributed systems.
 
 ## 1. Introduction
 
