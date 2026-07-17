@@ -185,6 +185,46 @@ if a student gives random answers or stops answering" idea was kept there as
 future work (not yet implemented — only the many-students generalization and
 per-student parent reports are done).
 
+## Where Mani is headed next (captured before a break, 2026-07-16)
+
+- **Sachin Adlakha has been contacted** and asked to test the system (his
+  onboarding is the repo `README.md`, per "Tester" above).
+- **Next: clean up the OfficeSpeak repo.** DisSysLab is already clean; OfficeSpeak
+  has examples/code scattered across several old locations from earlier phases. A
+  quick read-only scan (no changes made) found the live, current locus of work is
+  `offices/phase2_demo/` (runnable code) + `offices/claude_project/` (start
+  instructions + cold tests) + the top-level `README.md`/`HANDOFF.md`. Everything
+  else at the top level looks like earlier-phase scaffolding worth reviewing for
+  archiving/removal: `archive/`, `catalog/`, `experiments/`, `gallery_runs/`,
+  `examples/`, `officespeak/` (an older Python package — note there's also a
+  `network_of_thought.egg-info/`, consistent with the README's mention that the
+  project used to be called NetworkOfThought), and loose top-level `*.jsonl`
+  files (`approved.jsonl`, `briefings.jsonl`, `digest.jsonl`, `gave_up.jsonl`,
+  `jobs.jsonl` — all currently empty). Inside `offices/`, several per-office
+  folders (`investment_club/`, `weather/`, `trading_desk/`, `anomaly_monitor/`,
+  `support_desk/`) hold older `spec.md`/`build_package.md`/`reference/`/`runs/`
+  drafts that predate the phase2_demo approach.
+  - **A concrete example of the scatter:** `situation_room` (an early example
+    office) currently exists in at least six different places —
+    `archive/asyncio_experiment/`, `examples/situation_room.*`, `gallery_runs/
+    situation_room/`, `experiments/diagrams/situation_room.html`,
+    `catalog/translation_table.md`, and `officespeak/tests/test_office_writer.py`
+    — plus mentions in `BRAINSTORM.md`/`DECISIONS.md`/`PLAN.md`. Good first case
+    to resolve (decide which version, if any, is worth keeping) since it's also
+    the office Mani wants to reuse next (below).
+  - No files were deleted or moved — this is just a survey. Actual cleanup
+    (what to archive vs. delete vs. keep) should be decided together next
+    session, not done unilaterally, especially since files already in
+    `~/Documents/OfficeSpeak` need explicit permission to delete.
+- **Then: get set up for more testers.** One idea Mani is considering: run
+  `situation_room` for multiple clients (multiple Pat-testers at once) — set up
+  many news/social-media sources per Pat, and deliver results by email, text, or
+  social post. This is a new, bigger design conversation for next session (not
+  started): it touches real external feeds, multiple simultaneous testers, and
+  real contact info/delivery channels, so it deserves its own careful design pass
+  (and note: any real tester contact info that enters the picture should be
+  handled per the usual PII-care norms — not stored or surfaced carelessly).
+
 ## Repo state at end of this session
 
 OfficeSpeak has local commits **not yet pushed** — the sandbox's `git push` fails
