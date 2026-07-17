@@ -139,7 +139,7 @@ The **weather** office (pure Python, no API key) predicts a temperature by blend
 two forecast services and learns which one to trust:
 
 ```bash
-cd path/to/OfficeSpeak/offices/weather/reference/build
+cd path/to/OfficeSpeak/examples/weather/reference/build
 DSL_DEBUG=1 python run_weather.py
 ```
 
