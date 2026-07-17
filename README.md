@@ -2,9 +2,9 @@
 
 Build a running app as an **office** of cooperating **workers** — by describing
 what you want in plain English, with no programming. This page walks through one
-worked example: a fractions tutor for a single student. Later examples extend it
-to many students, and to testing, debugging, and maintaining your system in
-English. OfficeSpeak runs on the
+worked example: a fractions tutor, first for a single student, then for many
+students sharing the same office. Later sections extend it to testing, debugging,
+and maintaining your system in English. OfficeSpeak runs on the
 [DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
 
 ---
@@ -195,11 +195,107 @@ answer feed and the screen are swapped for one live terminal.
 
 ---
 
+## Step 5 — many students, one office
+
+Everything so far ran one student at a time. Tell the chat:
+
+> "Now let it handle many students at once — each one doing their own session at
+> the same time — and let a parent check in on how her child is doing."
+
+Enter into chat: **"Build this and explain it to me."**
+
+**What you see back** — Claude doesn't build a second tutor, or a third, one per
+student. The very same coach, grader, question bank, and progress keeper serve
+everyone. The only change: every message now says *whose* session it's part of,
+and the coach and progress keeper each remember one thing **per student** instead
+of one thing overall.
+
+```mermaid
+flowchart LR
+    SESSION(["SESSION<br/>(source) one 'start' per student"]):::source
+
+    PLANNER["PLANNER<br/>(the coach) picks & sequences, per student"]:::worker
+    CHECKER["CHECKER<br/>★ LLM — grades & gives feedback"]:::llm
+    TERMINAL["TERMINAL<br/>you (the live student)"]:::worker
+    SIM["SIM_ANSWERER<br/>stands in for other students"]:::worker
+
+    BANK[("BANK<br/>question bank")]:::record
+    PROGRESS[("PROGRESS<br/>mastery + progress, one row per student")]:::record
+
+    PARENT[["PARENT_REPORT<br/>one report per student"]]:::sink
+
+    SESSION -->|"start(student)"| PLANNER
+
+    PLANNER -->|"ask for a question"| BANK
+    BANK -->|"a question"| PLANNER
+
+    PLANNER -->|"save / read progress"| PROGRESS
+    PROGRESS -->|"progress"| PLANNER
+
+    PLANNER -->|"show question + answer key"| CHECKER
+    CHECKER -->|"how it went"| PLANNER
+
+    PLANNER -->|"ask/say (if live)"| TERMINAL
+    TERMINAL -->|"answer"| CHECKER
+
+    PLANNER -->|"ask/say (if simulated)"| SIM
+    SIM -->|"answer"| CHECKER
+
+    PLANNER -->|"report"| PARENT
+
+    classDef source fill:#e3f2fd,stroke:#1976d2,color:#0d47a1;
+    classDef worker fill:#eceff1,stroke:#546e7a,color:#263238;
+    classDef llm    fill:#f3e5f5,stroke:#8e24aa,color:#4a148c;
+    classDef record fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
+    classDef sink   fill:#fff3e0,stroke:#ef6c00,color:#e65100;
+```
+
+> *Meet the team.* The same coach, grader, question bank, and progress keeper as
+> before — nobody gets their own copy. A **roster** (SESSION) announces each
+> student as they begin. The coach and the progress keeper now file what they
+> remember **by student**, instead of keeping just one running total.
+>
+> *The story of one question, now with a name attached.* A student begins;
+> SESSION tells the coach who just joined. The coach pulls that student's next
+> question from the bank and shows it to them. They answer, the grader checks it
+> and writes feedback, and the coach updates *that student's* progress — not
+> anyone else's — before moving on. When a parent checks in, that's its own,
+> separate exchange with the progress keeper, filed under the parent, not the
+> student.
+
+Run it (needs a real keyboard for the one live student, same one-time setup as
+Step 4):
+
+```bash
+cd DisSysLab && pip install -e .          # once, if you haven't already
+cd ../OfficeSpeak/offices/phase2_demo
+python tutor_multi.py
+```
+
+You are the **live** student — you type your own answers. **amy** and **ben** are
+simulated students in this demo, answering from a small script, so you can watch
+several sessions run through the very same coach and grader without needing three
+keyboards. You'll see each student's questions and feedback as they happen,
+interleaved, and a summary at the end:
+
+```
+  (parent reports saved to parent_reports_multi.json)
+    live: 0/4
+    amy: 4/4
+    ben: 3/4
+```
+
+(The specific scores depend on what the live student types and how the grader —
+a language model — judges each simulated student's canned answers; the feedback
+wording is written fresh each run, same as Step 2.)
+
+---
+
 ## Later examples
 
-1. Build an app that serves as a tutorial office that trains many students.
-Keep track of each student and student cohorts. Send an alert to a
-human tutor if a student gives random answers or stops answering.
+1. **Alert a human tutor** if a student gives random answers or stops answering —
+   the deliberate example of adding a small, exact, auditable rule on top of an
+   LLM-driven office, rather than asking the model to notice it.
 
 2. Run an office in debug mode and then replay computations from global checkpoints.
    OfficeSpeak explains checkpoints and computations in English.
@@ -213,7 +309,8 @@ human tutor if a student gives random answers or stops answering.
 2. Did you ask chat to modify the office? And did it do as you requested?
 
 *(The runnable office is `offices/phase2_demo/tutor_llm.py`; the exact-match
-version, if you want to compare, is `tutor.py`.)*
+version, if you want to compare, is `tutor.py`; the many-students version from
+Step 5 is `tutor_multi.py`.)*
 
 ---
 
