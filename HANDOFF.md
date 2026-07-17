@@ -174,6 +174,17 @@ back at the keyboard (`cd DisSysLab && pip install -e .` once, then
    not needed for pilot); paper (`paper/draft_v2.md`) — the multi-student design is
    good material for it.
 
+## README updated for the multi-student step
+
+`README.md` (the public onboarding doc) now has **Step 5 — many students, one
+office**, right after Step 4: a new Pat description ("now let it handle many
+students at once... let a parent check in"), an org-chart diagram, explain-back,
+and `python tutor_multi.py` run instructions with sample output. The old "Later
+examples" placeholder for this was removed; the still-unbuilt "alert a human tutor
+if a student gives random answers or stops answering" idea was kept there as
+future work (not yet implemented — only the many-students generalization and
+per-student parent reports are done).
+
 ## Repo state at end of this session
 
 OfficeSpeak has local commits **not yet pushed** — the sandbox's `git push` fails
