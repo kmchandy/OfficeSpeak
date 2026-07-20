@@ -40,8 +40,9 @@ instructed to read only those files and act as the assistant.
 | 04 | Adaptive tutor (realistic; two records) | Records vs private state; **no gate on a single-writer record**; needs-to-see; the new three-part explain-back | **PASS** |
 | 05 | Adaptive tutor, re-run (regression) | The two-pass port-message edit: Pass A itemizes every outbox, Pass B derives every inbox; Pat-facing explanation stays clean | **PASS** |
 | 06 | Customer returns, many customers at once (new domain) | The new "many of the same kind at once" section: one team (no per-customer copies), every message tagged, a record generalized to one row per tag, restraint on tagging a second audience (manager) | **PASS** (with a gap noted in the test design itself — see case notes) |
+| 07 | News subscriptions (dynamic subscribers, compute once) | A pattern not in any gallery example: many external parties each want a different slice of the same computed fact, computed once and shared, not recomputed per party; an open-ended request that doesn't map onto anything already computed | **PASS** (5/5 scored criteria) |
 
-**Running verdict: 6/6.** Most notable: the set handles **state ownership in every
+**Running verdict: 7/7.** Most notable: the set handles **state ownership in every
 form** — it refuses record+gate for a single-owner running total (01), correctly
 introduces a shared keeper the moment two workers share that total (02), and refuses a
 gate on a read-and-written *record* touched by a single worker (04). It reasons about
@@ -107,6 +108,24 @@ writes it, TREND reads it), so this case didn't isolate whether a truly *private
 single-accessor, keyed-by-tag memory would wrongly get promoted to a record — that's
 follow-up work. Transcript: `transcripts/case_06_customer_returns_many_customers.md`.
 
+**07 — News subscriptions (dynamic subscribers, compute once).** Pre-registered: one
+shared analysis step per story, not one per friend; a single keeper holding per-friend
+subscriptions with no gate or record (only it ever touches that memory); friends modeled
+as external source/sink, not agents; Pat's own view as a separate, unconditional sink;
+and, as the second decisive probe, how the cold instance would handle "is the story
+positive," a request that maps onto nothing the office was described as already
+computing. The cold instance produced exactly the expected compute-once shape — one
+`ANALYZER` feeding both Pat's view and a `ROUTER` keeper that matches any number of
+friends off that single computation — and handled the open-ended request well: it added
+a `tone` fact to `ANALYZER` and flagged the addition explicitly under "Things I
+assumed," rather than silently misreading "positive" as an existing field like severity.
+No gate or record was added to the subscription table, matching the keeper reasoning
+`trading_room` teaches. This is a baseline test (no instructions or gallery change was
+being tested) and its main significance is evidentiary: Pat-speak alone, with no
+DSL-style structural description, converged correctly on a pattern (dynamic multi-party,
+compute-once sharing) that no gallery example teaches directly. Transcript:
+`transcripts/case_07_news_subscriptions.md`.
+
 **Explain-back note.** The instructions' explain-back was tightened (this run onward) to a
 three-part structure — **meet the team → the org chart → the story of one item** →
 "Things I assumed —", re-told after each correction. This is a mental-model device
@@ -114,13 +133,36 @@ three-part structure — **meet the team → the org chart → the story of one 
 describe her system is used to explain it back so she can evaluate it. Case 04 confirms a
 fresh instance follows it.
 
+## Full-chain cases
+
+Distinct from cases 01-07 above, which stop at Phase 1/2 (a plain-English network,
+never turned into code). A full-chain case carries a cold Phase 1/2 conversation all
+the way through: transcription into an `OfficeSpeakSpec`, approval of each
+office-specific worker (`phase3_approval.md`), generation (`from_officespeak.py`), and
+an actual run, checked by hand. Only the Phase 1/2 conversation itself is cold; the
+transcription/approval/generation/run steps are done by me, and each transcript says so
+plainly.
+
+**Full-chain 01 — Shipment release (genuine join, keyed matching).** Pat: "releases a
+shipment only after both its warehouse scan and its manifest paperwork have come in.
+Match them up by shipment ID." Pre-registered risk: `merge_synch` pairs the *n*-th
+message per inbox in arrival order, not by key — the correct shape is a keeper. The
+cold instance's first draft picked `merge_synch` anyway, even though its own
+explain-back described keyed-by-ID behavior `merge_synch` can't actually provide — a
+real miss, confirmed concretely by feeding the same interleaved shipment order directly
+into `MergeSynch` and getting three wrongly-paired rounds. A correction round (same
+protocol as `investment_club`'s Case 2) produced the right fix: a stateful transform
+keyed by shipment ID. The corrected design was transcribed, approved, generated, and
+run for real — three shipments, arriving with scans and manifests deliberately
+out of order relative to each other, all released against the correct paperwork.
+PASS overall, after one correction round; this closes task #19 (build reference
+implementations + cold-test the full chain) and the "genuine join in a new domain"
+item below. Transcript: `transcripts/full_chain_case_01_shipment_release.md`.
+
 ## Next cases (the paper wants more than three)
 
 Run these cold, same protocol, to broaden the evidence:
 
-- **Genuine join in a new domain** — an office where a decider truly needs *paired*
-  inputs (merge_synch), e.g. matching each shipment's scan to its manifest before
-  release. Tests that merge_synch is chosen (not fan-in).
 - **Hidden data-dependency requiring a NEW connection** — a description where a
   computing worker silently lacks a fact it needs and the fix is an added edge (harder
   than the loan needs-to-see, closer to the accountant-holdings gap). Tests whether the

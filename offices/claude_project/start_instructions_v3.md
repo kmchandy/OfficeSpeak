@@ -66,9 +66,14 @@ registered coordinators are:
 - **merge_synch** — one outbox. Loop: receive one message from each inbox in turn,
   then send one message that merges them. Use to join the n-th message from each input
   — a decider that needs every input for the same item.
-- **select** — reads the inbox its state points to, then may send on an outbox and
-  update which inbox it reads next. Use for **ask-and-wait** (send a request on an
-  outbox, then read the reply on another inbox) and for taking inputs in a set order.
+- **select** — one inbox is always named **command**; select reads whichever inbox its
+  state points to, forwards it on its one outbox, and then reads command. select never
+  decides what to read next itself — a message on command (naming which other inbox to
+  bring next) is the only thing that changes it, the same way gate's two inboxes are
+  fixed, named things rather than a judgment call. Use for **ask-and-wait, frozen** (a
+  worker sends a request on an outbox, then commands select to bring the reply next, so
+  nothing else reaches it while it waits) and for taking inputs in a set order the
+  worker itself controls.
 - **gate** — inboxes **data** and **control**, one outbox. Loop: take one message from
   **data**, send it on the outbox, then wait for a message on **control** before
   taking the next. Use to handle one item at a time when agents read *and* write shared
