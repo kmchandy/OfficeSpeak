@@ -1,6 +1,6 @@
 # OfficeSpeak "Phase 3" — approving workers before generation
 
-*This step comes after `start_instructions_v3.md`'s Phase 1 and Phase 2 end,
+*This step comes after `start_instructions.md`'s Phase 1 and Phase 2 end,
 and before the generator (turns an approved spec into `office.md` + role
 files, so DisSysLab's existing `compile_office` / `dsl build` can build it).
 Phase 1 and Phase 2 are unchanged by this document — this only describes what
@@ -64,6 +64,19 @@ fine and fail at runtime with a `NameError`. Whoever drafts or approves a
 computational worker's code should know this going in, not discover it as a
 generation-time surprise.
 
+**Another concrete example, found the same way: a worker downstream of
+`select` must send a command after *every* message it receives from it, not
+only when escalating.** `select_role`'s actual contract is "forward the data
+message, then unconditionally wait on `command` next" — regardless of what
+that message was. A worker that only sends a command on the "interesting"
+branch (e.g. escalating to a manager) and stays silent on the routine branch
+leaves `select` waiting on a command that never arrives — a real deadlock, not
+a compile error, and not something `dsl build` catches. This is exactly the
+kind of mistake the example-inputs check exists to catch: running the worker
+on a routine input and a "needs a command" input side by side would have shown
+the missing command immediately. See `cold_tests/transcripts/
+full_chain_case_02_returns_desk.md` for the case this was actually caught in.
+
 ## Judgment workers (LLM)
 
 For each office-specific agent Phase 2 describes as a judgment job:
@@ -100,7 +113,7 @@ The generator can run once, for every office-specific agent named in Phase
 
 and the Phase 1 network (agents, connections, port shapes) is untouched
 from when Phase 1 ended. Registered agents (coordinators, `record`) need
-none of this — their behavior is fixed, per `start_instructions_v3.md`:
+none of this — their behavior is fixed, per `start_instructions.md`:
 "You need not describe a registered agent; its behaviour is fixed."
 
 ## Explicitly out of scope

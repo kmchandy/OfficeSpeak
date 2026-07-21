@@ -1,6 +1,6 @@
 # Cold test 03 — Fractions tutor (build)
 
-**Setup.** Fresh subagent reads only `start_instructions_v3.md` + the three gallery
+**Setup.** Fresh subagent reads only `start_instructions.md` + the three gallery
 files, then acts as the assistant.
 
 **Pat's description.**

@@ -1,7 +1,7 @@
 # Case 07 — News subscriptions (dynamic subscribers, compute once)
 
 **What's new in the instructions being tested:** nothing — this is a baseline test of
-`start_instructions_v3.md` and `start_gallery/` exactly as they stand, with no changes
+`start_instructions.md` and `start_gallery/` exactly as they stand, with no changes
 made for this case. It probes a pattern none of the four gallery examples demonstrate:
 an unbounded, dynamic set of external parties who each register interest in a different
 slice of the same computed fact, where the fact must be computed once regardless of how
@@ -53,7 +53,7 @@ single most informative thing to watch for, alongside compute-once.
 
 ## Protocol
 
-A fresh subagent was given only: `start_instructions_v3.md`, `start_gallery/README.md`,
+A fresh subagent was given only: `start_instructions.md`, `start_gallery/README.md`,
 `start_gallery/investment_club.md`, `start_gallery/room_monitor.md`,
 `start_gallery/trading_room.md` — explicitly instructed not to read anything else (no
 HANDOFF.md, no other cold-test transcripts, no DSL/dissyslab files). It confirmed at the
@@ -63,7 +63,7 @@ top of its reply which five files it read.
 
 I read all five of the requested files:
 
-1. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_instructions_v3.md`
+1. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_instructions.md`
 2. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_gallery/README.md`
 3. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_gallery/investment_club.md`
 4. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_gallery/room_monitor.md`

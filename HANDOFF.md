@@ -86,7 +86,7 @@ OfficeSpeak `offices/phase2_demo/`:
   `tutor_interactive.py` in a normal terminal.
 
 Phase 1 (start module) and cold tests live under
-`offices/claude_project/` (`start_instructions_v3.md`, `start_gallery/`,
+`offices/claude_project/` (`start_instructions.md`, `start_gallery/`,
 `cold_tests/` 6/6 — see "Multi-student design" below for case 06).
 
 ## Onboarding doc = the public README
@@ -141,7 +141,7 @@ generalizes past the tutor to any "one case, now many at once" problem.
    for the demo) plus a `SIM_ANSWERER` worker standing in for other students'
    own devices, so `python tutor_multi.py` proves several sessions run through the
    same shared workers with no state bleed. **Verified working** (see below).
-2. `offices/claude_project/start_instructions_v3.md` — added a new section, "Many
+2. `offices/claude_project/start_instructions.md` — added a new section, "Many
    of the same kind at once," teaching this exact convention (tag every message;
    memory becomes one-per-tag; new arrival = message not agent; a trail to a new
    audience gets its own tag), with its own worked example (one tutor, many
@@ -307,7 +307,7 @@ silently falling back to two generic sentences.
 Naming, settled: use `start_instructions` (not `CLAUDE_CONTEXT_OFFICE`) and
 `start_gallery/` in DSL too — exact same names OfficeSpeak already uses for
 the same two roles (rules file; folder of worked examples), different repo.
-OfficeSpeak's own `start_instructions_v3.md` is untouched — too disruptive to
+OfficeSpeak's own `start_instructions.md` is untouched — too disruptive to
 rename something testers already reference by name.
 
 Examples folder decision: a *curated* `start_gallery/` folder, not references
@@ -356,7 +356,7 @@ OfficeSpeak, Pat describes a goal, never that vocabulary — OfficeSpeak's job
 is inventing the structure from scratch. Same explain-back-and-correct
 discipline, different starting point. `start_instructions.md` for DSL will
 need to teach *disambiguation of a structural sketch*, which is a different
-skill than what `start_instructions_v3.md` teaches (inventing structure from
+skill than what `start_instructions.md` teaches (inventing structure from
 a goal) — not just a retitled copy of it.
 
 Not yet done (tracked as tasks #25–27 in this session's tracker): write
@@ -383,7 +383,7 @@ external subscribers each wanting a different slice of the same computed
 fact, computed once and shared, not recomputed per subscriber. Rather than
 keep reasoning about this, ran a real cold test (task #30), following the
 existing `cold_tests/` protocol exactly (pre-register → fresh subagent reads
-only `start_instructions_v3.md` + the four `start_gallery/*.md` files + one
+only `start_instructions.md` + the four `start_gallery/*.md` files + one
 Pat description → score).
 
 Pat's description (the news-subscription spec from this session, user's own
@@ -468,14 +468,14 @@ per-requester tagging (like the tutor's id-keyed state) so grants and releases
 match up to the right caller. Mani's own call once this complexity was surfaced:
 **too complex for now — use plain `record` + `gate` and revisit RW only if a
 real case needs the concurrency.** This required no change to
-`start_instructions_v3.md`: "pair a record with a gate when it's both read and
+`start_instructions.md`: "pair a record with a gate when it's both read and
 written" is already the documented rule, so nothing Pat-facing changes: RW
 would later be a swappable *implementation* detail behind the same registered
 names, not a new taught concept. The RW design above is preserved here so it
 isn't lost if the need arises later.
 
 **Approval workflow (Phase 2 → generated code), and why it's simpler than it
-sounds.** `start_instructions_v3.md`'s existing Phase 1 already fixes every
+sounds.** `start_instructions.md`'s existing Phase 1 already fixes every
 port's message shape via the "Pass A — every outbox, then Pass B — every
 inbox, never invented" rule, before Phase 2 begins. So the new approval step
 (Pat approves each LLM worker's prompt; each Python worker is tested on
@@ -663,7 +663,7 @@ translators — any mismatch raises a clear `GeneratorError` naming the
 problem, never a silent guess.
 
 Not yet done: task #34 (source/sink matching doc) and the still-open
-`start_instructions_v3.md` gap this design pass surfaced — Phase 1 doesn't
+`start_instructions.md` gap this design pass surfaced — Phase 1 doesn't
 yet teach "one of select's inports is the command port, name it `command`,"
 so a cold Phase 1 conversation could still produce a select the generator
 would correctly refuse rather than silently mishandle.
@@ -755,6 +755,154 @@ platform-specific `pydantic_core` build here) — same workaround
 running an office never actually calls the LLM backend unless a worker is
 a genuine judgment (prompt) worker, and this case has none.
 
+## Second full-chain case — select, PASS on first try, real deadlock caught by approval (2026-07-20)
+
+Ran a second full-chain case (task #17/#19 follow-up), this time targeting
+`select` rather than case 01's keyed keeper: a returns desk auto-approving
+small refunds and freezing on any larger one until a manager replies. Full
+writeup: `cold_tests/transcripts/full_chain_case_02_returns_desk.md`.
+
+Cold Phase 1/2 got it right the first time — `select` with a `command` port,
+no correction round, explain-back consistent with the structure built. Useful
+data point alongside case 01's miss: the process isn't just finding problems
+that aren't there.
+
+The real finding was downstream, in my own transcription: `select_role`'s
+actual contract (`dissyslab/office/library.py`) is "forward the data message,
+then unconditionally wait on `command` next" — a worker must send a command
+after *every* message it gets from `select`, not only when escalating. A first
+draft sent one only on the escalation branch; the routine (auto-approve)
+branch sent none, so `select` waited forever on a command that never came —
+a real deadlock, correctly reported as genuine quiescence by `os_agent.py`
+(checked its termination logic directly; it's sound — this was not a
+termination-detector bug, contrary to my first suspicion). Caught immediately
+by actually running the generated office, exactly the failure mode
+`phase3_approval.md`'s "run on example inputs, check the outputs" step exists
+to catch — added this as a second concrete worked example in that doc,
+alongside the self-contained-factory constraint from case 01's session.
+
+New gallery fixture: `dissyslab/gallery/apps/returns_desk/` (`office.md` +
+`roles/tickets.py`, `roles/clerk.py`, `roles/manager.py`, run artifact
+`outcomes.jsonl`).
+
+## Source/sink-matching doc written; TESTER_MANUAL rewritten (2026-07-20)
+
+Closed task #34 (the explicitly-declared hard gate for external testers):
+`offices/claude_project/phase3_source_sink_matching.md` — a lookup guide from
+common Pat phrasings to DisSysLab's registered sources/sinks
+(`docs/SOURCES_AND_SINKS.md`), a worked example (case 07's BBC/Al
+Jazeera/NPR feeds match directly; "text me" doesn't — no SMS sink exists,
+the honest answer is a webhook to a third-party gateway or "not supported
+yet," never a silent guess), and an explicit "when nothing fits" fallback
+ladder (general-purpose `webhook`/`mcp_source`/`mcp_sink` escape valves, then
+stop and flag rather than force a match).
+
+`TESTER_MANUAL.md` rewritten to fix two real problems: (1) it still pointed
+Track A setup at `project_instructions.md`/`OfficeSpeak_gallery.md` — stale
+files from before this session's `start_instructions.md`/`start_gallery/`
+rebuild (last touched 2026-07-15, before v3 existed); fixed to point at the
+current files. (2) Track B ran unrelated pre-made examples (`weather`,
+`debug_demo`) instead of the office Track A actually built — exactly Mani's
+original "what's the point of Track A" concern, now that the full chain is
+real. Track B is reframed around a two-persona model matching Mani's own
+framing (Pat never leaves Track A; a technical collaborator, "Al," picks up
+Track A's output and runs it): new step B2 walks Al through source/sink
+matching (the new doc above) → worker approval (`phase3_approval.md`) →
+generation → `dsl run`, with the weather/debug_demo examples kept as an
+optional warm-up rather than the main event. "Known limitations" updated to
+state the real current status honestly: running your own office is now
+possible end to end, but takes a Python-comfortable person following two
+docs by hand, not one command Pat can run herself.
+
+## The two pieces closing "Al writes no code" -- built and validated (2026-07-20)
+
+Built the two pieces needed so Al's only job is matching/approving/filling
+blanks, never hand-writing the `OfficeSpeakSpec` wiring (per Mani's explicit
+ask to minimize Al's friction from Track A to Track B):
+
+1. **Track A now ends by emitting a hand-off file** -- a new section in
+   `start_instructions.md` ("Ending Phase 2: the hand-off file"), plus a
+   full worked example (the debate office's hand-off file) right after its
+   existing Phase 2 section. The file is plain Python (`OFFICE_NAME`,
+   `AGENTS`, `CONNECTIONS`) -- chosen over YAML/JSON specifically because a
+   transform's eventual body is real code, not data a text format can hold
+   directly. Every fact Phase 1/2 already fixed (name, kind, ports,
+   connections, English description) is filled in; every field a person
+   still has to supply (`registered_as` for sources/sinks, `body_fn`/
+   `body_prompt`/`approved` for transforms) is a clear `None`/`False`
+   placeholder -- consistent with the real scope boundary already in the
+   instructions ("write no code and no prompt here... a later step").
+2. **`dissyslab/office/assemble.py`** -- the new, genuinely small module.
+   Reads a finished hand-off file, validates every placeholder is filled
+   (naming exactly which agent and field if not), builds the real
+   `OfficeSpeakSpec`, and calls the already-existing
+   `build_office_from_officespeak()`. One command:
+   `python -m dissyslab.office.assemble <draft.py> <target_dir>`.
+   `dissyslab/office/draft_template.py` is the reference copy (the
+   shipment-release case, shown mid-way -- drafted but not yet approved).
+
+**A real, previously-latent bug found by cold-testing this, not by design
+review.** Pre-registered a fresh domain (room temperature/humidity
+monitoring, merge_synch) specifically to test the new instructions section
+on something not already in `start_gallery`. The cold instance's hand-off
+file was syntactically perfect on the first try -- but running it through
+`assemble.py` surfaced a real mismatch that would have hit *every* future
+hand-off file: OfficeSpeak's own Phase 1 rule ("name a lone inbox `in`, a
+lone outbox `out`") doesn't match DisSysLab's actual runtime convention (a
+sink or transform's single inbox must be `in_`; a real registered source's
+single outbox must be `destination`). Every earlier full-chain case dodged
+this by accident -- I was hand-writing the assembler's input directly and
+unconsciously already using the runtime names, never Track A's literal bare
+names. Fixed by adding two more mechanical normalization rules to
+`assemble.py`, alongside the existing "single outport is always `out`"
+rule from case 01/02 -- all three applied automatically, rewriting matching
+connections, so Al never has to know any of the three exist. Verified
+end-to-end: hand-filled the cold instance's own hand-off file (reclassifying
+the two sensors to transforms fed by `starter`, since no registered "room
+sensor" source exists -- itself a clean real example for
+`phase3_source_sink_matching.md`'s "when nothing fits" case), ran it through
+`assemble.py`, `dsl build`, `dsl run` -- correct alerts on exactly the two
+readings that were actually both hot and humid at once. Fixture:
+`dissyslab/gallery/apps/room_climate_monitor/`.
+
+Al's workflow is now, for real: receive one `.py` file, fill in
+`registered_as` values and approved bodies, run one command, then
+`dsl build`/`dsl run` -- never write `AgentSpec`/`ConnectionSpec` by hand.
+
+## "destination" vs "out" for a source's outbox -- relaxed, no core change needed (2026-07-20)
+
+Mani's question: hand-written offices and the generator both hardcode
+"destination" for a source's single outbox, but Track A's own taught rule
+("name a lone outbox `out`") and every other agent kind consistently use
+"out" -- can both be accepted without a large change? Checked directly
+against the compiler (`office/_internals.py`'s `_runtime_outport`) rather
+than assuming: for a source, it maps *any* string the office.md connection
+uses to the literal runtime `out_`, unconditionally -- "destination" was
+only ever a convention hand-written offices happened to follow, never
+something the compiler required. So the only place actually enforcing
+"destination" specifically was my own `from_officespeak.py` check, written
+this session. Relaxed it to accept `"destination"` or `"out"`; updated
+`assemble.py`'s matching normalization rule to leave either alone and only
+rewrite some third name to `"out"` (the newer, consistent choice, never
+back to `"destination"`). Verified both ways: `room_climate_monitor`
+(freshly generated, uses `"out"` throughout) and `shipment_release`
+(existing, uses `"destination"`) both build and run unchanged.
+
+## Two more Phase 3 docs -- the Al-Claude conversation, formalized (2026-07-20)
+
+- `phase3_assistant_instructions.md` -- the Phase 3 counterpart to
+  `start_instructions.md`: what an assistant helping Al should do
+  (match sources/sinks against the real catalogue, draft each worker from
+  its Phase 2 description, show it actually running on example inputs
+  *before* asking for approval, edit the same hand-off file in place, run
+  the assembler and `dsl build`/`dsl run` itself when it has shell access).
+  Real vocabulary allowed throughout -- unlike Pat's instructions, there is
+  no jargon rule here.
+- `phase3_al_howto.md` -- a full worked walkthrough for Al, start to
+  finish, using the real `room_climate_monitor` hand-off file, matching
+  decisions, drafted code, generated `office.md`, and actual run output
+  from this session -- not a hypothetical.
+
 ## Repo state at end of this session
 
 OfficeSpeak has local commits **not yet pushed** — the sandbox's `git push` fails
@@ -785,13 +933,20 @@ fixture, `dissyslab/gallery/apps/shipment_release/` (`office.md` +
 `roles/scan.py`, `roles/manifest.py`, `roles/match.py`, generated by
 `from_officespeak.py`, plus its run artifact `releases.jsonl`). OfficeSpeak
 also has uncommitted new/changed files: `offices/claude_project/
-phase3_approval.md`, `offices/claude_project/cold_tests/transcripts/
-full_chain_case_01_shipment_release.md`, and edits to
-`offices/claude_project/cold_tests/README.md` (new "Full-chain cases"
-section) reflecting the first full-chain test above. Not committed yet
-since Mani didn't ask for a commit this round; review and commit next
-session (`cd ~/Documents/DisSysLab && git add -A && git commit && git push`;
-same for OfficeSpeak).
+phase3_approval.md` (now also documenting the `select`-command deadlock
+finding), the new `offices/claude_project/phase3_source_sink_matching.md`
+(task #34), `offices/claude_project/cold_tests/transcripts/
+full_chain_case_01_shipment_release.md` and
+`full_chain_case_02_returns_desk.md`, edits to `offices/claude_project/
+cold_tests/README.md` (the "Full-chain cases" section, now with both
+cases), and a rewritten `TESTER_MANUAL.md` (current file references,
+Track B reframed around the Pat/Al two-persona model). DisSysLab also has
+the new `dissyslab/gallery/apps/returns_desk/` fixture (`office.md` +
+`roles/tickets.py`, `roles/clerk.py`, `roles/manager.py`,
+`outcomes.jsonl`), alongside `shipment_release` from the same session. Not
+committed yet since Mani didn't ask for a commit this round; review and
+commit next session (`cd ~/Documents/DisSysLab && git add -A && git commit
+&& git push`; same for OfficeSpeak).
 
 ## Note on account switch
 

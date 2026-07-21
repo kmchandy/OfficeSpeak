@@ -1,6 +1,6 @@
 # Cold test 02 — Loan desk (correction loop)
 
-**Setup.** Fresh subagent reads only `start_instructions_v3.md` + the three gallery
+**Setup.** Fresh subagent reads only `start_instructions.md` + the three gallery
 files, is given the office built in case 01, plus Pat's plain-English correction, and
 does the correction step.
 

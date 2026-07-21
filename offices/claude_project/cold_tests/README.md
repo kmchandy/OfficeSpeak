@@ -9,7 +9,7 @@ Full transcripts are in `transcripts/`.
 The people who wrote the instructions and the gallery are contaminated evaluators — if
 they build an office it flatters the artifacts. A **cold test** uses a fresh instance
 whose entire input is exactly the production input and nothing else:
-`start_instructions_v3.md` + the gallery examples (`start_gallery/`; the debate example
+`start_instructions.md` + the gallery examples (`start_gallery/`; the debate example
 lives inside the instructions) + one plain-English Pat description. No design-chat
 context, no hint of the expected answer. Here, each cold instance is a subagent
 instructed to read only those files and act as the assistant.
@@ -158,6 +158,21 @@ out of order relative to each other, all released against the correct paperwork.
 PASS overall, after one correction round; this closes task #19 (build reference
 implementations + cold-test the full chain) and the "genuine join in a new domain"
 item below. Transcript: `transcripts/full_chain_case_01_shipment_release.md`.
+
+**Full-chain 02 — Returns desk (`select`, "ask-and-wait, frozen").** Pat: refund
+tickets under $50 auto-approve; $50+ need a manager's sign-off, and no other
+ticket should be looked at while waiting. The cold instance got this right on
+the first try — `select` with a `command` port, no correction round needed,
+explain-back consistent with the structure it built. The real finding was
+downstream: a first-draft worker sent a command to `select` only when
+escalating, not on the routine (auto-approve) branch — `select`'s actual
+contract requires a command after *every* forwarded message, so this silently
+deadlocked the office (correctly detected as genuine quiescence, not a
+termination-detector bug). Caught and fixed via the approval step's own
+"run it on example inputs" discipline, exactly as `phase3_approval.md`
+prescribes; re-run afterward produced all four tickets in strict order, the
+freeze holding correctly. Transcript:
+`transcripts/full_chain_case_02_returns_desk.md`.
 
 ## Next cases (the paper wants more than three)
 

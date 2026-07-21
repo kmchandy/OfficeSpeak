@@ -1,6 +1,6 @@
 # Cold test 04 — Adaptive fractions tutor (build; realistic app)
 
-**Setup.** Fresh subagent reads only `start_instructions_v3.md` (with the new
+**Setup.** Fresh subagent reads only `start_instructions.md` (with the new
 three-part explain-back) + the three gallery files, then acts as the assistant. This is
 the realistic-tutor description prepared for a tester interested in tutoring.
 

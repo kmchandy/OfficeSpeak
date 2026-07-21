@@ -1,325 +1,491 @@
 # OfficeSpeak
 
-Build a running app as an **office** of cooperating **workers** — by describing
-what you want in plain English, with no programming. This page walks through one
-worked example: a fractions tutor, first for a single student, then for many
-students sharing the same office. Later sections extend it to testing, debugging,
-and maintaining your system in English. OfficeSpeak runs on the
-[DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
+Build a small, always-on team of software workers — an **office** — by
+**describing what you want in plain English**. No programming needed to try
+it. An assistant (Claude, set up with OfficeSpeak's instructions) turns your
+description into a team of workers that pass messages to each other, explains
+the team back to you, and lets you correct it in plain English. Information
+comes in through **sources** and results go out through **sinks**. OfficeSpeak
+runs on the [DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
+
+This page assumes **no computer background at all** — if you've never opened
+a "terminal" or typed a "command" before, every one of those words gets
+explained the first time it shows up.
+
+There are two stages, and it's normal to stop after the first:
+
+- **Stage 1 — Describe it (no installation).** Everything happens in a
+  conversation with an assistant on claude.ai. No Python, no terminal. This is
+  the most important part to try, and anyone can do it.
+- **Stage 2 — Run it for real (needs a computer with Python).** Turning your
+  description into an actually-running system. This is usually a second step,
+  sometimes done by the same person after learning a little Python, sometimes
+  by asking someone else. **Right now, that "someone else" can just be us** —
+  send us what Stage 1 produces and we'll run it for you. You don't need to
+  learn anything technical to get to see your office actually work.
+
+If setting up Python isn't for you, **just do Stage 1** — that's the heart of
+it, and it's the same experience whether or not anyone ever runs what you
+build.
+
+The point of trying this is to find out whether *you* can go from an English
+description to an office you understand and trust — and to tell us every place
+it's confusing. Rough edges are exactly what we're looking for; if something
+is unclear, that's a bug in our design, not yours.
+
+## The example this page follows
+
+Rather than show fragments from several different offices, this whole page
+follows **one story start to finish** — Stage 1, the correction, and then
+Stage 2 actually running it — so you can see the entire path an office takes,
+end to end. The story:
+
+> Once each period my club gets a batch of market data, forecasts, and news,
+> plus our decisions from last period. Two analysts each read it and recommend
+> a plan — one value-investing, one chasing emerging opportunities. A manager
+> weighs both, proposes a plan, checks the taxes and fees with an accountant,
+> then writes the final plan to a file. Keep our portfolio and history in one
+> place, and handle one period at a time so the books stay consistent.
+
+(You'll paste this exact wording in yourself in Stage 1, step 2 — this is just
+a preview of where the story is headed.)
+
+By the end of Stage 1 you'll have watched this exact office get built,
+explained back, and corrected. By the end of Stage 2 you'll have watched it
+actually run and produce real numbers. Then, at the very end, you'll do the
+whole thing again with an idea of your own.
+
+Want the two-minute visual version first? See
+[`pat_microcourse.html`](pat_microcourse.html) (Stage 1) and
+[`stage2_microcourse.html`](stage2_microcourse.html) (Stage 2) — open either
+one in a browser.
 
 ---
 
-## An office
+# Stage 1 — Describe it (no installation)
 
-An **office** is a small team of **workers** that pass messages to each other.
-Each worker has **inboxes** (messages arrive) and **outboxes** (messages it
-sends). An office has an org chart which is a set of **connections**. A
-connection is from one outbox to one inbox. The office repeatedly takes a
-message from the top of a nonempty outbox and places copies of the
-message at the bottom of the inboxes to which it is connected. A connection is shown as
-an arrow in diagrams.
+## Step 1 — one-time setup (~10 min, no Python)
 
----
+Don't already have an `OfficeSpeak` folder on your computer? See
+**[GETTING_THE_FILES.md](GETTING_THE_FILES.md)** first — a short,
+no-experience-needed guide to downloading it from GitHub (including a link to
+GitHub's own cloning tutorial, if you'd rather do that than download a ZIP).
+(Whoever pointed you here can also just hand you the two things below
+directly, if that's easier.)
 
-## Step 0 — set up (once)
+1. On claude.ai, create a new **Project** named **OfficeSpeak**. (A "Project" on
+   claude.ai is just a named folder for conversations that all share the same
+   background instructions and reference material — nothing to install.)
+2. Open `OfficeSpeak/offices/claude_project/start_instructions.md`, copy its
+   whole contents, and paste them into the Project's **custom instructions**.
+3. Upload every file in `OfficeSpeak/offices/claude_project/start_gallery/` as
+   Project **knowledge** (the worked examples that make the assistant good at
+   this).
 
-1. Get the two repos. OfficeSpeak uses the DisSysLab runtime as a dependency:
+That Project *is* the OfficeSpeak assistant. Start every office in a new chat
+inside it.
 
-   ```bash
-   git clone https://github.com/kmchandy/DisSysLab.git
-   git clone https://github.com/kmchandy/OfficeSpeak.git
-   ```
+## Step 2 — describe an office
 
-2. Open the **Claude desktop app**, turn on **Cowork**, and connect the folder
-   that contains both `DisSysLab` and `OfficeSpeak` (drag it in / pick it when
-   asked).
-3. The LLM grader needs a Claude API key. Just paste your key into the chat and
-   say *"save my Anthropic key so the tutor can use it"* — Claude will put it in
-   the right place. (You can get a key at console.anthropic.com; ~2 minutes.)
+Open a **new chat inside the OfficeSpeak Project**. For this walkthrough, paste
+in exactly this description (word for word is fine — it's the one this whole
+page follows):
 
----
+> Once each period my club gets a batch of market data, forecasts, and news,
+> plus our decisions from last period. Two analysts each read it and recommend
+> a plan — one value-investing, one chasing emerging opportunities. A manager
+> weighs both, proposes a plan, checks the taxes and fees with an accountant,
+> then writes the final plan to a file. Keep our portfolio and history in one
+> place, and handle one period at a time so the books stay consistent.
 
-## Step 1 — describe your app in English
+(When you get to the end of this page and try your own idea, here's what
+that description was answering, in case it helps you write yours: what should
+the office watch and decide; what comes in and from where; what goes out and
+to where; who does the work, with a name and a one-line job for each; what each
+helper needs to know to do its job — the most important one; what anyone
+remembers over time; anything the whole team shares; and any rules about
+order or one-at-a-time handling. Don't try to get it perfect — a rough first
+description is the point.)
 
-This is an example of a description of an app.
+## Step 3 — build
 
-1.1 **Paste the following into the chat in Cowork.**
+Send the description. The assistant replies with the **team** of workers and
+how information flows between them, a short **explanation** of what happens to
+one item start to finish, and a list titled **"Things I assumed —"** (choices
+you didn't spell out). For our example, the assistant's explanation reads
+something like this:
 
-> "I want an adaptive practice tutor for a kid learning fractions. It works from a
-> bank of practice questions. It asks one question at a time on the screen and
-> waits for an answer; if the answer is wrong it gives a gentle hint. It keeps
-> track of how the kid is doing and, when the session ends, shows a short
-> encouraging summary and saves a progress report the parent can read later."
-
-1.2 Enter into chat: **"Build this office and explain it to me."**
-
-**What you see back** — Claude shows a diagram of the org chart and
-describes the team in English, something like:
-
-Here is the diagram of the org chart for the tutor:
-
-```mermaid
-flowchart LR
-    SESSION(["SESSION<br/>(source) start signal"]):::source
-    ANSWERS(["ANSWERS<br/>(source) the kid's answers"]):::source
-
-    PLANNER["PLANNER<br/>(the coach) picks & sequences"]:::worker
-    CHECKER["CHECKER<br/>★ LLM — grades & gives feedback"]:::llm
-    REPORTER["REPORTER<br/>writes the wrap-up"]:::worker
-
-    BANK[("BANK<br/>question bank")]:::record
-    PROGRESS[("PROGRESS<br/>mastery + progress")]:::record
-
-    SCREEN[["SCREEN<br/>what the kid sees"]]:::sink
-    PARENT[["PARENT_REPORT<br/>file for the parent"]]:::sink
-
-    SESSION -->|start| PLANNER
-    ANSWERS -->|answer| CHECKER
-
-    PLANNER -->|"ask for a question"| BANK
-    BANK -->|"a question"| PLANNER
-
-    PLANNER -->|"save / read progress"| PROGRESS
-    PROGRESS -->|"progress"| PLANNER
-
-    PLANNER -->|"show question + answer key"| CHECKER
-    CHECKER -->|"how it went"| PLANNER
-
-    PLANNER -->|"show question"| SCREEN
-    CHECKER -->|"feedback / hint"| SCREEN
-    PLANNER -->|"session over"| REPORTER
-    REPORTER -->|"summary"| SCREEN
-    REPORTER -->|"report"| PARENT
-
-    classDef source fill:#e3f2fd,stroke:#1976d2,color:#0d47a1;
-    classDef worker fill:#eceff1,stroke:#546e7a,color:#263238;
-    classDef llm    fill:#f3e5f5,stroke:#8e24aa,color:#4a148c;
-    classDef record fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
-    classDef sink   fill:#fff3e0,stroke:#ef6c00,color:#e65100;
-```
-
-The colours mark the *kind* of each worker: blue = a **source** (feeds messages
-in), grey = a plain **worker**, green = a **record** (a shared file with a
-keeper), orange = a **sink** (an output), and the one **violet ★ box is the
-language model**.
-
-Three things the picture shows, which are the ideas behind every office:
-
-- **PLANNER's inbox has several arrows into it** (from SESSION, BANK, PROGRESS,
-  CHECKER). They all land in one inbox and PLANNER handles them one at a time.
-- **BANK and PROGRESS are records** — shared files, each with a keeper agent.
-- **The office stops itself** when everyone is done.
-
-
-> *Meet the team.* A **coach** (PLANNER) decides what to ask and keeps the session
-> moving. A **grader** (CHECKER) — this one is the language model — reads the kid's
-> answer, decides if it's right, and writes the feedback. A **question bank**
-> (BANK) holds the questions; a **progress keeper** (PROGRESS) remembers how the
-> kid is doing. A **screen** shows the kid everything, and a **report file** saves
-> a note for you.
+> Each period the office lets one batch in. Both analysts read it and each
+> writes a recommendation; a worker whose only job is to wait for both hands
+> the pair to the manager. The manager puts together a proposed plan and asks
+> the accountant what it would cost in taxes and fees; the accountant works
+> that out and reports back; the manager finalizes the plan, writes it and the
+> updated holdings to the shared portfolio, saves the plan to the file, and
+> lets the next period in.
 >
-> *The story of one question.* The coach pulls a question from the bank and shows
-> it on the screen. The kid types an answer. The grader — the language model —
-> checks it, writes a kind sentence of feedback, and tells the coach how it went.
-> The coach updates progress and picks the next one. At the end, it puts an
-> encouraging summary on the screen and saves your report.
+> **Things I assumed —** the two analysts are treated equally and the manager
+> has the final say; the office handles one period fully before starting the
+> next so the shared portfolio stays consistent; and **the accountant works out
+> the taxes from the proposed plan alone — it does not look at what the club
+> currently holds.** Tell me if any of these should be different.
+
+It also gives a plain-English description of what each worker does — but not
+its actual code or prompt yet; deciding whether a worker ends up as Python or a
+language-model prompt, and writing that, is a later step (Stage 2), not part
+of this conversation.
+
+## Step 4 — read and correct
+
+Read the explanation, and **especially the "Things I assumed —" list** —
+that's where mistakes hide. Look at the third assumption above: the accountant
+prices taxes from the proposed plan alone, never checking what the club
+currently owns. That's wrong — taxes and fees depend on what you already hold,
+not just the proposed move. Send the correction in plain English:
+
+> "The accountant has to see what we currently hold — otherwise the tax
+> numbers are guesses. Taxes depend on what we paid for what we own."
+
+The assistant revises and shows you what changed:
+
+> One new link: before it prices anything, the accountant now looks up what
+> the club currently holds and what we paid for it, and uses that for the tax
+> math. Nothing else about the office changes.
+
+Repeat this read-and-correct loop until an explanation matches what you meant.
+
+> This is the whole idea: you shouldn't have to specify a correct office up
+> front. It's easier to *react* to a concrete team than to describe one
+> perfectly from nothing. Catching exactly this kind of gap — a worker that
+> computes something but was never given a fact it needs — is what the
+> "Things I assumed —" list is for.
+
+## Step 5 — understanding a worker
+
+You can ask the assistant to look closely at any single worker. How it helps
+depends on the kind of worker:
+
+- **A computational worker** (its job is a well-defined computation — working
+  out a fee, averaging numbers) can be **walked through on example inputs**:
+  the assistant reasons through what its description implies for a specific
+  input so you can see whether it's right. Try asking about the accountant,
+  after the correction: "Walk me through what the accountant does for period
+  1, if we start with no shares and $10,000 cash and the analysts propose
+  buying 8 shares." This is still in English at this stage — actually writing
+  code, and actually running it on real numbers, comes in Stage 2.
+- **A judgment worker** (its job is done by a language model — weighing an
+  argument, writing a summary) is **not** tested or graded. There's no fixed
+  right answer to check against. Instead the assistant simply **shows you its
+  prompt** and asks *"Is this what you mean?"*, and can show a few example
+  inputs and what the model produced — for you to read and judge, not for the
+  system to score. Getting an LLM worker right is a matter of whether its
+  prompt says what you intend.
+
+## Step 6 — what to send back (the most valuable part)
+
+1. **Your description** — what you pasted in (or your own idea, if you tried
+   one after the example).
+2. **Did the team make sense?** Could you follow the explanation? Where did it
+   lose you?
+3. **The "Things I assumed —" list** — anything wrong or missing? Did you catch
+   it before being told (as with the accountant above)?
+4. **Your correction(s)** — what you said, and whether the revision fixed it.
+5. **Jargon slips** — the assistant is supposed to avoid words like "port",
+   "queue", "state". Tell us if it slips.
+6. **Would you use this?** For what?
+
+Short notes are fine. Confusion and dead-ends are the signal.
 
 ---
 
-## Step 2 — run it
+# Stage 2 — Run it for real (needs a computer with Python)
 
-Enter into the chat: **"Run the tutor and show me what the kid sees."**
+This is where a description becomes an actually-running system. **You don't
+have to do this part yourself** — send us what Stage 1 produced (the
+assistant's hand-off file) and we'll run it and send back what happened. If
+you (or someone helping you) do want to do it directly, here's the whole
+path, continuing the same investment-club example, now with the accountant's
+correction already built in, so you can see the exact numbers it produces.
 
-Claude runs the office and shows the session. You get back something like this
-(the questions and score are fixed; the **feedback wording is written fresh by
-the model each run**, so yours will read a little differently):
+**A few words, explained, before we start:** a **terminal** (also called a
+"command line" or "shell") is a plain, text-only window where you type
+instructions to your computer one line at a time, instead of clicking icons —
+on a Mac it's an app called **Terminal**, already installed, in
+Applications → Utilities. A **command** is one line you type into it, then
+press Return/Enter to run. A **folder** (technically a "directory") is the
+same thing as the folders you already see in Finder — a terminal just lets you
+move between them by typing their name instead of double-clicking. Every
+command below is something you can copy and paste in exactly as written (just
+change the parts that are clearly your own file paths).
 
-```
-=== tutor (LLM grader) — what the kid saw on SCREEN ===
-  [SHOW]     1/2 + 1/2 = ?
-  [FEEDBACK] Perfect! You're absolutely right — one half plus one half equals one whole!
-  [SHOW]     1/4 + 1/4 = ?
-  [FEEDBACK] Not quite — when you add 1/4 + 1/4 you get 2/4, which is the same as 1/2, not 1.
-  [SHOW]     2/3 of 9 = ?
-  [FEEDBACK] Perfect! Six is exactly right — great job finding 2/3 of 9!
-  [SHOW]     3/4 - 1/4 = ?
-  [FEEDBACK] Perfect! Two quarters is exactly the same as 1/2 — great job!
+## Step 1 — install the runtime
 
-  [SUMMARY]  Session done — you got 3/4. Nice work!
-
-=== parent report file ===
-  {'kind': 'report', 'mastery': 3, 'questions_seen': 4, 'score': '3/4'}
-```
-
-Look at what the kid actually typed for those: **"one"**, **"1"**, **"six"**, and
-**"two quarters"**. The grader is a language model and so it accepts *"one"* for 1.
-It gives a hint on a mistake.
-
-This run inside Cowork is a **demonstration**: the answers are fixed, so you can
-watch the office work without typing. To let a real student type their own answers
-live, see Step 4.
-
----
-
-## Step 3 — change the office, in plain English
-
-If the office that is generated does not do what you want it to do then
-tell the chat what you want changed. For example:
-
-- *"Add a question: 3 × 1/3 = ?, answer 1."*
-- *"Give two hints before revealing the answer."*
-- *"Make the summary mention which question was missed."*
-- *"Pull the questions from this list I'm pasting in…"*
-
-
----
-
-## Step 4 — let a real student try it (type answers live)
-
-The run in Step 2 uses fixed answers so you can watch it. To let an actual
-student sit down and type their own answers, run the **interactive** version in a
-terminal (Cowork runs code without a live keyboard, so this one step happens in a
-normal terminal on your machine — a one-time, two-line setup):
+Open Terminal, then type each of these lines, pressing Return after each one:
 
 ```bash
-cd DisSysLab && pip install -e .          # once
-cd ../OfficeSpeak/offices/phase2_demo
-python tutor_interactive.py
+cd path/to/DisSysLab
+pip install -e .
+python -c "import dissyslab; print('DisSysLab OK')"
 ```
 
-The tutor shows a question, waits for the student to type an answer and press
-Enter, the language model grades what they actually wrote, gives a line of
-feedback, and moves on. At the end it prints an encouraging summary and saves the
-parent report to `parent_report.json`. It's the same office as before — only the
-answer feed and the screen are swapped for one live terminal.
+(`cd` means "change directory" — move into that folder. `pip install -e .`
+means "install the package that lives in this folder." The last line just
+checks it worked; if you see `DisSysLab OK` printed back, you're set.)
 
----
-
-## Step 5 — many students, one office
-
-Everything so far ran one student at a time. Tell the chat:
-
-> "Now let it handle many students at once — each one doing their own session at
-> the same time — and let a parent check in on how her child is doing."
-
-Enter into chat: **"Build this and explain it to me."**
-
-**What you see back** — Claude doesn't build a second tutor, or a third, one per
-student. The very same coach, grader, question bank, and progress keeper serve
-everyone. The only change: every message now says *whose* session it's part of,
-and the coach and progress keeper each remember one thing **per student** instead
-of one thing overall.
-
-```mermaid
-flowchart LR
-    SESSION(["SESSION<br/>(source) one 'start' per student"]):::source
-
-    PLANNER["PLANNER<br/>(the coach) picks & sequences, per student"]:::worker
-    CHECKER["CHECKER<br/>★ LLM — grades & gives feedback"]:::llm
-    TERMINAL["TERMINAL<br/>you (the live student)"]:::worker
-    SIM["SIM_ANSWERER<br/>stands in for other students"]:::worker
-
-    BANK[("BANK<br/>question bank")]:::record
-    PROGRESS[("PROGRESS<br/>mastery + progress, one row per student")]:::record
-
-    PARENT[["PARENT_REPORT<br/>one report per student"]]:::sink
-
-    SESSION -->|"start(student)"| PLANNER
-
-    PLANNER -->|"ask for a question"| BANK
-    BANK -->|"a question"| PLANNER
-
-    PLANNER -->|"save / read progress"| PROGRESS
-    PROGRESS -->|"progress"| PLANNER
-
-    PLANNER -->|"show question + answer key"| CHECKER
-    CHECKER -->|"how it went"| PLANNER
-
-    PLANNER -->|"ask/say (if live)"| TERMINAL
-    TERMINAL -->|"answer"| CHECKER
-
-    PLANNER -->|"ask/say (if simulated)"| SIM
-    SIM -->|"answer"| CHECKER
-
-    PLANNER -->|"report"| PARENT
-
-    classDef source fill:#e3f2fd,stroke:#1976d2,color:#0d47a1;
-    classDef worker fill:#eceff1,stroke:#546e7a,color:#263238;
-    classDef llm    fill:#f3e5f5,stroke:#8e24aa,color:#4a148c;
-    classDef record fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20;
-    classDef sink   fill:#fff3e0,stroke:#ef6c00,color:#e65100;
-```
-
-> *Meet the team.* The same coach, grader, question bank, and progress keeper as
-> before — nobody gets their own copy. A **roster** (SESSION) announces each
-> student as they begin. The coach and the progress keeper now file what they
-> remember **by student**, instead of keeping just one running total.
->
-> *The story of one question, now with a name attached.* A student begins;
-> SESSION tells the coach who just joined. The coach pulls that student's next
-> question from the bank and shows it to them. They answer, the grader checks it
-> and writes feedback, and the coach updates *that student's* progress — not
-> anyone else's — before moving on. When a parent checks in, that's its own,
-> separate exchange with the progress keeper, filed under the parent, not the
-> student.
-
-Run it (needs a real keyboard for the one live student, same one-time setup as
-Step 4):
+You'll also need an LLM backend for any judgment (LLM) workers an office uses
+— our investment-club example happens to need none (every worker in it is
+plain, deterministic Python), so you can skip this for this walkthrough.
+`install.sh` sets a backend up for you (Ollama for free/local, or an
+OpenRouter/Claude API key) when a later office needs one; doing it by hand,
+export whichever the office's workers expect, e.g.:
 
 ```bash
-cd DisSysLab && pip install -e .          # once, if you haven't already
-cd ../OfficeSpeak/offices/phase2_demo
-python tutor_multi.py
+export OPENROUTER_API_KEY='...'
 ```
 
-You are the **live** student — you type your own answers. **amy** and **ben** are
-simulated students in this demo, answering from a small script, so you can watch
-several sessions run through the very same coach and grader without needing three
-keyboards. You'll see each student's questions and feedback as they happen,
-interleaved, and a summary at the end:
+## Step 2 — turn the description into a runnable office
+
+This is the real point of Stage 2. Starting from Stage 1's output — the
+network, the "Things I assumed —" list, and each worker's approved body —
+Stage 1 ends by producing a single **hand-off file**: an ordinary `.py` file
+listing every worker and connection, with two kinds of blanks still open —
+`registered_as=None` for anything that needs to be matched to a real
+data source or destination, and `approved=False` for anything that needs its
+actual code or prompt written and checked. Whoever does Stage 2 does three
+things, in order:
+
+### 2a. Match sources and sinks
+
+The description names things like "a batch each period" and "a file"; DisSysLab
+has a fixed catalogue of registered ones (`DisSysLab/docs/SOURCES_AND_SINKS.md`).
+Follow `OfficeSpeak/offices/claude_project/phase3_source_sink_matching.md` to
+match each one, or find out there's no match yet and flag it rather
+than guessing. In our example one matches cleanly and one doesn't — both are
+worth seeing, since "nothing fits" is a real, common outcome, not a failure:
+
+| Worker | The description's words | What happens |
+|---|---|---|
+| the final-plan file | "writes the final plan to a file" | **Clean match:** `jsonl_recorder(path="recommendations.jsonl")` — appends one line of JSON per period. No credentials needed. |
+| FEED (the per-period batch) | "once each period my club gets a batch of market data, forecasts, and news..." | **Nothing fits.** No registered source polls Yahoo/Bloomberg/news feeds and bundles them into one per-period batch. Following `phase3_source_sink_matching.md`'s "when nothing fits" path, FEED is reclassified from `kind="source"` to `kind="transform"` with a stand-in body (a fixed sequence of 3 period numbers) for building/testing — flagged, not silently guessed. It needs one upstream kick to start, which *is* a clean, tiny match: the registered `starter` (fires a single one-time signal, nothing else). |
+
+Only `jsonl_recorder` is a real "asked for X, X exists" match. `starter` isn't
+answering anything in the description — it's plumbing added only because FEED
+became a transform and every transform needs something upstream to trigger it.
+
+### 2b. Approve each office-specific worker
+
+Follow `OfficeSpeak/offices/claude_project/phase3_approval.md` — for a
+computational worker, run it on example inputs and check the outputs; for a
+judgment worker, read the prompt and a few example outputs and judge whether it
+says what was meant. This is the one required human-review gate before
+anything runs unattended.
+
+Here's the accountant — the worker the correction changed — approved as
+real code. Notice it does exactly what was asked: it asks the ledger for
+current holdings *before* it prices anything, not after.
+
+```python
+def _make_accountant_fn():
+    _PRICE_PER_SHARE = 100.0
+    pending = {}
+
+    def accountant_fn(msg):
+        if "proposed_shares" in msg:
+            # A proposal from the manager -- ask the ledger what we hold
+            # *before* pricing anything (this is the correction).
+            pending["period"] = msg["period"]
+            pending["proposed_shares"] = msg["proposed_shares"]
+            return [({"action": "read"}, "to_ledger")]
+
+        # The ledger's reply.
+        current_shares = msg["aapl_shares"]
+        current_cash = msg["cash"]
+        proposed = pending["proposed_shares"]
+        fee = 1.0 * proposed + 0.001 * current_shares * _PRICE_PER_SHARE
+        return [({"fee": fee, "current_shares": current_shares,
+                   "current_cash": current_cash}, "to_manager")]
+    return accountant_fn
+```
+
+Tested on period 1's actual numbers, before approving it:
 
 ```
-  (parent reports saved to parent_reports_multi.json)
-    live: 0/4
-    amy: 4/4
-    ben: 3/4
+IN  (manager's proposal):  {"period": 1, "proposed_shares": 8}
+OUT (accountant's first reply): asks the ledger, {"action": "read"}
+
+IN  (ledger's reply):      {"aapl_shares": 0, "cash": 10000.0}
+OUT (accountant's answer to the manager):
+    {"fee": 8.0, "current_shares": 0, "current_cash": 10000.0}
 ```
 
-(The specific scores depend on what the live student types and how the grader —
-a language model — judges each simulated student's canned answers; the feedback
-wording is written fresh each run, same as Step 2.)
+(The two value/opportunity analysts in this example are deliberately simple,
+fixed stand-ins — "recommend buying a small, growing number of shares each
+period" — so the walkthrough has real, changing numbers to follow without
+needing real market data. A real office would replace them with a genuine
+computation or an LLM judgment worker, approved the same way.)
+
+The whole hand-off file — every worker, not just the accountant snippet above
+— is at `OfficeSpeak/offices/claude_project/investment_club_handoff.py` if
+you want to see how it all fits together or run it yourself.
+
+### 2c. Generate and run
+
+Once every source/sink is matched and every worker is approved, one command
+turns the finished hand-off file into a real, runnable office:
+
+```bash
+python -m dissyslab.office.assemble investment_club_handoff.py investment_club_office
+```
+
+This writes `investment_club_office/office.md` (the office description) and
+`investment_club_office/roles/` (one file per worker) — you should never need
+to hand-write either. Then:
+
+```bash
+dsl build investment_club_office     # just checks it compiles
+dsl run investment_club_office       # actually runs it
+```
+
+Running it end to end for real produces exactly three periods (this office is
+set up to run three, then stop on its own):
+
+```
+[Manager] period 1: proposing 8 shares (val=5, oppo=3); asking accountant
+[Accountant] period 1: asking ledger for current holdings before pricing
+[Accountant] period 1: current holdings shares=0, cash=10000.00 -> fee=8.00
+[Manager] period 1: fee=8.00, holdings before this trade: shares=0, cash=10000.00 -> after: shares=8, cash=9192.00
+
+[Manager] period 2: proposing 16 shares (val=10, oppo=6); asking accountant
+[Accountant] period 2: current holdings shares=8, cash=9192.00 -> fee=16.80
+[Manager] period 2: -> after: shares=24, cash=7575.20
+
+[Manager] period 3: proposing 24 shares (val=15, oppo=9); asking accountant
+[Accountant] period 3: current holdings shares=24, cash=7575.20 -> fee=26.40
+[Manager] period 3: -> after: shares=48, cash=5148.80
+```
+
+and `recommendations.jsonl` ends up holding:
+
+```json
+{"period": 1, "bought": 8, "fee": 8.0, "resulting_shares": 8, "resulting_cash": 9192.0}
+{"period": 2, "bought": 16, "fee": 16.8, "resulting_shares": 24, "resulting_cash": 7575.2}
+{"period": 3, "bought": 24, "fee": 26.4, "resulting_shares": 48, "resulting_cash": 5148.8}
+```
+
+Each period's fee is computed from the *previous* period's ending holdings —
+exactly the thing the correction asked for, now visibly true in real numbers
+(period 2's fee of 16.80 = $1/share × 16 shares + 0.1% × 8 shares the club
+already held × $100 — the 8 shares are period 1's result, not period 2's
+proposal).
+
+This step currently takes a Python-comfortable person following the two
+`phase3_*.md` docs by hand — it is not yet one command you could run
+yourself with no help. See "Known limitations" below.
+
+## Step 3 — see this exact office, already built
+
+If you'd rather run something that's already known to work before assembling
+your own hand-off file, this exact office (post-correction) already lives in
+DisSysLab as a validated example:
+
+```bash
+cd path/to/DisSysLab
+dsl run dissyslab/gallery/apps/investment_club
+```
+
+You should see the identical three-period output shown above.
+
+## Step 4 — see a bug found by testing one worker
+
+The **debug_demo** office is a tiny weather-alert office with a *planted* bug,
+to show how OfficeSpeak debugs a computational worker:
+
+```bash
+cd path/to/OfficeSpeak/offices/debug_demo
+python office.py             # buggy: alerts on almost every reading (10)
+DEBUG_FIX=1 python office.py  # fixed: one alert, on the real spike
+python per_agent_tests.py     # tests each worker alone; localizes the bug
+```
+
+Then read `debugging_walkthrough.md` in that folder — it's the plain-English
+story of the same bug: the office over-alerts, the assistant tests each worker
+by itself, finds that one worker compares the wrong value, explains it in
+plain English, and fixes it with one line. (Note: this works because the
+workers are ordinary Python. Judgment/LLM workers are not tested this way —
+see Stage 1, step 5.)
+
+## Step 5 — what to send back
+
+Everything from Stage 1's step 6, plus: did step 2 actually produce a running
+office with the numbers shown above? Where did the source/sink matching or the
+worker approval step get confusing or stuck? Did steps 3/4 run for you? Did
+the debugging walkthrough make the bug clear? How hard did the whole run step
+feel, start to finish?
+
+## Want to see another example run, a different way?
+
+`STAGE2_WALKTHROUGH.md` walks a completely different office (a fractions
+tutor for a student, with a real language-model grader) through Stage 2 a
+different way: live, inside the Claude desktop app's Cowork mode, rather than
+a plain terminal. Good if you want to see an LLM judgment worker actually
+running, or the Cowork-based workflow specifically.
 
 ---
 
-## Later examples
+## Now try your own idea
 
-1. **Alert a human tutor** if a student gives random answers or stops answering —
-   the deliberate example of adding a small, exact, auditable rule on top of an
-   LLM-driven office, rather than asking the model to notice it.
-
-2. Run an office in debug mode and then replay computations from global checkpoints.
-   OfficeSpeak explains checkpoints and computations in English.
-
----
-
-## Questions for you
-
-1. Did the office that was constructed seem correct to you given the English
-   description? Did the English explanations make sense?
-2. Did you ask chat to modify the office? And did it do as you requested?
-
-*(The runnable office is `offices/phase2_demo/tutor_llm.py`; the exact-match
-version, if you want to compare, is `tutor.py`; the many-students version from
-Step 5 is `tutor_multi.py`.)*
+Once you've followed the investment-club example through both stages, describe
+an office of your own the same way (Stage 1, step 2's questions are there to
+help). If someone else is doing Stage 2 for you, hand off the same way —
+matching, approving, generating, running — and compare how much friction you
+hit against how smooth this worked example felt.
 
 ---
 
-## The code
+## Known limitations (so they don't surprise you)
 
-For how offices are built and run — the uniform worker contract, the general
-harness, and how a language-model worker and a plain-Python worker meet the same
-interface — see
-[`offices/phase2_demo/README.md`](offices/phase2_demo/README.md).
+- **Running your *own* office isn't one command yet.** Building, explaining,
+  and correcting is smooth and complete in Stage 1. Turning that into a running
+  office (Stage 2, step 2) is now possible end to end — a real generator
+  exists and has been validated on real cases, including the investment-club
+  example above — but it currently takes a Python-comfortable person
+  working through two short docs by hand (matching sources/sinks; approving
+  each worker), not a single command you could run entirely on your own yet.
+- **Source/sink matching can hit a real gap.** DisSysLab's registered sources
+  and sinks are a fixed catalogue (`docs/SOURCES_AND_SINKS.md`), not arbitrary
+  live connectors — e.g. there's no built-in way to text someone yet, and no
+  registered source for real-world hardware sensors. When an office needs
+  something not on that list, the honest answer is "not supported yet," a more
+  general fallback (an outbound webhook to a third-party service), or
+  reclassifying it as a stand-in for testing — not a silent guess — see
+  `phase3_source_sink_matching.md`.
+- **Debugging is early.** It covers **computational** workers (testing them in
+  isolation). Judgment/LLM workers are shown to you as a prompt to confirm, not
+  debugged. Checking whether messages are getting stuck between workers, and
+  explaining a saved snapshot, are coming next.
+- **Maintenance isn't in this round.**
+- **It's research software.** Expect rough edges — that's what we're hoping
+  you'll help us find.
+
+## Troubleshooting (Stage 2)
+
+- **`pip install -e .` fails** — check Python 3.10+ (`python --version`) and
+  that you're inside the `DisSysLab` folder; try `python -m pip install -e .`.
+- **`import dissyslab` fails** — you likely installed into a different Python
+  than the one you're running.
+- **An example prints nothing / doesn't stop** — re-run exactly as shown, from
+  the folder given; each finishes within a few seconds.
+- **Generation raises an `AssemblyError` or `GeneratorError` (step 2)** — it
+  always names the exact problem (a still-blank `registered_as`, an unapproved
+  worker, a port declared under the wrong name). It's telling you something in
+  the hand-off file doesn't match what Stage 1 or the source/sink matching
+  step decided — fix that, don't work around the error.
+
+## Getting help
+
+Send your notes (Stage 1, step 6, and Stage 2, step 5 if you ran anything) to
+your OfficeSpeak contact — and if you want Stage 2 done for you rather than
+doing it yourself, send your hand-off file too. Thanks for trying this —
+your confusion is our roadmap.
 
 ## License
 

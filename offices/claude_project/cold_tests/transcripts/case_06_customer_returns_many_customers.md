@@ -39,7 +39,7 @@ still needed — see follow-up below.
 
 ## Protocol
 
-A fresh subagent was given only: `start_instructions_v3.md`, `start_gallery/README.md`,
+A fresh subagent was given only: `start_instructions.md`, `start_gallery/README.md`,
 `start_gallery/investment_club.md`, `start_gallery/room_monitor.md`,
 `start_gallery/trading_room.md` — explicitly instructed not to read anything else
 (no HANDOFF.md, no phase2_demo code, no other cold-test transcripts). It confirmed at
@@ -49,7 +49,7 @@ the top of its reply which five files it read.
 
 I read exactly these five files:
 
-1. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_instructions_v3.md`
+1. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_instructions.md`
 2. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_gallery/README.md`
 3. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_gallery/investment_club.md`
 4. `/Users/kmchandy/Documents/OfficeSpeak/offices/claude_project/start_gallery/room_monitor.md`
