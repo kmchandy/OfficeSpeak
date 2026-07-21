@@ -8,6 +8,13 @@ the team back to you, and lets you correct it in plain English. Information
 comes in through **sources** and results go out through **sinks**. OfficeSpeak
 runs on the [DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
 
+**Want the two-minute visual version first?** See
+[`pat_microcourse.html`](pat_microcourse.html) (Stage 1) and
+[`stage2_microcourse.html`](stage2_microcourse.html) (Stage 2) — download
+either file and open it in a browser. No install, no reading required.
+(They're plain HTML files, so GitHub will only show you their source code if
+you click them here — download first, then open.)
+
 This page assumes **no computer background at all** — if you've never opened
 a "terminal" or typed a "command" before, every one of those words gets
 explained the first time it shows up.
@@ -54,11 +61,6 @@ By the end of Stage 1 you'll have watched this exact office get built,
 explained back, and corrected. By the end of Stage 2 you'll have watched it
 actually run and produce real numbers. Then, at the very end, you'll do the
 whole thing again with an idea of your own.
-
-Want the two-minute visual version first? See
-[`pat_microcourse.html`](pat_microcourse.html) (Stage 1) and
-[`stage2_microcourse.html`](stage2_microcourse.html) (Stage 2) — open either
-one in a browser.
 
 ---
 
@@ -486,6 +488,15 @@ Send your notes (Stage 1, step 6, and Stage 2, step 5 if you ran anything) to
 your OfficeSpeak contact — and if you want Stage 2 done for you rather than
 doing it yourself, send your hand-off file too. Thanks for trying this —
 your confusion is our roadmap.
+
+## Read the whole story in one place
+
+Everything above is interleaved with setup steps, troubleshooting, and
+side notes. If you'd rather reread the investment-club example straight
+through — the description, the build, the mistake it caught, the
+correction, and the real numbers it produced — with none of that in
+between, see
+[`INVESTMENT_CLUB_WALKTHROUGH.md`](INVESTMENT_CLUB_WALKTHROUGH.md).
 
 ## License
 

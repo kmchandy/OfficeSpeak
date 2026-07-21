@@ -251,3 +251,54 @@ entirely in the OS layer means no worker's code (Python or LLM prompt) ever
 needs to know this exists — consistent with the project's whole design
 philosophy of keeping the formalism invisible to the person and the worker
 author alike.
+
+### Full engineering design — 2026-07-21
+
+Grounded in the real `core.py`/`snapshot.py` code (not just the algorithm
+sketch above) and written up in full at
+`DisSysLab/docs/algorithms/TRACE_AND_LOGICAL_CLOCK.md`. Summary for the
+paper:
+
+- **This is a separate feature from the existing (unbuilt) "debug-mode
+  replay"** described in `DisSysLab/docs/internals/replay_debug_mode_decision.md`.
+  That one is an exact-reproduction tool for engineers — it has to capture
+  every source of nondeterminism (fair_merge order, LLM responses, RNG/
+  clock/external calls) so a run can be replayed bit-for-bit. This feature
+  is a **read-only narration** of one real run that already finished — it
+  never re-executes anything, so it doesn't need to solve that harder
+  problem. Worth stating this distinction explicitly in the paper so a
+  reviewer familiar with replay-debugging doesn't conflate the two.
+- **Recording**: each agent's `send()`/`recv()` already has a natural
+  interception point (the same place `_Checkpoint`/`_GiveMeCounts` OS
+  messages are intercepted today). A lightweight internal wrapper carries
+  each message's Lamport timestamp across the wire, invisible to worker
+  code; unwrapped and logged the instant it's dequeued, before the
+  existing checkpoint channel-state recording ever sees it — so the two
+  features don't interact. Logged to one append-only JSONL file per agent.
+  Opt-in via a `--trace` flag (off by default, zero overhead when off,
+  same principle as `--snapshot-interval`).
+- **Decided for v1: logical time does not need to survive a
+  checkpoint/resume.** Scoping the activity log to a single uninterrupted
+  run keeps it fully decoupled from the snapshot machinery that was only
+  stabilized six days ago — an honest, statable v1 limitation rather than
+  a risk taken on for the paper.
+- **Playback**: a standalone, read-only tool — no dependency on the live
+  runtime — that merges every agent's JSONL log, sorts by
+  `(timestamp, agent_name)`, and narrates one action at a time in English.
+  Same worked example as the checkpoint explainer (recovery_demo, the
+  five-agent Monte Carlo π office) for a single consistent illustration
+  running through both features.
+- **Bonus for "bridges" framing, now literally true rather than aspirational:**
+  the same theoretical lineage (Lamport 1978 happened-before → Chandy-Lamport
+  1985 snapshots) now grounds two built features, not one plus a footnote.
+- **Resolved 2026-07-21 (Mani):** logical time scoped to a single
+  uninterrupted run, does not survive checkpoint/resume (confirms the v1
+  recommendation above); large messages truncated at a fixed character
+  cutoff; LLM prompts are not logged or narrated (already visible in
+  `roles/` — the log covers input/output messages only, uniformly for
+  computational and LLM workers); tracing is opt-in and stopped manually
+  from the terminal (Ctrl-C or natural termination), with no automatic
+  stop condition — considered and rejected as unneeded complexity; no
+  trace-file retention policy needed (unlike periodic checkpoints, trace
+  files don't accumulate the same way). Full decision log in
+  `DisSysLab/docs/algorithms/TRACE_AND_LOGICAL_CLOCK.md`.
