@@ -9,11 +9,11 @@ comes in through **sources** and results go out through **sinks**. OfficeSpeak
 runs on the [DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
 
 **Want the two-minute visual version first?** See
-[`pat_microcourse.html`](pat_microcourse.html) (Stage 1) and
-[`stage2_microcourse.html`](stage2_microcourse.html) (Stage 2) — download
-either file and open it in a browser. No install, no reading required.
-(They're plain HTML files, so GitHub will only show you their source code if
-you click them here — download first, then open.)
+[`pat_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/pat_microcourse.html)
+(Stage 1) and
+[`stage2_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/stage2_microcourse.html)
+(Stage 2) — click either one, no install and nothing to download, it opens
+straight in your browser.
 
 This page assumes **no computer background at all** — if you've never opened
 a "terminal" or typed a "command" before, every one of those words gets
