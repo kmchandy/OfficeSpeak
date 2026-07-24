@@ -130,13 +130,14 @@ Tested on the four paired readings before approving, exactly as
 `(79, 55)` → nothing, `(85, 70)` → alert. Matches the threshold rule Phase 2
 described. Approved.
 
-Notice `CHECKER`'s returned status is `"out"`, even though Track A's
-`out_ports` said `"alert"`. This is not a mistake to fix later — a
-single-outport transform's runtime status is always `"out"` regardless of
-what Track A called it for readability (`phase3_approval.md` has the full
-story, and a real case where getting this wrong caused a silent deadlock).
-The assembler renames `out_ports` to match automatically; the *code* still
-has to say `"out"` itself.
+`CHECKER`'s code above returns status `"out"`, matching Track A's `out_ports`
+after the assembler's single-outport normalization. It didn't have to: the
+assembler also accepts Track A's original name (`"alert"`) here, and
+translates it automatically — a single-outport transform's code can return
+either the readable name Track A gave it or `"out"`, whichever reads better
+to whoever drafts and approves it. This used to be a real footgun (getting
+it wrong caused a silent deadlock, a documented real case); it no longer is,
+as of the `status_aliases` fix in `dissyslab/blocks/role.py`.
 
 ## 5. Generate
 
@@ -178,17 +179,17 @@ humid at once — the other two produced nothing, correctly.
 
 `assemble.py` and `dsl build`/`dsl run` all raise errors that name the exact
 agent and field at fault — read the message before doing anything else. Two
-mistakes worth knowing about because they don't show up as build errors,
-only at runtime:
+formerly-silent mistakes are now caught loudly instead:
 
-- **Colliding field names into a `merge_synch`.** If two paired messages
-  use the same field name, the dict-merge silently overwrites one with the
-  other — no error, just quietly wrong values. Fixed by using distinct
-  field names (step 4, above).
-- **A single-outport transform's code returning the wrong status string.**
-  Silently deadlocks the office (nothing crashes; it just stops producing
-  output) if the code uses the *original* semantic name instead of `"out"`.
-  See `phase3_approval.md` for the real case this happened in.
+- **Colliding field names into a `merge_synch`.** If two paired messages use
+  the same field name, the merge now raises immediately, naming the inport
+  and the colliding field, instead of silently letting one value overwrite
+  the other. Fixed by using distinct field names (step 4, above) — the
+  error message tells you exactly which ones collided if you forget.
+- **A single-outport transform's code returning a status string.** No
+  longer a footgun: the generator accepts either Track A's original name
+  (e.g. `"alert"`) or `"out"` — both route to the same outport. Older
+  advice said the code had to say `"out"` literally; it no longer has to.
 
 ## What to send back
 

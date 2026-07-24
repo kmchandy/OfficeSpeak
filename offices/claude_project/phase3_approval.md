@@ -19,17 +19,13 @@ without.
 
 ## The one thing this step does *not* have to decide
 
-Phase 1 already fixed the message shape on every port, before Phase 2 even
-began — the "Pass A, every outbox; Pass B, every inbox; never invented"
-rule. That means every worker approved here is implementing to a contract
-that already exists. **Approval here is a fidelity check against that
-contract, not a fresh design decision.** The question is never "what should
-this worker's inputs and outputs look like" — Phase 1 already answered that
-— the question is only "does this actual prompt or actual code honor what
-Phase 1 already committed to for its ports, and does it do the job Phase 2
-described." Keeping this distinction explicit is the point of writing it
-down: it's what keeps this step fast and mechanical instead of turning into
-a second design pass.
+Phase 1 already fixed every port's message shape (the "Pass A, every
+outbox; Pass B, every inbox; never invented" rule). **Approval here is a
+fidelity check against that existing contract, not a fresh design
+decision** — never "what should this worker's inputs and outputs look
+like," only "does this prompt or code honor what Phase 1 already fixed,
+and does it do what Phase 2 described." That's what keeps this step fast
+and mechanical rather than a second design pass.
 
 ## Computational workers (Python)
 

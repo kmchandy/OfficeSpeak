@@ -60,6 +60,35 @@ Update this file, not a fresh one, when priorities change — see `INDEX.md`'s
    accepted, not a gap to close. What *is* a real to-do: lowering the cost
    of being Al — tightening those two docs, cutting steps, clearer error
    messages — short of the "one command" goal that isn't realistic yet.
+   **Status (2026-07-24): short-term fix done.** The two documented
+   silent-failure footguns around single-outport transforms and `merge_synch`
+   are closed: `dissyslab/blocks/role.py`'s new `status_aliases` lets an
+   approved transform's code return either Track A's original port name
+   (e.g. `"alert"`) or `"out"` — both route correctly, so the code no
+   longer has to say `"out"` literally; and `synchronizer_role` (in
+   `dissyslab/office/library.py`) now raises immediately, naming the inport
+   and field, when two branches supply a colliding key, instead of silently
+   letting one value overwrite the other. `phase3_al_howto.md` updated to
+   match. **Postponed (2026-07-24): removing the single-in/out-port naming
+   convention itself** (`"in_"`/`"out"`, also touching `office.md`'s
+   compiler/parser convention and `core.py`/`builder.py`'s
+   `default_inport`/`default_outport` — estimated 3-5 days). Postponed, not
+   rejected, because it doesn't affect Pat at all — it's purely an Al-facing
+   ergonomic choice, and the two footguns it would have prevented are
+   already closed a different way (above). Revisit if it turns out to
+   matter for a real reason later. **Also done (2026-07-24): the general
+   friction-reduction pass.** Clearer, actionable error messages fixed
+   across the pipeline Al actually hits: `compiler.py` (parameterized-role
+   bad-argument errors now get "Did you mean?" + valid-argument lists, and
+   the internal library-shape error points at `docs/EXTENDING.md`);
+   `parser.py` (a missing `office.md`/`network.md` now says to run
+   `assemble.py` first, instead of a bare "not found"); `builder.py` (the
+   three "no default port" errors now list the agent's actual ports and
+   the dot-notation fix); `cli.py`'s `dsl build`/`dsl run` failure-mapper
+   (added a case for "office.md not generated yet" so it stops giving the
+   wrong "check build/run.py" advice for that failure). Both docs
+   (`phase3_source_sink_matching.md`, `phase3_approval.md`) tightened —
+   redundant explanatory passages cut, nothing procedural removed.
 
 4. **Guided onboarding / description elicitation for Pat.** A real gap.
    Today OfficeSpeak assumes Pat already knows roughly the shape of a good

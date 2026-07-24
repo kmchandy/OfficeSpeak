@@ -151,11 +151,11 @@ step.
 
 ## Feeding the generator
 
-Once matched, this is all `from_officespeak.py` needs — literally the
-`registered_as`/`registered_args` on each source/sink `AgentSpec`. It
-does no matching of its own (by design; see its module docstring), so a
-skipped or wrong match here is not something `dsl build` will always
-catch — a credentialed sink with a plausible-looking but wrong name
-compiles fine and only fails (or silently misbehaves) at run time. This
-step is the only check standing between a Phase 2 description and that
-failure mode; treat it as required, not optional, before generating.
+Once matched, `registered_as`/`registered_args` on the `AgentSpec` are all
+`from_officespeak.py` needs — it does no matching of its own. A wrong or
+skipped match here is the one failure mode nothing downstream reliably
+catches: `assemble.py` will refuse to run with `registered_as=None` still
+blank, but a *wrong, plausible-looking* name compiles clean and only fails
+(or silently misbehaves) at runtime. So this step is required, not
+optional, before generating — not because later steps won't check
+anything, but because this is the one check they can't do for you.
