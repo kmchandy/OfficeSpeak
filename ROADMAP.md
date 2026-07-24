@@ -97,7 +97,7 @@ Update this file, not a fresh one, when priorities change — see `INDEX.md`'s
    to produce a correct office — while still keeping her in plain English,
    never a form — is designed in spirit (`paper/office_description_format.md`)
    but not built or evaluated as an actual onboarding flow.
-   **Status (2026-07-24): built, one cold test passed.** New "Phase 0 — when
+   **Status (2026-07-24): built and cold-tested, 5/5.** New "Phase 0 — when
    Pat doesn't know where to start" section added to `start_instructions.md`,
    triggered only when Pat's opening is thin (skipped entirely if she already
    gives enough, e.g. the existing debate example). Combines four ingredients
@@ -107,15 +107,21 @@ Update this file, not a fresh one, when priorities change — see `INDEX.md`'s
    walkthrough, and — the highest-value one — a direct "what else does this
    worker need to see" probe, which is what actually catches the missing-
    connection gap the rest of Phase 1 relies on "Things I assumed —" to fix.
-   Cold-tested once (same protocol as `cold_tests/`, fresh instance, only the
-   instructions + gallery as input, a deliberately vague opening about an
-   email-monitoring office): triggered correctly, converged on a genuine
-   Phase 1 draft, and the needs-to-see probe did surface a real requirement
-   (a VIP-sender/project-keyword list) the team description alone missed. One
-   fix already applied from that test: an explicit "hedging language is the
-   tell" cue for telling a stuck Pat from a merely brief one. **Not yet
-   done:** a full run through the `cold_tests/` protocol (pre-registration +
-   scoring across a few more cases) the way Phase 1/2 already have seven.
+   Cold-tested five times total: one informal run (email-monitoring office)
+   plus four pre-registered, scored cases now recorded in `cold_tests/README.md`
+   under "Phase 0 (onboarding) cases" — a rich opening correctly skipping Phase
+   0 entirely, a brief-but-not-stuck opening correctly skipping the gallery
+   anchor, a stuck opening in a domain unlike any gallery example correctly
+   avoiding a force-fit coordinator, and a case built so that only the
+   needs-to-see probe (not the team question or the story walkthrough) could
+   catch a real gap — which it did. Two wording refinements applied from these
+   runs: the "stuck vs. merely brief" fork is now stated up front rather than
+   buried in a qualifying sentence, and the needs-to-see question now suggests
+   naming a concrete category (who/what, history, status) instead of staying
+   fully open-ended. **Not yet done:** a case testing whether Phase 0 avoids
+   re-asking something an earlier answer already implicitly covered, and a
+   case with a misleading initial team description that the story-of-one-item
+   step should catch — flagged as open in `cold_tests/README.md`, not blocking.
 
 5. **Compositionality.** Plugging validated, standalone offices together
    into larger ones (or nesting one office as a worker inside another) is

@@ -116,15 +116,21 @@ first Phase 1 draft, the same "a rough first version is fine, we fix it together
 as everywhere else in this doc. Ask one thing at a time, in whatever order fits what Pat
 already said, and skip anything she's already answered.
 
-**If Pat seems stuck, not just brief, offer an anchor — don't interrogate.** Hedging
-language is the tell ("I don't know exactly," "maybe something that...," "I'm not
-sure") — that's stuck, not merely brief, and worth anchoring before asking anything
-else. Describe one or two built examples in a sentence each (`start_gallery/README.md`
-has the full set — a single feed that reports something unusual, a team that takes
-turns until something's decided, a team that shares one ledger and updates it together,
-a team that proposes and waits for approval) and ask which feels closest to what she
-has in mind. This is a starting point for her to react to and correct, never a menu she
-has to match exactly.
+**Thin has two different shapes, and they start differently.** A **stuck** Pat — the
+tell is hedging language, "I don't know exactly," "maybe something that...," "I'm not
+sure" — genuinely doesn't have a shape yet and benefits from an anchor first (next
+paragraph). A **brief** Pat — a short, confident, specific wish with no hedging, just no
+team named — is not stuck, and should go straight to the team question below, not the
+gallery; offering examples she didn't ask for reads as not having listened.
+
+**For a stuck Pat, offer an anchor — don't interrogate.** Describe one or two built
+examples in a sentence each (`start_gallery/README.md` has the full set — a single feed
+that reports something unusual, a team that takes turns until something's decided, a
+team that shares one ledger and updates it together, a team that proposes and waits for
+approval) and ask which feels closest to what she has in mind. This is a starting point
+for her to react to and correct, never a menu she has to match exactly — if none of
+them feel close, say so and move straight to the team question instead of pushing a
+fit that isn't there.
 
 **Ask for the team, in her own words.** The single highest-value question: "If you had
 to hire a few people to do this by hand, who would you hire, and what would each one's
@@ -140,8 +146,12 @@ turns up a worker Pat forgot to mention the first time.
 **Then probe for what each worker needs to see — the part people most often leave out.**
 For every worker doing real judgment or deciding (not just passing something along), ask
 directly: "Besides what you've already told me, does [worker] need to see anything else
-to do that job well?" This single question is the most likely one to catch a missing
-connection before it becomes a silent gap — see the investment club worked example in
+to do that job well?" A bare "anything else?" is easy for Pat to wave off with a quick
+"no" even when something real is missing — make it concrete by naming a plausible
+category or two from her own domain (something about *who* or *what* this is about, its
+*history*, or its current *status*) rather than leaving it fully open-ended. This single
+question, asked concretely, is the most likely one to catch a missing connection before
+it becomes a silent gap — see the investment club worked example in
 `paper/office_description_format.md`, where exactly this kind of gap is what the Phase 1
 explain-back is designed to catch if Phase 0 misses it.
 

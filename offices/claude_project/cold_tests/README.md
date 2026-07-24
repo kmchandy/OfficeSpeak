@@ -193,17 +193,47 @@ Run these cold, same protocol, to broaden the evidence:
   promoting it to a record+gate just because there are now many of something instead of
   one. Case 06 accidentally required a genuine shared record, so this is still open.
 
+## Phase 0 (onboarding) cases
+
+Distinct from cases 01-07 above, which cold-test the translation of an already-given
+Pat description (Phase 1/2). These test the new "Phase 0 — when Pat doesn't know where
+to start" section of `start_instructions.md` (ROADMAP item 4) instead: does it trigger
+(or correctly skip itself) at the right moments, ask sensible questions in a sensible
+order, and actually catch the kind of gap it exists to catch. Same cold protocol —
+fresh instance, only `start_instructions.md` + `start_gallery/README.md` as input.
+
+| # | Case | Chiefly tests | Verdict |
+|---|------|---------------|---------|
+| P0-A | Rich opening (GitHub issue triager) | Phase 0 correctly skips itself when Pat's opening already supplies enough | **PASS** |
+| P0-B | Brief but not stuck (typo/proofreading office) | The anchor step stays reserved for a genuinely stuck Pat; a merely brief one gets the team question first, not the gallery | **PASS** |
+| P0-C | Stuck, novel domain (weekly meal planning) | The gallery anchor doesn't get force-fit onto a domain none of the four examples resemble; no gratuitous coordinator invented | **PASS** |
+| P0-D | Needs-to-see is the only catch (bike-shop price quote) | The explicit, worker-specific "does X need to see anything else" probe — not the team question or the story walkthrough — is what surfaces a real, load-bearing gap (membership/warranty status) | **PASS** |
+
+**Running verdict: 4/4.** Two wording refinements came out of these runs and were
+applied to `start_instructions.md` before this entry was written: P0-B's cold instance
+flagged that the "stuck vs. merely brief" distinction (whether to open with the gallery
+anchor at all) was easy to skim past, since it appeared only as a qualifying sentence
+after the general trigger condition rather than being framed as its own explicit fork —
+Phase 0 now states the fork ("thin has two different shapes, and they start
+differently") before either the anchor step or the team-question step, keyed off the
+same hedging-language tell rather than leaving it to be inferred. P0-D's cold instance
+passed but volunteered, unprompted, a concrete category hint ("something about the
+customer or the bike itself") that likely helped Pat's answer land — the needs-to-see
+bullet now explicitly suggests naming a plausible category (who/what this is about, its
+history, its current status) rather than leaving the question fully open-ended, since a
+bare "anything else?" is easy for a real Pat to wave off even when something real is
+missing.
+
+**Not yet done:** a case testing whether Phase 0 avoids re-asking a question Pat's
+answer to an *earlier* Phase 0 question already implicitly answered (all four cases
+here had clean, non-overlapping answers by construction); and a case with a Pat who
+gives a wrong or misleading initial team description that the story-of-one-item
+walkthrough should catch and correct, mirroring case 06's off-distribution rigor above.
+
 ## Related: gallery README and the Gulf of Execution
 
 The gallery also serves Pat directly (Norman's *gulf of execution*, "how do I say what
 I want?"). `start_gallery/README.md` indexes the examples by *what kind of office they
 are*, in plain language, so Pat (or a tester) can find one like the office she has in
-mind and use it as a starting point to describe hers. **Done (2026-07-24):** this hook
-is now real, not just possible — `start_instructions.md`'s new "Phase 0" section points
-a stuck Pat (hedging language like "I don't know exactly" is the trigger) at this
-gallery before asking anything else, and one cold test (an email-monitoring office, run
-outside this scorecard) confirms Phase 0 triggers correctly and converges on a genuine
-Phase 1 draft. Phase 0 is not yet run through this file's own pre-register/score
-protocol across multiple cases — a natural next entry once there's time (a "stuck,
-one-line-wish" opening, scored on whether Phase 0 triggers appropriately, whether the
-needs-to-see probe catches a real gap, and whether it hands off cleanly into Phase 1).
+mind and use it as a starting point to describe hers. This hook is now real, not just
+possible — see "Phase 0 (onboarding) cases" above for how it's tested.
