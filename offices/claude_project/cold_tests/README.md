@@ -198,5 +198,12 @@ Run these cold, same protocol, to broaden the evidence:
 The gallery also serves Pat directly (Norman's *gulf of execution*, "how do I say what
 I want?"). `start_gallery/README.md` indexes the examples by *what kind of office they
 are*, in plain language, so Pat (or a tester) can find one like the office she has in
-mind and use it as a starting point to describe hers. Possible hook: the onboarding can
-point a stuck Pat to that README.
+mind and use it as a starting point to describe hers. **Done (2026-07-24):** this hook
+is now real, not just possible — `start_instructions.md`'s new "Phase 0" section points
+a stuck Pat (hedging language like "I don't know exactly" is the trigger) at this
+gallery before asking anything else, and one cold test (an email-monitoring office, run
+outside this scorecard) confirms Phase 0 triggers correctly and converges on a genuine
+Phase 1 draft. Phase 0 is not yet run through this file's own pre-register/score
+protocol across multiple cases — a natural next entry once there's time (a "stuck,
+one-line-wish" opening, scored on whether Phase 0 triggers appropriately, whether the
+needs-to-see probe catches a real gap, and whether it hands off cleanly into Phase 1).

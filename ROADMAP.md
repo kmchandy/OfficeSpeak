@@ -97,6 +97,25 @@ Update this file, not a fresh one, when priorities change — see `INDEX.md`'s
    to produce a correct office — while still keeping her in plain English,
    never a form — is designed in spirit (`paper/office_description_format.md`)
    but not built or evaluated as an actual onboarding flow.
+   **Status (2026-07-24): built, one cold test passed.** New "Phase 0 — when
+   Pat doesn't know where to start" section added to `start_instructions.md`,
+   triggered only when Pat's opening is thin (skipped entirely if she already
+   gives enough, e.g. the existing debate example). Combines four ingredients
+   already sketched in `paper/draft_v2.md`'s limitations section: an anchor to
+   the example gallery (`start_gallery/README.md`) for a genuinely stuck Pat,
+   the team-metaphor question ("who would you hire?"), the story-of-one-item
+   walkthrough, and — the highest-value one — a direct "what else does this
+   worker need to see" probe, which is what actually catches the missing-
+   connection gap the rest of Phase 1 relies on "Things I assumed —" to fix.
+   Cold-tested once (same protocol as `cold_tests/`, fresh instance, only the
+   instructions + gallery as input, a deliberately vague opening about an
+   email-monitoring office): triggered correctly, converged on a genuine
+   Phase 1 draft, and the needs-to-see probe did surface a real requirement
+   (a VIP-sender/project-keyword list) the team description alone missed. One
+   fix already applied from that test: an explicit "hedging language is the
+   tell" cue for telling a stuck Pat from a merely brief one. **Not yet
+   done:** a full run through the `cold_tests/` protocol (pre-registration +
+   scoring across a few more cases) the way Phase 1/2 already have seven.
 
 5. **Compositionality.** Plugging validated, standalone offices together
    into larger ones (or nesting one office as a worker inside another) is
