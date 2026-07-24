@@ -29,8 +29,8 @@ separate, later problem: this office still runs once and terminates).
                              │  └─report(id)──▶ PARENT_REPORT (keyed by id)
                              └───────────────── graded(id) ◀── CHECKER
 
-Only one student_id ("live") is ever routed to the real TERMINAL — Mani's
-call, to keep the demo to one real keyboard. The others ("amy", "ben") are
+Only one student_id ("live") is ever routed to the real TERMINAL — a
+deliberate choice, to keep the demo to one real keyboard. The others ("amy", "ben") are
 routed to SIM_ANSWERER, a worker that answers on their behalf from a small
 canned script, standing in for other students' own devices. PLANNER decides
 which channel a student's messages go to by remembering, per student_id,

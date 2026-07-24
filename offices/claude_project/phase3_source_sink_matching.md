@@ -84,33 +84,53 @@ aren't repeated here.
 
 ## When nothing fits
 
-Not everything Pat might ask for has a registered match today — the most
-common real gap is **texting/SMS** (no `sms_sink` ships yet) and anything
-requiring an MCP server that isn't already set up (`search`, `web`,
-`mcp_source`/`mcp_sink` all need one installed first). When nothing in
-`docs/SOURCES_AND_SINKS.md` genuinely fits:
+Not everything Pat might ask for has a registered match today, but before
+concluding that, work through these checks in order — in practice, real
+gaps are rarer than the fixed catalogue alone would suggest:
 
-1. **Check the general-purpose escape valves first** — `webhook`/
-   `webhook_sink` (arbitrary inbound/outbound HTTP) and `mcp_source`/
-   `mcp_sink` (any MCP server tool) cover a lot of ground a named entry
-   doesn't. A "text me" request, for instance, is realistically a
-   `webhook_sink` pointed at a third-party SMS gateway (e.g. a Twilio
-   webhook URL), not a built-in DisSysLab primitive — worth naming this
-   explicitly to whoever's approving, since it shifts a setup cost onto
-   them (an account with that gateway), not just a config line.
-2. **If even that doesn't cover it, stop and flag it** — same discipline
-   as every other "never guess" rule in this pipeline. Tell Pat (or the
-   tester) plainly: "there's no registered way to do this yet; here's
-   the closest thing, or here's what building a new one would take." Do
-   **not** generate an office with a guessed or silently-approximated
-   source/sink.
-3. **Writing a genuinely new source or sink is out of scope for this
-   step.** It's real work — a Python class with a `run()` method,
-   registered in `dissyslab/office/utils.py`'s `SOURCE_REGISTRY`/
-   `SINK_REGISTRY` (see `docs/SOURCES_AND_SINKS.md`'s own "Adding more"
-   section) — but it's a one-time framework addition a developer does
-   once, not a per-office judgment call, so it belongs to a different
-   step than this matching pass.
+1. **Check the MCP Registry first.** `mcp_source`/`mcp_sink` can already
+   reach any server in the official [MCP
+   Registry](https://modelcontextprotocol.info/tools/registry/) — 500+
+   community servers as of 2026 (Google Drive, Notion, Postgres, Discord,
+   Telegram, and hundreds more), plus the small set of official reference
+   servers (fetch, filesystem, git, memory, time). A surprising number of
+   "we need X" requests are already reachable this way without any new
+   DisSysLab code — check here before assuming a gap. (Setup cost: an MCP
+   server for that service needs to be installed and reachable, which is
+   a one-time cost for whoever runs the office, not a per-request one.)
+2. **Check the general-purpose escape valves next** — `webhook`/
+   `webhook_sink` (arbitrary inbound/outbound HTTP) cover a lot of ground
+   a named entry doesn't. A "text me" request, for instance, is
+   realistically a `webhook_sink` pointed at a third-party SMS gateway
+   (e.g. a Twilio webhook URL), not a built-in DisSysLab primitive — worth
+   naming this explicitly to whoever's approving, since it shifts a setup
+   cost onto them (an account with that gateway), not just a config line.
+3. **Check the "candidates for new first-class sources/sinks" list** —
+   `docs/SOURCES_AND_SINKS.md`'s "Adding more" section surveys several
+   specific, not-yet-built but easy additions (Discord webhook sink,
+   Telegram bot sink, USGS earthquakes, crypto prices, CSV/SQLite sink,
+   more RSS feeds). If Pat's request matches one of these by name, it's
+   worth flagging as a near-term build rather than a dead end — each
+   mirrors an existing registered entry closely enough to be a small,
+   well-scoped addition.
+4. **Only if none of the above apply, stop and flag it** — same
+   discipline as every other "never guess" rule in this pipeline. Tell Pat
+   (or the tester) plainly: "there's no registered way to do this yet;
+   here's the closest thing, or here's what building a new one would
+   take." Do **not** generate an office with a guessed or
+   silently-approximated source/sink.
+5. **Writing a genuinely new source or sink is out of scope for this
+   step**, whether or not it's on the "candidates" list. It's real work —
+   a Python class with a `run()` method, registered in
+   `dissyslab/office/utils.py`'s `SOURCE_REGISTRY`/`SINK_REGISTRY` (see
+   `docs/SOURCES_AND_SINKS.md`'s own "Adding more" section) — but it's a
+   one-time framework addition a developer does once, not a per-office
+   judgment call, so it belongs to a different step than this matching
+   pass. Note: in Stage 2 (Cowork, real file/shell access), a
+   Python-comfortable person can ask Claude to write and register one of
+   the "candidates" directly, following the pattern of an existing entry
+   — genuinely easy for that tier. In Stage 1 (claude.ai, no install),
+   Claude can only flag the gap, not build it.
 
 ## Worked example
 
@@ -118,12 +138,16 @@ Case 07's news-subscription office (`cold_tests/transcripts/
 case_07_news_subscriptions.md`) named its sources as "the BBC," "Al
 Jazeera," and "NPR," and (in a variant of the case) "notify a friend by
 text." The first three are exact catalogue hits: `bbc_world`,
-`al_jazeera`, `npr_news`. "Notify a friend by text" is exactly the "when
-nothing fits" case above — there is no SMS sink; the honest answer is
-either `webhook_sink` against a real SMS gateway Pat would need to set
-up, or telling Pat this isn't supported yet and asking whether email
-(`gmail_sink`) is an acceptable substitute. Flagging that choice back to
-Pat, rather than silently picking one, is the point of this whole step.
+`al_jazeera`, `npr_news`. "Notify a friend by text" is the "when nothing
+fits" case above — there is no SMS sink — but it's worth working through
+the checks in order rather than stopping at "not supported": a Telegram
+or Discord MCP server (check 1) might already cover "notify a friend"
+depending on where the friend actually wants to be notified; failing
+that, `webhook_sink` against a real SMS gateway Pat would need to set up
+(check 2) or telling Pat this isn't supported yet and asking whether
+email (`gmail_sink`) is an acceptable substitute. Flagging that choice
+back to Pat, rather than silently picking one, is the point of this whole
+step.
 
 ## Feeding the generator
 

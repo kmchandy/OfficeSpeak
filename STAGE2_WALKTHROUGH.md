@@ -296,8 +296,10 @@ wording is written fresh each run, same as Step 2.)
    the deliberate example of adding a small, exact, auditable rule on top of an
    LLM-driven office, rather than asking the model to notice it.
 
-2. Run an office in debug mode and then replay computations from global checkpoints.
-   OfficeSpeak explains checkpoints and computations in English.
+2. Get a debug trace of a run, and look inside a checkpoint — see
+   [`DEBUG_TRACE_AND_CHECKPOINT_WALKTHROUGH.md`](DEBUG_TRACE_AND_CHECKPOINT_WALKTHROUGH.md)
+   for the full step-by-step version (uses `recovery_demo`, the π example,
+   rather than the tutor).
 
 ---
 

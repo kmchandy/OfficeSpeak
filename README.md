@@ -8,11 +8,13 @@ the team back to you, and lets you correct it in plain English. Information
 comes in through **sources** and results go out through **sinks**. OfficeSpeak
 runs on the [DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
 
-**Want the two-minute visual version first?** See
-[`pat_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/pat_microcourse.html)
+**New here?** See [the OfficeSpeak site](https://kmchandy.github.io/OfficeSpeak/)
+for an overview of what's already built, or jump straight to the two-minute
+visual walkthroughs:
+[`stage1_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/stage1_microcourse.html)
 (Stage 1) and
 [`stage2_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/stage2_microcourse.html)
-(Stage 2) — click either one, no install and nothing to download, it opens
+(Stage 2) — click any of these, no install and nothing to download, they open
 straight in your browser.
 
 This page assumes **no computer background at all** — if you've never opened
@@ -39,6 +41,31 @@ The point of trying this is to find out whether *you* can go from an English
 description to an office you understand and trust — and to tell us every place
 it's confusing. Rough edges are exactly what we're looking for; if something
 is unclear, that's a bug in our design, not yours.
+
+## What's already built (so you know before you start)
+
+This page walks through one story so you can see the whole path clearly, but
+it's not the only thing here — there's real, substantial groundwork behind it
+already:
+
+- **33 example offices run end to end today** (24 apps + 9 examples in
+  DisSysLab's gallery) — news and market monitoring, a wardrobe assistant
+  that checks your calendar and the weather, birdsong and camera-trap
+  perception, a multi-agent debate panel, and more.
+- **20 registered sources and sinks**, no code required — RSS feeds, weather,
+  stocks, Bluesky, Gmail, calendar, webhooks, web search — and beyond that
+  fixed list, `mcp_source`/`mcp_sink` can reach any of the 500+ community
+  servers in the public MCP Registry. See `DisSysLab/docs/SOURCES_AND_SINKS.md`.
+- **Crash recovery that actually works.** Every office can checkpoint and
+  resume without losing or duplicating a message — a real adaptation of the
+  global distributed-snapshot algorithm, not a toy version.
+- **Debugging and checkpoints, explained in English.** Ask OfficeSpeak to
+  narrate a saved checkpoint or a run's full recorded history — grounded in
+  real distributed-systems theory (logical clocks, consistent snapshots), not
+  hidden as implementation detail. See
+  `DEBUG_TRACE_AND_CHECKPOINT_WALKTHROUGH.md` for a full worked example.
+
+`FEATURES.md` has the complete, verified inventory across both repos; `ROADMAP.md` says what's next.
 
 ## The example this page follows
 
@@ -244,6 +271,9 @@ export whichever the office's workers expect, e.g.:
 export OPENROUTER_API_KEY='...'
 ```
 
+(Choosing *which* backend, and mixing backends across an office's workers,
+is covered properly in step 2d below — this is just enough to get set up.)
+
 ## Step 2 — turn the description into a runnable office
 
 This is the real point of Stage 2. Starting from Stage 1's output — the
@@ -379,6 +409,15 @@ exactly the thing the correction asked for, now visibly true in real numbers
 already held × $100 — the 8 shares are period 1's result, not period 2's
 proposal).
 
+### 2d. Choose a backend; deploy it
+
+If any worker is a judgment (LLM) worker, pick which backend it runs on —
+and if the office needs to keep running past this terminal session (the
+usual case for anything meant to run 24 × 7, not just a one-off demo),
+set that up too. Follow
+`OfficeSpeak/offices/claude_project/phase3_backends_and_deployment.md`
+for both.
+
 This step currently takes a Python-comfortable person following the two
 `phase3_*.md` docs by hand — it is not yet one command you could run
 yourself with no help. See "Known limitations" below.
@@ -452,14 +491,24 @@ hit against how smooth this worked example felt.
   example above — but it currently takes a Python-comfortable person
   working through two short docs by hand (matching sources/sinks; approving
   each worker), not a single command you could run entirely on your own yet.
-- **Source/sink matching can hit a real gap.** DisSysLab's registered sources
-  and sinks are a fixed catalogue (`docs/SOURCES_AND_SINKS.md`), not arbitrary
-  live connectors — e.g. there's no built-in way to text someone yet, and no
-  registered source for real-world hardware sensors. When an office needs
-  something not on that list, the honest answer is "not supported yet," a more
-  general fallback (an outbound webhook to a third-party service), or
-  reclassifying it as a stand-in for testing — not a silent guess — see
-  `phase3_source_sink_matching.md`.
+- **Source/sink matching can hit a real gap — but this is likely to cause
+  little or no friction in practice.** DisSysLab's registered sources and
+  sinks are a fixed catalogue (`docs/SOURCES_AND_SINKS.md`), not arbitrary
+  live connectors, so if your office needs something not on that list, the
+  honest first answer used to be "not supported yet." In practice there are
+  three fallbacks, checked in this order, before that's the real answer:
+  (1) `mcp_source`/`mcp_sink` can already reach any server in the [MCP
+  Registry](https://modelcontextprotocol.info/tools/registry/) — 500+
+  community servers as of 2026 (Google Drive, Notion, Postgres, Discord,
+  and hundreds more) — so a surprising number of "not built-in" requests
+  are actually already reachable; (2) a generic outbound/inbound webhook
+  covers most everything else (e.g. "text me" → a webhook to a third-party
+  SMS gateway you set up); (3) a handful of specific gaps (Discord,
+  Telegram, USGS earthquakes, crypto prices, CSV/SQLite, more RSS feeds)
+  are easy, near-term additions — see `docs/SOURCES_AND_SINKS.md`'s "Adding
+  more" section — so naming what you actually want, even if it's not on the
+  list today, is useful signal. Only if none of the three apply is the
+  honest answer "not supported yet" — see `phase3_source_sink_matching.md`.
 - **Debugging is early.** It covers **computational** workers (testing them in
   isolation). Judgment/LLM workers are shown to you as a prompt to confirm, not
   debugged. Checking whether messages are getting stuck between workers, and
