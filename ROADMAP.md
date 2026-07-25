@@ -15,6 +15,29 @@ Update this file, not a fresh one, when priorities change — see `INDEX.md`'s
    into larger ones (or nesting one office as a worker inside another) is
    demonstrated only informally today, not as a systematic, first-class
    capability. (Task #34.)
+   **Status (2026-07-24): done, Al-facing, reuse-only, tested.** DisSysLab
+   already had the runtime machinery for this (arbitrary port counts,
+   arbitrary nesting depth, "external" boundary ports) -- the gap was
+   purely at the OfficeSpeak hand-off layer. New `kind="department"`
+   AgentSpec (`dissyslab/office/officespeak_spec.py`), same schema shape
+   as a coordinator (named ports, no body) but a distinct kind: nothing
+   vouches for a department's internal logic the way a coordinator's is
+   formally trusted, only that Al tested it before turning it into one.
+   Explicitly scoped narrow, on request: Pat's Stage 1 conversation is
+   completely unchanged (composition is entirely Al's implementation
+   choice at Phase 3, invisible to her); reuse only, no way to
+   parameterize a department (same "postponed" call as item 3's old
+   port-naming rearchitecture -- parameterizing *any* office, composed or
+   not, is a bigger, separate gap, deliberately not tackled here); and no
+   catalog or matching mechanism for finding a reusable office -- Al just
+   looks at the gallery and whatever else he's built. New doc
+   `offices/claude_project/phase3_composition.md` covers the whole
+   "test it closed, open it up, plug it in" workflow. Tested end-to-end,
+   single- and multi-port cases, both built and actually run (not just
+   assembled) in the sandbox -- see the doc for the real commands and
+   output. Also resolves `backlog_generated_coordinators.md`'s open
+   question: a Claude-generated multi-inbox agent that isn't one of the
+   registered primitives is a department, not a new coordinator flavor.
 
 2. **Per-agent process-vs-thread execution.** Al can already choose
    processes or threads for a whole office, but not mix the two within one
@@ -67,6 +90,16 @@ Update this file, not a fresh one, when priorities change — see `INDEX.md`'s
    (`dissyslab/office/library.py`) — plus a general error-message and
    doc-tightening pass across `compiler.py`/`parser.py`/`builder.py`/
    `cli.py`/`phase3_source_sink_matching.md`/`phase3_approval.md`.
+   **Correction (2026-07-24):** the collision check's first version
+   (key-presence only) was too strict — it broke `room_climate_monitor`,
+   an already-shipped gallery example, because `TEMP_SENSOR`/
+   `HUMIDITY_SENSOR` intentionally share a `timestamp` field with the
+   *same* value each round (a paired join key, not a disagreement). Caught
+   by actually running that example while regression-checking the
+   composition work below, not assumed. Fixed to raise only on a genuine
+   *value mismatch* for a shared key, not mere key presence — the room-
+   climate example now runs correctly again, producing the documented
+   alerts.
    Removing the `"in_"`/`"out"` single-port naming convention itself was
    considered and **postponed, not rejected** — it's purely Al-facing,
    doesn't touch Pat at all, and the footguns it would have prevented are

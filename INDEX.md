@@ -87,6 +87,12 @@ maintenance cost — a habit, not a project.
   session (nohup/tmux, a process supervisor, and how that interacts with
   checkpoint/resume). Not a required gate like matching/approval, but
   real ongoing use almost always needs it.
+- **`offices/claude_project/phase3_composition.md`** — added 2026-07-24
+  (ROADMAP.md item 1): reusing an already-built, already-tested office as
+  a single worker (`kind="department"`) inside a new one. Al-only, tested
+  end-to-end (single- and multi-port cases); Pat's Stage 1 conversation is
+  unchanged. See also `backlog_generated_coordinators.md`, whose open
+  taxonomy question this resolves.
 - **`offices/claude_project/SETUP.md`** — one-time setup + repeatable
   per-demo loop (operational, for running demos yourself).
 - **`offices/claude_project/backlog_generated_coordinators.md`** — an

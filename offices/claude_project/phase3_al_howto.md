@@ -182,9 +182,12 @@ agent and field at fault — read the message before doing anything else. Two
 formerly-silent mistakes are now caught loudly instead:
 
 - **Colliding field names into a `merge_synch`.** If two paired messages use
-  the same field name, the merge now raises immediately, naming the inport
-  and the colliding field, instead of silently letting one value overwrite
-  the other. Fixed by using distinct field names (step 4, above) — the
+  the same field name *with different values*, the merge now raises
+  immediately, naming the inport and the field, instead of silently letting
+  one value overwrite the other. Two branches agreeing on a shared field
+  with the *same* value (e.g. this office's own paired `timestamp`) is fine
+  and expected — only a genuine disagreement raises. Fixed by using
+  distinct field names when values could differ (step 4, above) — the
   error message tells you exactly which ones collided if you forget.
 - **A single-outport transform's code returning a status string.** No
   longer a footgun: the generator accepts either Track A's original name

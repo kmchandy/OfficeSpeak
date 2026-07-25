@@ -1,5 +1,22 @@
 # For later — allow generated (determinate) coordinators
 
+**Update (2026-07-24):** the taxonomy question this doc was wrestling with — is a
+generated multi-inbox agent a coordinator or something else — has an answer now,
+worked out while designing office composition (ROADMAP item 1, `phase3_composition.md`):
+it's a **department**, not a new flavor of coordinator. The distinction that matters
+for `kind` was never really the port shape (a coordinator and a department are both
+"an arbitrary number of named ports, no body written here") — it's whether the logic
+behind those ports is one of DisSysLab's small, trusted, formally-specified primitives
+(`kind="coordinator"`) or not (`kind="department"`), regardless of whether that logic
+came from reusing an already-built office or from Claude generating something fresh for
+this one case. So "flagged as generated, extra scrutiny" below is just what a
+department already is: something with a department's shape whose logic Al (or Claude)
+wrote and tested, not something the framework itself vouches for. This doc's "safe
+condition" section is still the right technical content for *what makes a generated
+multi-inbox agent safe to trust at all* — that hasn't changed, and still matters before
+anything gets treated as a department. What's changed is just where the result of that
+scrutiny lives in the schema.
+
 Decision direction (not yet in start_instructions): weaken "all coordinators are
 registered/predefined" to allow Claude to generate a custom multi-inbox agent when
 no registered coordinator fits Pat's need.
