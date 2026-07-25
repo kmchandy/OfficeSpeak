@@ -38,6 +38,14 @@ Update this file, not a fresh one, when priorities change — see `INDEX.md`'s
    output. Also resolves `backlog_generated_coordinators.md`'s open
    question: a Claude-generated multi-inbox agent that isn't one of the
    registered primitives is a department, not a new coordinator flavor.
+   **2026-07-25:** expanded `phase3_composition.md` from reference notes
+   into a full narrative tutorial, leading with a realistic worked example
+   (a trading buy/sell/hold signal check, reused unmodified across two
+   different instrument-monitoring offices) instead of the bare increment
+   toy case -- built and actually ran all three offices (the closed
+   signal check, and both parents) in the sandbox to confirm the reuse
+   payoff for real before writing it up. Increment/adder kept as a
+   quick-reference minimal case at the end of the doc.
 
 2. **Per-agent process-vs-thread execution.** Al can already choose
    processes or threads for a whole office, but not mix the two within one
