@@ -18,7 +18,11 @@ visual walkthroughs:
 [`gallery_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/gallery_microcourse.html)
 (**the gallery** — all 33 offices already running, plus real, unedited
 transcripts of 9 of them actually being built) — click any of these, no
-install and nothing to download, they open straight in your browser.
+install and nothing to download, they open straight in your browser. Prefer
+reading to clicking through slides? See
+[`gallery_overview.md`](gallery_overview.md) — the same gallery as a
+browsable page, with enough detail to actually search for an office like the
+one you have in mind.
 
 There are two stages:
 

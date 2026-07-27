@@ -70,6 +70,12 @@ maintenance cost — a habit, not a project.
   linked `FEATURES.md` as plain text and never linked the cold-test
   transcripts at all. Live at `kmchandy.github.io/OfficeSpeak/` alongside the
   other two (also present in this repo).
+- **`gallery_overview.md`** — added 2026-07-26: the reading version of the
+  same gallery, linked right next to `gallery_microcourse.html` from
+  `README.md`. A quick-index table plus narrative sections organized by the
+  four "which shape is like yours" categories and by domain (news/markets,
+  personal/productivity, perception, deliberating teams, small patterns,
+  real transcripts) — meant to actually be searched, not just skimmed.
 - **`DEMO_RECORDING_SCRIPT.md`** — shot list for a recruitment video (not yet
   recorded; recruiting by phone call instead for now).
 - **`TESTER_MANUAL.md`** — now a short stub pointing back to `README.md`
