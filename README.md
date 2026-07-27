@@ -17,30 +17,18 @@ visual walkthroughs:
 (Stage 2) — click any of these, no install and nothing to download, they open
 straight in your browser.
 
-This page assumes **no computer background at all** — if you've never opened
-a "terminal" or typed a "command" before, every one of those words gets
-explained the first time it shows up.
+There are two stages:
 
-There are two stages, and it's normal to stop after the first:
+- **Stage 1 — Describe it (no installation).** This stage is a
+  conversation with an assistant on claude.ai. This stage requires no 
+  computer background.
 
-- **Stage 1 — Describe it (no installation).** Everything happens in a
-  conversation with an assistant on claude.ai. No Python, no terminal. This is
-  the most important part to try, and anyone can do it.
-- **Stage 2 — Run it for real (needs a computer with Python).** Turning your
-  description into an actually-running system. This is usually a second step,
-  sometimes done by the same person after learning a little Python, sometimes
-  by asking someone else. **Right now, that "someone else" can just be us** —
-  send us what Stage 1 produces and we'll run it for you. You don't need to
-  learn anything technical to get to see your office actually work.
+- **Stage 2 — Run it for real (needs a computer with Python).** Turn your
+  description into a running system. This stage requires Python. 
+If setting up Python isn't for you, **just do Stage 1** — and let me know;
+I'll work on getting stage 2 going for you.
 
-If setting up Python isn't for you, **just do Stage 1** — that's the heart of
-it, and it's the same experience whether or not anyone ever runs what you
-build.
-
-The point of trying this is to find out whether *you* can go from an English
-description to an office you understand and trust — and to tell us every place
-it's confusing. Rough edges are exactly what we're looking for; if something
-is unclear, that's a bug in our design, not yours.
+Let me know if any part of stage 1 is unclear and if it can bei
 
 ## What's already built (so you know before you start)
 
