@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OfficeSpeak — The Gallery</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,700;9..144,900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink:    #1a1a2e;
+  --paper:  #faf8f3;
+  --orange: #ff6b35;
+  --teal:   #00c9a7;
+  --yellow: #ffd166;
+  --purple: #7b5ea7;
+  --teal-deep:   #00947d;
+  --orange-deep: #d13d0e;
+  --yellow-deep: #b8860b;
+  --purple-deep: #5b3f87;
+  --text-body:   rgba(26,26,46,0.78);
+  --text-muted:  rgba(26,26,46,0.55);
+  --text-faint:  rgba(26,26,46,0.38);
+  --surface-tint: rgba(26,26,46,0.04);
+  --surface-border: rgba(26,26,46,0.1);
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body:    'DM Sans', sans-serif;
+  --font-mono:    'Courier New', monospace;
+}
+
+html, body {
+  height: 100%;
+  font-family: var(--font-body);
+  background: var(--paper);
+  overflow: hidden;
+  color: var(--ink);
+}
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.45s ease, transform 0.45s ease;
+  transform: translateX(40px);
+  overflow: hidden;
+  padding: 32px 40px 90px;
+  background: var(--paper);
+  color: var(--ink);
+}
+.slide.active    { opacity: 1; pointer-events: all; transform: translateX(0); }
+.slide.exit-left { opacity: 0; transform: translateX(-40px); }
+
+.blob { position: absolute; border-radius: 50%; filter: blur(72px); pointer-events: none; }
+
+.badge {
+  background: var(--orange); color: #fff; font-size: 13px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; padding: 7px 18px;
+  border-radius: 100px; margin-bottom: 18px; flex-shrink: 0;
+}
+.badge.alt { background: var(--purple); }
+.badge.dark { background: var(--ink); }
+
+.headline {
+  font-family: var(--font-display); font-weight: 900; line-height: 1.08;
+  color: var(--ink); text-align: center; margin-bottom: 14px;
+}
+.headline em { font-style: normal; color: var(--orange-deep); }
+
+.body-text {
+  font-size: clamp(17px, 2vw, 21px); line-height: 1.55; color: var(--text-body);
+  font-weight: 500; text-align: center; max-width: 660px; margin-bottom: 20px;
+}
+.body-text strong { color: var(--ink); font-weight: 700; }
+
+.paper {
+  background: #12122a; border: 1px solid rgba(255,255,255,0.1); border-radius: 14px;
+  overflow: hidden; box-shadow: 0 18px 40px rgba(26,26,46,0.16);
+}
+.paper-header { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: rgba(255,255,255,0.04); border-bottom: 1px solid rgba(255,255,255,0.07); }
+.paper-dots { display: flex; gap: 5px; }
+.pd { width: 10px; height: 10px; border-radius: 50%; }
+.paper-title { font-size: 13px; color: rgba(255,255,255,0.4); margin-left: 6px; font-family: var(--font-mono); }
+
+.hl { border-radius: 4px; padding: 1px 6px; font-weight: 700; }
+.hl-orange { background: rgba(255,107,53,0.18); color: var(--orange-deep); }
+.hl-teal   { background: rgba(0,201,167,0.18);  color: var(--teal-deep); }
+
+/* ── Nav ─────────────────────────────────────────────────────── */
+.nav { position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 14px; z-index: 100; }
+.nav-btn {
+  background: #ffffff; border: 1.5px solid rgba(26,26,46,0.18); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; font-weight: 600; padding: 9px 22px;
+  border-radius: 100px; cursor: pointer; transition: background 0.18s, transform 0.1s, border-color 0.18s;
+  letter-spacing: 0.02em; box-shadow: 0 1px 2px rgba(26,26,46,0.05);
+}
+.nav-btn:hover  { background: rgba(26,26,46,0.05); border-color: rgba(26,26,46,0.3); }
+.nav-btn:active { transform: scale(0.96); }
+.nav-btn.primary { background: var(--orange); border-color: var(--orange-deep); color: #fff; }
+.nav-btn.primary:hover { background: var(--orange-deep); border-color: var(--orange-deep); }
+
+.progress { display: flex; gap: 6px; align-items: center; }
+.prog-dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(26,26,46,0.25); transition: background 0.2s, transform 0.2s; }
+.prog-dot.on { background: var(--orange); transform: scale(1.45); }
+
+@keyframes pulse    { 0%,100%{opacity:1} 50%{opacity:0.25} }
+@keyframes glowPulse{ 0%,100%{box-shadow:0 0 0 rgba(255,107,53,0)} 50%{box-shadow:0 0 16px rgba(255,107,53,0.3)} }
+
+/* ══════════════════════ S1 — hook ══════════════════════ */
+#s1 .blob1 { width: 380px; height: 380px; background: var(--yellow); opacity: .28; top: -120px; left: -120px; }
+#s1 .blob2 { width: 320px; height: 320px; background: var(--teal);   opacity: .22; bottom: -100px; right: -100px; }
+.s1-headline { font-family: var(--font-display); font-size: clamp(34px, 5.4vw, 58px); font-weight: 900; line-height: 1.08; text-align: center; margin-bottom: 16px; max-width: 860px; }
+.s1-headline em { font-style: normal; color: var(--orange-deep); }
+.stat-row { display:flex; gap: 22px; margin-top: 10px; flex-wrap: wrap; justify-content: center; }
+.stat-box { background:#12122a; border:1px solid rgba(255,255,255,0.1); border-radius:14px; padding: 16px 26px; text-align:center; min-width: 130px; }
+.stat-box .num { font-family: var(--font-display); font-weight:900; font-size: 34px; color: var(--teal); }
+.stat-box .lbl { font-size: 13px; color: rgba(255,255,255,0.55); text-transform:uppercase; letter-spacing:.06em; margin-top:2px; }
+
+/* ══════════════════════ category cards (which team is like yours) ══════════════════════ */
+.category-grid { display:grid; grid-template-columns: repeat(2, minmax(250px,1fr)); gap:14px; max-width:700px; width:100%; }
+.category-card { background:#fff; border:1px solid var(--surface-border); border-radius:14px; padding:16px 18px; text-align:left; box-shadow: 0 8px 20px rgba(26,26,46,0.06); border-left: 5px solid var(--purple); }
+.category-card .cat-name { font-family: var(--font-display); font-weight:900; font-size:17px; color:var(--ink); margin-bottom:5px; }
+.category-card .cat-desc { font-size:13.5px; line-height:1.45; color: var(--text-body); margin-bottom:8px; }
+.category-card .cat-eg { font-size:12px; font-weight:700; color: var(--purple-deep); text-transform:uppercase; letter-spacing:.03em; }
+
+/* ══════════════════════ app grids ══════════════════════ */
+.mini-grid { display:grid; grid-template-columns: repeat(3, minmax(150px,1fr)); gap:9px; max-width:800px; width:100%; }
+.mini-card { background:#fff; border:1px solid var(--surface-border); border-radius:10px; padding:9px 12px; text-align:left; box-shadow: 0 4px 10px rgba(26,26,46,0.05); border-left: 3px solid var(--teal); }
+.mini-card.tier2 { border-left-color: var(--orange); }
+.mini-card.tier3 { border-left-color: var(--purple); }
+.mini-card .mc-name { font-family: var(--font-display); font-weight:900; font-size:13.5px; color:var(--ink); }
+.mini-card .mc-desc { font-size:11.5px; line-height:1.35; color: var(--text-muted); margin-top:1px; }
+
+/* ══════════════════════ cold-test case cards ══════════════════════ */
+.case-grid { display:grid; grid-template-columns: repeat(3, minmax(190px,1fr)); gap:11px; max-width:840px; width:100%; }
+.case-card { background:#12122a; border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:13px 15px; text-align:left; }
+.cc-badge { display:inline-block; font-size:9.5px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; padding:2px 8px; border-radius:100px; margin-bottom:6px; color:#12122a; }
+.cc-badge.build { background: var(--teal); }
+.cc-badge.correction { background: var(--yellow); }
+.cc-badge.chain { background: var(--orange); color:#fff; }
+.cc-name { font-family: var(--font-display); font-weight:900; font-size:14px; color:#fff; margin-bottom:4px; }
+.cc-desc { font-size:11.5px; line-height:1.4; color: rgba(255,255,255,0.72); }
+
+/* ══════════════════════ spotlight quote ══════════════════════ */
+.quote-card {
+  background: #fff; border: 1px solid var(--surface-border); border-left: 6px solid var(--orange);
+  border-radius: 14px; padding: 26px 30px; max-width: 680px; box-shadow: 0 12px 30px rgba(26,26,46,0.08);
+  font-family: var(--font-display); font-size: clamp(17px, 2.1vw, 22px); font-weight: 700; line-height: 1.5; color: var(--ink);
+}
+.quote-attrib { margin-top: 14px; font-family: var(--font-body); font-size: 15px; font-weight: 600; color: var(--text-muted); text-align: right; }
+.spot-tag { font-size:13px; letter-spacing:.08em; text-transform:uppercase; color: var(--orange-deep); font-weight:700; margin-bottom:10px; text-align:center; }
+
+/* ══════════════════════ end links ══════════════════════ */
+.s-links { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top: 8px; }
+.s-link {
+  display:inline-flex; align-items:center; gap:8px; background:#fff; border:1.5px solid var(--surface-border); color:var(--ink);
+  padding: 11px 20px; border-radius: 100px; text-decoration:none; font-weight:700; font-size:15.5px; transition: border-color .2s, transform .15s;
+}
+.s-link:hover { border-color: var(--orange); transform: translateY(-1px); }
+.s-link.primary { background: var(--ink); color:#fff; border-color: var(--ink); }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ S1 — HOOK ═══════════════ -->
+<section class="slide active" id="s1">
+  <div class="blob blob1"></div>
+  <div class="blob blob2"></div>
+  <div class="badge">The gallery</div>
+  <h1 class="s1-headline">Not just one example.<br><em>A whole gallery</em> of offices,<br>already running.</h1>
+  <p class="body-text" style="max-width:560px;">Every office in this course is real — built, run, and checked
+    against real output. Here's the full range, and a few real conversations where one got built live.</p>
+  <div class="stat-row">
+    <div class="stat-box"><div class="num">33</div><div class="lbl">offices, built &amp; running</div></div>
+    <div class="stat-box"><div class="num">9</div><div class="lbl">real build conversations</div></div>
+    <div class="stat-box"><div class="num">20</div><div class="lbl">sources &amp; sinks, no code</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════ S2 — WHICH TEAM IS LIKE YOURS ═══════════════ -->
+<section class="slide" id="s2">
+  <div class="badge alt">Find yours</div>
+  <h1 class="headline" style="font-size:clamp(26px,4.2vw,44px);">Which team is <em>like yours?</em></h1>
+  <p class="body-text" style="margin-bottom:16px;">Four shapes cover almost everything. Skim these, find the one
+    closest to what you have in mind, and describe yours from there.</p>
+  <div class="category-grid">
+    <div class="category-card">
+      <div class="cat-name">Watch one thing, speak up</div>
+      <div class="cat-desc">One stream of information comes in; a worker or two watch it and report when something matters.</div>
+      <div class="cat-eg">e.g. room monitor, weather &amp; stock alerts</div>
+    </div>
+    <div class="category-card" style="border-left-color:var(--teal);">
+      <div class="cat-name">Take turns, in rounds</div>
+      <div class="cat-desc">Workers go back and forth in rounds, repeating until someone decides it's settled.</div>
+      <div class="cat-eg">e.g. a debate panel</div>
+    </div>
+    <div class="category-card" style="border-left-color:var(--yellow-deep);">
+      <div class="cat-name">Share one ledger, one at a time</div>
+      <div class="cat-desc">Several workers read and update one shared record; things are handled one item at a time so it stays consistent.</div>
+      <div class="cat-eg">e.g. investment club, customer returns</div>
+    </div>
+    <div class="category-card" style="border-left-color:var(--orange-deep);">
+      <div class="cat-name">Propose, then get approval</div>
+      <div class="cat-desc">A worker proposes something and waits for an answer, checked against a shared limit or record, before acting.</div>
+      <div class="cat-eg">e.g. trading desk, loan desk</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════ S3 — APPS: NO KEYS NEEDED ═══════════════ -->
+<section class="slide" id="s3">
+  <div class="badge">Already running</div>
+  <h1 class="headline" style="font-size:clamp(26px,4.2vw,44px);">Runs on any laptop.<br><em>No keys, no signups.</em></h1>
+  <p class="body-text" style="margin-bottom:14px;">Zero or one AI call per cycle — install and see output in seconds.</p>
+  <div class="mini-grid">
+    <div class="mini-card"><div class="mc-name">periodic_brief</div><div class="mc-desc">Morning brief: news + weather + stocks, one page.</div></div>
+    <div class="mini-card"><div class="mc-name">weather_monitor</div><div class="mc-desc">Hourly plain-English weather briefing.</div></div>
+    <div class="mini-card"><div class="mc-name">stocks_monitor</div><div class="mc-desc">One-line read of a ticker's movement.</div></div>
+    <div class="mini-card"><div class="mc-name">loudness_monitor</div><div class="mc-desc">Mic audio → threshold-crossing alert.</div></div>
+    <div class="mini-card"><div class="mc-name">backyard_birds</div><div class="mc-desc">Audio clips → species ID via BirdNET.</div></div>
+    <div class="mini-card"><div class="mc-name">wildlife_watcher</div><div class="mc-desc">Camera-trap photos → species labels.</div></div>
+    <div class="mini-card"><div class="mc-name">recovery_demo</div><div class="mc-desc">Monte Carlo π — crash, resume, no lost work.</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════ S4 — APPS: HOSTED BACKEND ═══════════════ -->
+<section class="slide" id="s4">
+  <div class="badge">Already running</div>
+  <h1 class="headline" style="font-size:clamp(26px,4.2vw,44px);">The richer ones.<br><em>Real judgment, real reach.</em></h1>
+  <p class="body-text" style="margin-bottom:14px;">Many AI calls per cycle, or talk to Gmail/Calendar/Slack/your CRM.</p>
+  <div class="mini-grid">
+    <div class="mini-card tier2"><div class="mc-name">periodic_brief_pro</div><div class="mc-desc">Brief + tagged news + calendar + Gmail.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">situation_room</div><div class="mc-desc">Feeds → four thinkers → synced brief.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">situation_room_pro</div><div class="mc-desc">Same, Claude writes, open-weight extracts.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">arxiv_radar</div><div class="mc-desc">Daily papers → rated → high-relevance digest.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">kalshi_market_watch</div><div class="mc-desc">Prediction markets → briefing on price moves.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">competitor_watch</div><div class="mc-desc">Tech news → entities/sentiment → daily digest.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">inbox_triage</div><div class="mc-desc">Gmail → urgency + summary → Slack digest.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">ticket_router</div><div class="mc-desc">Webhook tickets → classified → oncall Slack.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">lead_qualifier</div><div class="mc-desc">Webhook leads → summarized → CRM.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">new_grad_jobs</div><div class="mc-desc">HN hiring thread → screened for new-grad fit.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">job_hunter</div><div class="mc-desc">RSS jobs → matched to your resume → cover letter.</div></div>
+    <div class="mini-card tier2"><div class="mc-name">wardrobe_assistant</div><div class="mc-desc">Calendar + weather + closet → outfit pick.</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════ S5 — BUILDER PATTERNS ═══════════════ -->
+<section class="slide" id="s5">
+  <div class="badge alt">For the curious</div>
+  <h1 class="headline" style="font-size:clamp(26px,4.2vw,44px);">One idea at a time.<br><em>Patterns to read.</em></h1>
+  <p class="body-text" style="margin-bottom:14px;">Small, deliberately minimal offices — each one teaches a single moving part.</p>
+  <div class="mini-grid">
+    <div class="mini-card tier3"><div class="mc-name">my_first_office</div><div class="mc-desc">Single-agent Hacker News briefer.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">org_news_editorial</div><div class="mc-desc">Two-agent chain — analyst feeds editor.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">org_two_office_news</div><div class="mc-desc">An office made of two other offices.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">org_intelligence_briefing</div><div class="mc-desc">Multi-source feed, significance filter.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">org_news_filter</div><div class="mc-desc">A pipeline that drops non-matches.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">org_situation_room</div><div class="mc-desc">The simpler, two-agent situation room.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">webhook_listener</div><div class="mc-desc">Listens on localhost for HTTP POSTs.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">web_monitor</div><div class="mc-desc">Page-watching via the MCP web source.</div></div>
+    <div class="mini-card tier3"><div class="mc-name">gmail_monitor</div><div class="mc-desc">Pulls unread mail from Gmail.</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════ S6 — TRANSITION TO REAL CONVERSATIONS ═══════════════ -->
+<section class="slide" id="s6">
+  <div class="blob blob1" style="background:var(--purple); opacity:.22;"></div>
+  <div class="badge alt">Now watch one happen</div>
+  <h1 class="headline" style="font-size:clamp(30px,5vw,52px);">These aren't demos.<br><em>They're real conversations.</em></h1>
+  <p class="body-text">Every case below is an unedited transcript: a fresh assistant, given nothing but the same
+    instructions and gallery you'll get, handed one plain-English description and left to build. Some are the
+    first draft; some are the correction; two were carried all the way through to a real, running office.</p>
+</section>
+
+<!-- ═══════════════ S7 — 9 CASE CARDS ═══════════════ -->
+<section class="slide" id="s7">
+  <div class="badge alt">Nine real cases</div>
+  <h1 class="headline" style="font-size:clamp(24px,3.8vw,38px);">Nine offices, <em>nine conversations.</em></h1>
+  <div class="case-grid">
+    <div class="case-card"><span class="cc-badge build">build</span><div class="cc-name">Loan desk</div><div class="cc-desc">Score each application, then check a running risk limit before offering — kept as one worker's own memory.</div></div>
+    <div class="case-card"><span class="cc-badge correction">correction</span><div class="cc-name">Loan desk, two desks</div><div class="cc-desc">Now two desks share one limit — the private total becomes a shared keeper both check before committing.</div></div>
+    <div class="case-card"><span class="cc-badge build">build</span><div class="cc-name">Fractions tutor</div><div class="cc-desc">One tutor worker holds a kid's mastery and picks the next question — easier, harder, or a new skill.</div></div>
+    <div class="case-card"><span class="cc-badge build">build</span><div class="cc-name">Adaptive tutor</div><div class="cc-desc">A coach, a quizmaster, a question shelf, a progress keeper — explained back in three plain-English parts.</div></div>
+    <div class="case-card"><span class="cc-badge build">regression</span><div class="cc-name">Adaptive tutor, re-run</div><div class="cc-desc">Same office, a tougher edit to the instructions — comes out even cleaner the second time.</div></div>
+    <div class="case-card"><span class="cc-badge build">build</span><div class="cc-name">Customer returns</div><div class="cc-desc">One team handles every customer at once, tagged not duplicated — plus a manager who checks in on any one.</div></div>
+    <div class="case-card"><span class="cc-badge build">build</span><div class="cc-name">News subscriptions</div><div class="cc-desc">Friends each ask for a different slice of the same story — computed once, shared, not re-billed per person.</div></div>
+    <div class="case-card"><span class="cc-badge chain">built &amp; run</span><div class="cc-name">Shipment release</div><div class="cc-desc">A real first-draft miss, caught and fixed — then actually generated and run, not just discussed.</div></div>
+    <div class="case-card"><span class="cc-badge chain">built &amp; run</span><div class="cc-name">Returns desk</div><div class="cc-desc">Correct on the first try — an urgent ticket freezes the line until the manager answers, then resumes.</div></div>
+  </div>
+</section>
+
+<!-- ═══════════════ S8 — SPOTLIGHT: LOAN DESK CORRECTION ═══════════════ -->
+<section class="slide" id="s8">
+  <div class="badge">Spotlight</div>
+  <div class="spot-tag">what changed, and why it matters</div>
+  <div class="quote-card">
+    "Now you have <strong>two</strong> offer-writers, consumer and business, and they share <strong>one</strong>
+    limit for the whole desk. If each kept its own private total, neither would ever see the other's committed
+    loans... So the running total can't live inside the offer-writers anymore. The fix is the same shape as a
+    trading desk's ledger: move the shared total out into one worker that both offer-writers check with."
+    <div class="quote-attrib">— the assistant's own explanation, unedited</div>
+  </div>
+  <p class="body-text" style="margin-top:20px;font-size:15px;color:var(--text-muted);">One sentence in Pat's
+    correction ("they both draw against the same limit") and the assistant correctly promoted private memory
+    into a shared keeper — the exact inverse of the office it had just built.</p>
+</section>
+
+<!-- ═══════════════ S9 — SPOTLIGHT: ADAPTIVE TUTOR ═══════════════ -->
+<section class="slide" id="s9">
+  <div class="badge">Spotlight</div>
+  <div class="spot-tag">explaining it back to Pat</div>
+  <div class="quote-card" style="font-size:clamp(15px,1.8vw,18px);">
+    "A <strong>coach worker</strong> is the brain. It remembers how well your kid knows each skill, decides what
+    to practice next — easier when they're struggling, harder as they improve, and slipping in a bit of review
+    of older or shaky skills so they don't fade — and only moves on to a new skill once the current one and the
+    skills it builds on are solid. A <strong>quizmaster worker</strong> runs the actual practice: shows one
+    question, waits, checks the answer, offers a gentle hint and another try if it's wrong."
+    <div class="quote-attrib">— the assistant's "meet the team," unedited</div>
+  </div>
+  <p class="body-text" style="margin-top:20px;font-size:15px;color:var(--text-muted);">A fresh assistant, given
+    only the instructions and the gallery, built this from one paragraph — and correctly avoided a common trap
+    (no gate on the progress record, because only one worker ever touches it).</p>
+</section>
+
+<!-- ═══════════════ S10 — SPOTLIGHT: SHIPMENT RELEASE ═══════════════ -->
+<section class="slide" id="s10">
+  <div class="badge">Spotlight</div>
+  <div class="spot-tag">a real miss, caught and fixed — then actually run</div>
+  <div class="quote-card" style="font-size:clamp(16px,1.9vw,20px);">
+    "I want an office that releases a shipment only after both its warehouse scan and its manifest paperwork have
+    come in. Match them up by shipment ID, then send the release notice to the loading dock."
+    <div class="quote-attrib">— Pat's request, verbatim</div>
+  </div>
+  <p class="body-text" style="margin-top:18px;">The first draft matched scans to manifests correctly — but this
+    case was carried all the way through: approved, generated, and actually run, not just discussed. Unlike the
+    others here, you can check its real output for yourself, the same way you'd check any office in this
+    gallery.</p>
+</section>
+
+<!-- ═══════════════ S11 — END ═══════════════ -->
+<section class="slide" id="s11">
+  <div class="blob blob1" style="background:var(--teal); opacity:.2;"></div>
+  <h1 class="headline" style="font-size:clamp(34px,5.6vw,58px);">See it <em>yourself.</em></h1>
+  <p class="body-text">Every app, every example, and every full cold-test transcript quoted here lives in the
+    repos, unedited.</p>
+  <div class="s-links">
+    <a class="s-link primary" href="https://github.com/kmchandy/DisSysLab/blob/main/dissyslab/gallery/README.md" target="_blank" rel="noopener">🖼️ The full DisSysLab gallery</a>
+    <a class="s-link" href="https://github.com/kmchandy/OfficeSpeak/blob/main/offices/claude_project/cold_tests/README.md" target="_blank" rel="noopener">💬 All 9 transcripts</a>
+    <a class="s-link" href="https://github.com/kmchandy/OfficeSpeak/blob/main/FEATURES.md" target="_blank" rel="noopener">📋 Full feature inventory</a>
+    <a class="s-link" href="stage1_microcourse.html">◀️ Stage 1 microcourse</a>
+  </div>
+</section>
+
+<!-- ═══════════════ NAV ═══════════════ -->
+<nav class="nav">
+  <button class="nav-btn" id="prevBtn" onclick="go(-1)" style="visibility:hidden">← Back</button>
+  <div class="progress" id="progress"></div>
+  <button class="nav-btn primary" id="nextBtn" onclick="go(1)">Next →</button>
+</nav>
+
+<script>
+let cur = 0;
+const slides = document.querySelectorAll('.slide');
+const TOTAL = slides.length;
+
+const prog = document.getElementById('progress');
+for (let i = 0; i < TOTAL; i++) {
+  const d = document.createElement('div');
+  d.className = 'prog-dot' + (i === 0 ? ' on' : '');
+  prog.appendChild(d);
+}
+
+function go(dir) {
+  const next = cur + dir;
+  if (next < 0 || next >= slides.length) return;
+  if (slides[cur]) { slides[cur].classList.remove('active'); if (dir > 0) slides[cur].classList.add('exit-left'); }
+  cur = next;
+  setTimeout(() => {
+    slides.forEach(s => s.classList.remove('exit-left'));
+    if (slides[cur]) slides[cur].classList.add('active');
+  }, 60);
+  updateNav();
+}
+
+function updateNav() {
+  document.getElementById('prevBtn').style.visibility = cur === 0 ? 'hidden' : 'visible';
+  const last = cur >= slides.length - 1;
+  document.getElementById('nextBtn').style.visibility = last ? 'hidden' : 'visible';
+  document.querySelectorAll('.prog-dot').forEach((d,i) => d.classList.toggle('on', i === cur));
+}
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight') go(1);
+  if (e.key === 'ArrowLeft') go(-1);
+});
+</script>
+</body>
+</html>

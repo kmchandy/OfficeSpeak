@@ -12,10 +12,13 @@ runs on the [DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
 for an overview of what's already built, or jump straight to the two-minute
 visual walkthroughs:
 [`stage1_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/stage1_microcourse.html)
-(Stage 1) and
+(Stage 1),
 [`stage2_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/stage2_microcourse.html)
-(Stage 2) — click any of these, no install and nothing to download, they open
-straight in your browser.
+(Stage 2), and
+[`gallery_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/gallery_microcourse.html)
+(**the gallery** — all 33 offices already running, plus real, unedited
+transcripts of 9 of them actually being built) — click any of these, no
+install and nothing to download, they open straight in your browser.
 
 There are two stages:
 
@@ -53,7 +56,13 @@ already:
   hidden as implementation detail. See
   `DEBUG_TRACE_AND_CHECKPOINT_WALKTHROUGH.md` for a full worked example.
 
-`FEATURES.md` has the complete, verified inventory across both repos; `ROADMAP.md` says what's next.
+[`gallery_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/gallery_microcourse.html)
+walks all 33 of those offices, grouped by shape, plus real transcripts of 9
+of them being built live. [`FEATURES.md`](FEATURES.md) has the complete,
+verified inventory across both repos, and DisSysLab's own
+[`gallery/README.md`](https://github.com/kmchandy/DisSysLab/blob/main/dissyslab/gallery/README.md)
+lists every app with what it does and what it costs to run.
+[`ROADMAP.md`](ROADMAP.md) says what's next.
 
 ## The example this page follows
 

@@ -63,6 +63,13 @@ maintenance cost — a habit, not a project.
 - **`stage1_microcourse.html`** / **`stage2_microcourse.html`** — the 2-minute
   visual versions of Stage 1 / Stage 2. Live at
   `kmchandy.github.io/OfficeSpeak/` (also present in this repo).
+- **`gallery_microcourse.html`** — added 2026-07-26: a third microcourse, same
+  visual format, browsing the full breadth of what's built — all 33 DisSysLab
+  offices grouped by shape/cost tier, plus real, unedited excerpts from 3 of
+  the 9 `cold_tests/transcripts/` cases. Answers the gap that `README.md`
+  linked `FEATURES.md` as plain text and never linked the cold-test
+  transcripts at all. Live at `kmchandy.github.io/OfficeSpeak/` alongside the
+  other two (also present in this repo).
 - **`DEMO_RECORDING_SCRIPT.md`** — shot list for a recruitment video (not yet
   recorded; recruiting by phone call instead for now).
 - **`TESTER_MANUAL.md`** — now a short stub pointing back to `README.md`
