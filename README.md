@@ -31,8 +31,6 @@ There are two stages:
 If setting up Python isn't for you, **just do Stage 1** — and let me know;
 I'll work on getting stage 2 going for you.
 
-Let me know if any part of stage 1 is unclear and if it can bei
-
 ## What's already built (so you know before you start)
 
 This page walks through one story so you can see the whole path clearly, but
