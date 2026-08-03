@@ -302,3 +302,91 @@ paper:
   trace-file retention policy needed (unlike periodic checkpoints, trace
   files don't accumulate the same way). Full decision log in
   `DisSysLab/docs/algorithms/TRACE_AND_LOGICAL_CLOCK.md`.
+
+---
+
+## 5. A second pillar: the framework builds frameworks (Vikram / mac_speed_suite) — added 2026-08-02
+
+### What this is, and how it surfaced
+
+Separately from the checkpoint/trace work above, a second demo was built this
+session end-to-end: `DisSysLab/dissyslab/gallery/apps/mac_speed_suite`, a
+trend-following backtesting office built for a finance tester ("Vikram," see
+`OfficeSpeak/paper/transcript_sp100_trend_following.md`) who asked for several
+traditional trend-following rules (Man/AQR/Mulvaney-style moving-average
+crossover, the Turtle system, Donchian channels) backtested and ranked across
+SP100 stocks.
+
+While building it, a reuse pattern emerged and was made explicit before being
+implemented: every strategy family shares the same backtesting and evaluation
+machinery (a BACKTESTER that turns a day-by-day position-size signal into
+realized P&L, an EVALUATOR that turns P&L into the six standard stats and an
+inverse-volatility-weighted portfolio ranking) — the only strategy-specific
+piece is a small `compute_variant_signal(bars, params) -> signal` function.
+This was formalized as a 3-part contract (VARIANTS table, compute function,
+shared wrapper) with a `make_signal_computer(strategy_name, variants,
+compute_variant_signal)` factory, implemented in
+`roles/_signal_common.py`. Adding Donchian and Turtle as new strategy
+families required writing only their compute functions — BACKTESTER and
+EVALUATOR needed zero changes, confirming the contract holds in practice, not
+just on paper.
+
+### The claim, and why it's different from "we built N offices"
+
+The existing gallery (33 offices) demonstrates breadth: many different,
+finished, unrelated pipelines — the "what can you build" argument. This is a
+different kind of demonstration: not one more office, but an office that is
+itself an extensible *framework* — a documented contract a further plain-English
+conversation can safely extend with a new strategy without touching the shared
+machinery. Concretely: Mani plans to hand Vikram the existing contract and ask
+him, unaided, to add a new strategy via a Claude conversation of his own — if
+that works, it's evidence that OfficeSpeak's plain-English building process
+can be turned on *extending* an existing system, not only on building one from
+scratch. No low-code/no-code tool known to us claims this — most produce one
+fixed pipeline per conversation, not a reusable extension point.
+
+### Honest structural note: this is a second, parallel pillar, not a third instance of the Lamport lineage
+
+Sections 2–4 above share one theoretical throughline: Lamport's 1978
+happened-before relation and the 1985 Chandy-Lamport snapshot algorithm,
+translated into English by the checkpoint explainer and the activity-log/trace
+feature. The Vikram/mac_speed_suite pillar rests on a different kind of
+formalism — a software-architecture discipline (separation of concerns, a
+typed extension contract), not a named distributed-systems result. It
+shouldn't be forced into the same lineage. It reads better as a second,
+parallel pillar under the same higher-level umbrella from Section 1 ("a
+formal structure translated into plain English, in both directions"): pillar
+one bridges HCI to distributed-systems *theory* (checkpoints, causal
+ordering); pillar two bridges HCI to software-architecture *practice* (a
+non-programmer's conversation safely extending a running system).
+
+### What's still needed before this pillar is submission-ready
+
+- **A second strategy family actually built**, not just designed — done as of
+  this session: Donchian channel breakout and a simplified Turtle system
+  (ATR-based breakout entry/exit with pyramiding) now exist alongside MAC, so
+  the "extend to a new strategy" claim is demonstrated on real code, not only
+  argued for.
+- **External validation.** Every example so far — recovery_demo,
+  mac_speed_suite, the gallery — was built with Mani or Claude driving.
+  Plan (Mani, 2026-08-02): ask Vikram to add a new strategy himself, via his
+  own Claude conversation grounded in the existing contract, unaided. If it
+  works, this is the evaluation evidence the pillar currently lacks — a real
+  outside domain expert extending a running distributed system through plain
+  English, not a fourth internally-built case study.
+- **Real (non-synthetic) data.** The office now runs on 5 real SP100 tickers
+  (AMD, NFLX, NVDA, PLTR, TSLA; local CSV files, `DisSysLab/sp100_data`) in
+  addition to synthetic data — Stooq's own historical endpoint is still
+  returning 404s and remains undiagnosed (unrelated open item).
+- **Persistence and checkpointing, if this pillar is to touch pillar one.**
+  Vikram's actual next request: run these strategies as a continuous
+  distributed system, reading stock prices daily, not a one-shot batch
+  backtest. That reframes mac_speed_suite from a batch job into a long-running
+  office — which is exactly where pillar one's checkpoint/snapshot and
+  activity-log machinery becomes directly relevant, not just analogous. Not
+  yet designed or built as of this note; the signal computers currently
+  recompute from a full bulk history each run rather than maintaining
+  incremental state (a running EWMA, a rolling breakout window, Turtle's open
+  position/stop state) across daily updates — that statefulness, plus
+  checkpointing it, is the next design problem, and it would make pillar one
+  and pillar two the same running system rather than two separate examples.
