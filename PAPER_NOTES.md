@@ -378,6 +378,35 @@ non-programmer's conversation safely extending a running system).
   (AMD, NFLX, NVDA, PLTR, TSLA; local CSV files, `DisSysLab/sp100_data`) in
   addition to synthetic data — Stooq's own historical endpoint is still
   returning 404s and remains undiagnosed (unrelated open item).
+- **External validation -- now in motion, 2026-08-04.** Packaged the
+  contract into a shareable Cowork skill, `backtest-strategy-builder`
+  (`SKILL.md` + a bundled no-lookahead checker script, tested internally
+  first via two dry-run cases -- a momentum strategy and an RSI
+  mean-reversion strategy -- comparing skill-guided vs. unaided attempts
+  before sending it to anyone). Being sent to Vikram and a second fintech
+  contact, each independently, with instructions limited to setup only
+  (install the skill, connect the public DisSysLab repo) -- deliberately
+  not walked through how to add a strategy, since that's the actual thing
+  being tested. Their transcripts/diffs, if shared, would be the first
+  real instance of an outside domain expert extending this system
+  unaided, rather than a fifth internally-built case study.
+- **A real bug the internal dry run caught, worth noting for the paper's
+  own credibility.** Both dry-run conditions (skill-guided and unaided)
+  independently hit the same genuine, pre-existing bug in the shipped
+  office: the CLI's generated runner changes directory before executing,
+  which broke a relative data path and silently zeroed out every
+  strategy's results, not just the new one. Fixed directly in the repo and
+  re-verified via the actual CLI (not just the Python API used in earlier
+  testing). One honest, mildly self-critical finding from the same dry
+  run: the two unaided attempts fixed this bug for real, while the two
+  skill-guided attempts only worked around it locally -- the skill's own
+  verification step had offered two "equally valid" ways to check the
+  work, and that framing let it take the easier path instead of fixing
+  the root cause. Tightened before packaging. Worth a sentence in the
+  paper either way: the dry-run process caught a real defect neither the
+  original build-and-run pass nor its own earlier verification had, which
+  is itself evidence for why external, adversarial-ish testing (even
+  internal dry runs) matters before claiming a contract "just works."
 - **Persistence and checkpointing, if this pillar is to touch pillar one.**
   Vikram's actual next request: run these strategies as a continuous
   distributed system, reading stock prices daily, not a one-shot batch
