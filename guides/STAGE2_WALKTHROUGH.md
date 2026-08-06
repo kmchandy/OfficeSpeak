@@ -320,4 +320,4 @@ Step 5 is `tutor_multi.py`.)*
 For how offices are built and run — the uniform worker contract, the general
 harness, and how a language-model worker and a plain-Python worker meet the same
 interface — see
-[`offices/phase2_demo/README.md`](offices/phase2_demo/README.md).
+[`offices/phase2_demo/README.md`](../archive/offices/phase2_demo/README.md).

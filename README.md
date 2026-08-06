@@ -20,7 +20,7 @@ visual walkthroughs:
 transcripts of 9 of them actually being built) — click any of these, no
 install and nothing to download, they open straight in your browser. Prefer
 reading to clicking through slides? See
-[`gallery_overview.md`](gallery_overview.md) — the same gallery as a
+[`gallery_overview.md`](guides/gallery_overview.md) — the same gallery as a
 browsable page, with enough detail to actually search for an office like the
 one you have in mind.
 
@@ -60,11 +60,11 @@ already:
 
 [`gallery_microcourse.html`](https://kmchandy.github.io/OfficeSpeak/gallery_microcourse.html)
 walks all 33 of those offices, grouped by shape, plus real transcripts of 9
-of them being built live. [`FEATURES.md`](FEATURES.md) has the complete,
+of them being built live. [`FEATURES.md`](project-status/FEATURES.md) has the complete,
 verified inventory across both repos, and DisSysLab's own
 [`gallery/README.md`](https://github.com/kmchandy/DisSysLab/blob/main/dissyslab/gallery/README.md)
 lists every app with what it does and what it costs to run.
-[`ROADMAP.md`](ROADMAP.md) says what's next.
+[`ROADMAP.md`](project-status/ROADMAP.md) says what's next.
 
 ## The example this page follows
 
@@ -95,7 +95,7 @@ whole thing again with an idea of your own.
 ## Step 1 — one-time setup (~10 min, no Python)
 
 Don't already have an `OfficeSpeak` folder on your computer? See
-**[GETTING_THE_FILES.md](GETTING_THE_FILES.md)** first — a short,
+**[GETTING_THE_FILES.md](guides/GETTING_THE_FILES.md)** first — a short,
 no-experience-needed guide to downloading it from GitHub (including a link to
 GitHub's own cloning tutorial, if you'd rather do that than download a ZIP).
 (Whoever pointed you here can also just hand you the two things below
@@ -544,7 +544,7 @@ side notes. If you'd rather reread the investment-club example straight
 through — the description, the build, the mistake it caught, the
 correction, and the real numbers it produced — with none of that in
 between, see
-[`INVESTMENT_CLUB_WALKTHROUGH.md`](INVESTMENT_CLUB_WALKTHROUGH.md).
+[`INVESTMENT_CLUB_WALKTHROUGH.md`](guides/INVESTMENT_CLUB_WALKTHROUGH.md).
 
 ## License
 

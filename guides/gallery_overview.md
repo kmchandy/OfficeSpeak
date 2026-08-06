@@ -40,10 +40,10 @@ actually search through.
 | [debate](#teams-that-deliberate) | Panel debates a question in rounds | Take turns in rounds | keys |
 | [investment_club](#teams-that-deliberate) | Two analysts, a manager, a shared ledger | Shared ledger, one at a time | none |
 | [trading_room](#teams-that-deliberate) | Trades proposed, checked against limits | Propose, then get approval | none |
-| [loan desk](offices/claude_project/cold_tests/transcripts/case_01_loan_desk_build.md) *(transcript, [+ correction](offices/claude_project/cold_tests/transcripts/case_02_loan_desk_correction.md))* | Risk-checked loan offers against a shared limit | Propose, then get approval | — |
-| [adaptive tutor](offices/claude_project/cold_tests/transcripts/case_04_adaptive_tutor.md) *(transcript)* | A coach, a quizmaster, a progress keeper | Several weigh in, one decides | — |
-| [customer returns](offices/claude_project/cold_tests/transcripts/case_06_customer_returns_many_customers.md) *(transcript)* | Many customers at once, one team, tagged | Shared ledger, one at a time | — |
-| [shipment release](offices/claude_project/cold_tests/transcripts/full_chain_case_01_shipment_release.md) *(transcript, built & run)* | Match a scan to its paperwork, then release | Watch & alert | — |
+| [loan desk](../archive/offices/claude_project/cold_tests/transcripts/case_01_loan_desk_build.md) *(transcript, [+ correction](../archive/offices/claude_project/cold_tests/transcripts/case_02_loan_desk_correction.md))* | Risk-checked loan offers against a shared limit | Propose, then get approval | — |
+| [adaptive tutor](../archive/offices/claude_project/cold_tests/transcripts/case_04_adaptive_tutor.md) *(transcript)* | A coach, a quizmaster, a progress keeper | Several weigh in, one decides | — |
+| [customer returns](../archive/offices/claude_project/cold_tests/transcripts/case_06_customer_returns_many_customers.md) *(transcript)* | Many customers at once, one team, tagged | Shared ledger, one at a time | — |
+| [shipment release](../archive/offices/claude_project/cold_tests/transcripts/full_chain_case_01_shipment_release.md) *(transcript, built & run)* | Match a scan to its paperwork, then release | Watch & alert | — |
 
 *("keys" means an LLM backend and/or a third-party credential — Gmail, Slack,
 a calendar URL. "none" means it runs the moment you install it.)*
@@ -224,30 +224,30 @@ built some of them — a fresh assistant, given nothing but the standard
 instructions and gallery, handed one plain-English description and left to
 work. No editing, no second takes.
 
-**[Loan desk](offices/claude_project/cold_tests/transcripts/case_01_loan_desk_build.md)**
+**[Loan desk](../archive/offices/claude_project/cold_tests/transcripts/case_01_loan_desk_build.md)**
 (propose, then get approval) — "score each application, check it against a
 running risk limit, then offer or don't." Its
-[follow-up correction](offices/claude_project/cold_tests/transcripts/case_02_loan_desk_correction.md)
+[follow-up correction](../archive/offices/claude_project/cold_tests/transcripts/case_02_loan_desk_correction.md)
 is the best illustration of a shape *change* in this whole gallery: told
 that two desks now share one limit, the assistant correctly recognized that
 a private running total had to become a shared ledger both desks check
 before committing — the exact inverse of what it had just built, reasoned
 out from one sentence of correction.
 
-**[Adaptive tutor](offices/claude_project/cold_tests/transcripts/case_04_adaptive_tutor.md)**
+**[Adaptive tutor](../archive/offices/claude_project/cold_tests/transcripts/case_04_adaptive_tutor.md)**
 (several weigh in, one decides) — a coach that tracks a kid's mastery of
 each skill and picks the next question, a quizmaster that runs the actual
 back-and-forth, a shared question bank, and a progress record — built from
 a single paragraph, with the tricky trap (don't over-engineer a
 shared-record gate where only one worker ever writes) avoided correctly.
 
-**[Customer returns, many at once](offices/claude_project/cold_tests/transcripts/case_06_customer_returns_many_customers.md)**
+**[Customer returns, many at once](../archive/offices/claude_project/cold_tests/transcripts/case_06_customer_returns_many_customers.md)**
 (shared ledger, one at a time) — the same one-customer office generalized
 to handle every customer simultaneously without duplicating the team —
 each message tagged by customer, one shared record generalized to one row
 per customer, plus a manager who can check in on any single one.
 
-**[Shipment release](offices/claude_project/cold_tests/transcripts/full_chain_case_01_shipment_release.md)**
+**[Shipment release](../archive/offices/claude_project/cold_tests/transcripts/full_chain_case_01_shipment_release.md)**
 (watch & alert) — the one case here that was carried all the way through,
 not just designed: approved, generated, and actually run. The first draft
 had a real, honest miss in its own explanation, caught and fixed before

@@ -133,7 +133,7 @@ logic, and is low-risk to add this close to the deadline.
 
 The existing debugging design (`docs/internals/debugging_aids_decision.md`)
 deliberately scopes worker-isolation testing (aid (a), already built as
-`OfficeSpeak/offices/debug_demo/`) to computational workers only — an LLM
+`OfficeSpeak/archive/offices/debug_demo/`) to computational workers only — an LLM
 worker's judgment isn't a fixed function, so it can't be graded the way a
 Python body can. The per-agent activity log doesn't evaluate a worker's
 judgment at all; it just shows what happened. So it applies uniformly to
@@ -390,6 +390,13 @@ non-programmer's conversation safely extending a running system).
   being tested. Their transcripts/diffs, if shared, would be the first
   real instance of an outside domain expert extending this system
   unaided, rather than a fifth internally-built case study.
+- **All three external testers confirmed asked, as of 2026-08-05
+  (Mani).** Vikram and Sebu for `backtest-strategy-builder`; Sachin
+  (a parent who separately wanted a tutor for his daughter -- see
+  `OfficeSpeak/archive/offices/phase2_demo/README.md`) for the new
+  `tutor-subject-builder` skill below. None of the three has returned
+  feedback yet as of this writing -- their transcripts/diffs, when they
+  land, are the actual evidence this pillar has been missing.
 - **A real bug the internal dry run caught, worth noting for the paper's
   own credibility.** Both dry-run conditions (skill-guided and unaided)
   independently hit the same genuine, pre-existing bug in the shipped
@@ -419,3 +426,229 @@ non-programmer's conversation safely extending a running system).
   position/stop state) across daily updates — that statefulness, plus
   checkpointing it, is the next design problem, and it would make pillar one
   and pillar two the same running system rather than two separate examples.
+
+---
+
+## 6. Pillar two, second domain: adaptive_tutor (education) -- added 2026-08-05
+
+The generality gap flagged above (pillar two rested on one full example --
+mac_speed_suite -- plus one partial analogy, `situation_room_pro`'s single
+role-file swap) is now partly closed. `dissyslab/gallery/apps/adaptive_tutor/`
+ports an older tutoring demo (`OfficeSpeak/archive/offices/phase2_demo/tutor_multi.py`,
+built on a pre-v1.6 API) onto the current office.md/roles framework, and --
+unlike that version -- formalizes what varies between practice subjects into
+the same kind of documented, typed contract mac_speed_suite has: a
+`generate_problem(rng, params) -> problem` function per subject, wrapped by a
+shared `make_subject_bank` factory, feeding one shared PLANNER/CHECKER/STUDENT.
+Two seed subjects (fractions, multiplication_facts) plus a third
+(telling_time) added unaided by a fresh Claude subagent given only the
+packaged skill (`tutor-subject-builder`) and the repo -- no shared file
+touched, verified independently afterward, not just by trusting the
+subagent's own report.
+
+**Why this is a genuinely different domain, not a relabeled finance example.**
+Backtesting's automatic correctness check (no-lookahead) has a clean
+mechanical shape because its invariant is about *time*. Tutoring problems
+aren't sequential that way, so the analogous check had to be *rediscovered*,
+not reused: `check_problem_ground_truth.py` verifies self-consistency
+(a generator's own `correct_answer` is always in its own `accepted_forms`)
+and determinism (same seed -> byte-identical problems), catching a different
+class of bug (answer/accepted-forms drift, a forgotten `rng` argument) than
+no-lookahead catches. Worth stating explicitly in the paper: the *contract
+pattern* (VARIANTS + a small typed compute function + a shared wrapper)
+generalizes across domains; *what counts as an automatic correctness check*
+does not come for free and has to be designed fresh per domain. That is a
+more honest, more interesting claim than "one universal checker," and is the
+kind of nuance a reviewer is more likely to trust.
+
+**A real bug this build caught, same spirit as the chdir bug in Section 5.**
+`tutor_planner.py` initially returned `(status, message)` tuples instead of
+the framework's `(message, status)` convention (`dissyslab/blocks/role.py`'s
+`Role.run()`, line ~121) -- every session hung silently, no crash, no error
+printed, until killed by a timeout. Found only by actually running the
+pipeline end to end (via a monkeypatched LLM backend, since this sandbox has
+no live Anthropic API access) rather than trusting that the code "looked
+right." Fixed; the fresh-subagent test afterward confirmed the fix held and
+found one more small, real thing: `_subject_common.py` eagerly imports the
+Anthropic SDK at module load time even for pure-logic testing that never
+calls it -- a minor design smell, not a blocker, worth a fix but not a
+crisis.
+
+**Sachin** (a parent who wanted a tutor for his daughter -- the same person
+`phase2_demo/README.md` was originally written for) is the third external
+tester, alongside Vikram and Sebu, given the packaged `tutor-subject-builder`
+skill + a cover note mirroring the one sent for backtesting. As with the
+other two, no feedback yet as of this writing.
+
+---
+
+## 7. CHI 2027 outline + what would convince reviewers -- discussion 2026-08-05
+
+Draft v3 (`OfficeSpeak/paper/draft_v3.md`, dated 2026-07-22) predates all of
+Sections 5-6 above -- its five contributions cover only pillar one
+(the office interaction, trusted coordination primitives, English
+debugging/checkpoint explainers, separation of concerns, preliminary
+evidence). Pillar two (framework builds frameworks) is not in it at all yet.
+Integrating rather than replacing is the right move -- v3's related-work and
+evaluation sections are already well-built and honest; they need extending,
+not redoing.
+
+**Concrete edits to draft_v3.md:**
+- Add a sixth contribution for pillar two, likely folded near contribution 4
+  (separation of concerns) or as its own numbered item: a documented,
+  domain-specific extension contract (VARIANTS + typed compute function +
+  shared wrapper) that a further plain-English conversation -- Claude's own,
+  or an outside domain expert's -- can safely extend without touching shared
+  machinery, demonstrated in two unrelated domains (finance, education) with
+  automatic, mechanically-checked correctness per domain and (pending) real
+  external testers extending each one unaided.
+- Related work needs a new subsection specifically for pillar two -- v3's
+  current section 7 covers multi-agent frameworks and durable execution
+  (AutoGen, LangGraph, CrewAI, Temporal) for pillar one, but says nothing
+  about low-code/no-code extension mechanisms. Must engage directly with:
+  LangFlow/AutoGen Studio/Zapier/n8n/Sim/Open Agent Platform (all extend via
+  a visual canvas, not natural language, and none pair a typed contract with
+  an automatic domain-correctness check); Claude Skills' own "verification
+  loops" framing (genuinely close -- packaged natural-language instructions
+  for safely extending existing code -- the real distinction is that
+  OfficeSpeak's target system was *also* built through the same
+  conversational process, and the correctness check is a designed part of
+  the contract, not a generic "run tests"); SUGILITE/PUMICE (Li et al.,
+  end-user natural-language task automation) -- adjacent tradition, not
+  about extending a previously-built system via a reuse contract. A plain
+  web search (2026-08-05) found nothing combining all of: natural-language
+  build, natural-language extend, typed contract, automatic per-domain
+  check -- but this was one afternoon's search, not a real ACM DL/Scholar
+  pass; state the novelty claim at that precision, not more broadly.
+- Evaluation section gains: the internal skill-eval benchmark for
+  `backtest-strategy-builder` (2 evals x with/without skill, the honest
+  mixed finding that with-skill runs *worked around* the chdir bug rather
+  than fixing it -- a negative-ish finding worth reporting plainly, not
+  hiding); the fresh-subagent `telling_time` test for
+  `tutor-subject-builder`; and, in the "proposed, not yet run" bucket
+  alongside the hedge-fund-manager/environmental-sensor-network conversations
+  already listed there, the three pending tester results (Vikram, Sebu,
+  Sachin). Note for Mani: Vikram's *original* strategy request (the thing
+  that became mac_speed_suite) may already double as evidence for
+  contribution 1 (a real domain expert describing an office he wanted) --
+  worth checking whether that transcript still exists and fits v3's existing
+  worked-example framing, before writing a new example from scratch.
+- Limitations section should add the point made above about
+  ground-truth/no-lookahead-style checks not being domain-free -- each new
+  domain needs its own correctness invariant designed by hand; the pattern
+  generalizes, the specific check does not.
+
+**What would most convince a CHI reviewer, in rough priority order:**
+1. Real tester transcripts landing before the Sept 10 deadline -- even
+   informal, even critical. A reviewer's first objection to a "framework
+   builds frameworks" claim will be "did anyone who didn't build this try
+   it," and right now the honest answer is still no.
+2. A precise, narrow novelty claim that visibly engages the closest prior
+   work (Claude Skills, SUGILITE/PUMICE, LangFlow/AutoGen/Zapier) rather than
+   a sweeping claim that ignores it -- reviewers who know any of these will
+   flag the omission immediately.
+3. Reporting negative/mixed findings plainly (the with-skill workaround
+   finding; the silent-hang bug; the eager-import smell) -- v3 already does
+   this well for pillar one (a real termination-detection bug found and
+   fixed, stated outright); pillar two should match that standard rather
+   than reading as a success story with no friction.
+4. Genuine generality across unrelated domains, honestly scoped -- two
+   full-fit examples (finance, education) is real progress over one; naming
+   the boundary (salton_sea_dashboard, the environmental-monitoring app, does
+   *not* yet fit this same contract shape -- it has two sources, not a
+   family of interchangeable variants) is a better, more credible statement
+   than implying the pattern fits everything.
+5. Matching CHI 2027's own "bridges" theme directly and without forcing it --
+   the paper already has this almost for free: pillar one bridges HCI to
+   distributed-systems theory, pillar two bridges HCI to software-
+   architecture practice, both under one higher-level claim (Section 1: a
+   formal structure translated into English, in both directions).
+6. A public, runnable artifact (the DisSysLab repo itself) a reviewer or PC
+   member could actually clone and exercise -- already true today, worth
+   stating plainly in the paper rather than assuming reviewers will find it.
+
+---
+
+## 8. Naming pillar two: "higher-order office" -- decided 2026-08-05
+
+Settled name for what Section 5-7 above call "the framework builds
+frameworks" / "framework -> framework": **higher-order office** (or
+higher-order framework, for the more general noun). Rationale, for
+whichever section first introduces it: it's a direct, precise analogy to
+a higher-order function (one that takes or returns functions) -- an
+office, once built, exposes a formal contract that lets a further
+natural-language conversation produce a new instance of one of its own
+components, mechanically verified before it's wired in. Stays inside the
+paper's existing "office" vocabulary rather than introducing an unrelated
+noun, and gives pillar two the same move pillar one already has with
+Lamport/Chandy-Lamport: a real bridge from a named CS concept to an HCI
+claim, matching CHI 2027's "bridges" theme the same way. Considered and
+rejected: "self-extending framework" (plainer, no jargon, but less
+distinctive) and "bootstrapped office" (nice echo of a self-compiling
+compiler, but "bootstrap" is overloaded in ML/stats and risks confusing a
+skimming reviewer).
+
+**Also strengthened since Section 7 was written, worth folding into the
+eventual draft_v3.md edit:** `backtest-strategy-builder`'s per-strategy
+checker grew from one check (no-lookahead) to a small tiered menu --
+determinism, finite-values, a declared directional/sizing range actually
+enforced (previously just eyeballed), a declared warm-up period, and two
+alternative ways to catch a "confidently wrong" formula: a hand-computed
+golden example (most rigorous) or a zero-effort synthetic monotonic-
+trend sanity check (weaker, automatic). The tester now picks which of
+the latter two they want rather than the skill silently forcing the more
+expensive one on everyone -- itself a small, honest data point for
+contribution 6: the *menu* of what's mechanically checkable generalizes
+per domain (tiered by cost/rigor), even though the specific checks don't.
+Separately, `_backtester_core.py`/`evaluator.py` (shared machinery every
+strategy relies on unchanged) gained their own permanent unit tests
+(`tests/unit/test_mac_speed_suite_backtester_core.py`,
+`test_mac_speed_suite_evaluator.py`) -- previously untested -- locking in
+the P&L realization-lag invariant and the documented stat formulas so a
+future edit to shared code can't silently break every strategy's numbers
+without a test catching it.
+
+---
+
+## 9. Go/no-go decision point for CHI 2027 -- set 2026-08-06
+
+Mani's decision, stated plainly: wait for real tester feedback -- Sebu and
+Vikram on `backtest-strategy-builder`, Sachin on `tutor-subject-builder`,
+and possibly Professor Sinclair on the Salton Sea dashboard (pending the
+Aeroqual Cloud API integration). **If feedback lands by August 25**, submit
+to CHI 2027 (Sept 10 deadline -- 16 days to write up whatever the feedback
+says, honestly, per Section 7's priority list). **If it doesn't**, the plan
+is not to force a submission on a still-unvalidated pillar-two claim, but
+to look for another way to get people to actually try the framework and
+give feedback -- the paper was never the actual goal, real usage and
+feedback is, and the paper is only worth writing once that evidence exists.
+Worth remembering if this note is revisited later: this is the honest
+reason a submission may not happen this cycle, not a loss of momentum.
+
+---
+
+## 10. Applied to draft_v3.md: the three-condition framework value-add argument -- 2026-08-06
+
+Added directly to Section 1 (Introduction), between the closing sentence
+of the current framing paragraph and "This paper makes the following
+contributions" -- a general argument for why build a reusable framework
+at all rather than asking an LLM to generate each application from
+scratch. Three necessary conditions: (1) reuse count (many people, or
+many variations from one person) has to be large enough to amortize the
+framework's own construction cost; (2) what's encapsulated has to be
+expensive/risky to regenerate correctly on demand, not just voluminous;
+(3) a new use has to be checkable against the framework's own contract
+by something other than trusting whichever model session built it, or
+conditions 1-2 can hold and the value still partially evaporates.
+Condition 3 is flagged as the sharpest and most concretely evidenced by
+this project specifically (no-lookahead / ground-truth checking).
+
+Deliberately scoped as a general framing paragraph, not the paper's
+central claim -- discussed and agreed with Mani that this inequality on
+its own is a software-economics argument, not a human-centered one, and
+would be a better fit as the paper's *motivation* than as its
+contribution list. The actual contributions (the office interaction,
+trusted primitives, English debugging, separation of concerns, and the
+still-unwritten higher-order-office contribution 6) remain the
+human-centered, evidenced claims; this paragraph explains why they're
+worth having.

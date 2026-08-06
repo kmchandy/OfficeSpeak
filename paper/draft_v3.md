@@ -15,8 +15,11 @@ measured unless it is.*
 
 Distributed systems — programs that run continuously, keep state, react to
 asynchronous inputs, and coordinate several agents — have been used by
-corporations for decades. Individuals, such as small business owners, with
-limited programming skills, can benefit from them too. A challenge for
+corporations for decades. Small-business owners and individuals with 
+limited programming skills can benefit from them too. 
+Large language models (LLMs) can generate
+
+A challenge for
 non-programmers is not only to build distributed systems, but also to
 debug and maintain them. Large language models can generate code, but
 generating stateful, concurrent systems is more difficult than generating
@@ -70,6 +73,35 @@ correctness — were solved over decades, by computer scientists, for
 computer scientists. OfficeSpeak is an attempt to make those results
 usable by everyone, without ever showing the person the formalism that
 makes them work.
+
+A reasonable question for any system built this way is why build a
+framework at all, rather than simply asking a large language model to
+generate each application directly. Giving a model a reusable framework
+to build with, instead of asking it to generate an application from
+scratch, is worth the cost of building and maintaining that framework
+only when three conditions hold. First, the framework has to be *used*
+many times — by many people, or by one person building many variations
+within the same application space — since its construction cost is only
+recovered by amortizing it across reuse; built and used once, it is
+strictly worse than direct generation. Second, what it encapsulates has
+to be expensive or risky to regenerate correctly on demand: not large in
+volume so much as the kind of logic — a concurrency guarantee, an
+easily-violated invariant, a convention no two independent generations
+would reliably reproduce identically — that a model is liable to get
+subtly wrong if asked to rederive it fresh every time. Third, and most
+easily overlooked: a new use of the framework has to be checkable
+against the framework's own contract by some means other than trusting
+whichever model session built it, or the first two conditions can hold
+and the value still partially evaporates into an unverified assumption
+that the new use actually respects the framework's guarantees. OfficeSpeak
+is built to satisfy all three deliberately rather than incidentally: its
+trusted coordination primitives (Section 8) are exactly the class of
+logic the second condition describes, and later sections show a further
+natural-language conversation extending an already-built office with a
+new instance — a new trading strategy, a new tutoring subject — through
+a documented contract with its own mechanical, domain-specific
+correctness check, rather than relying on a model's own judgment that a
+new instance "looks right."
 
 **This paper makes the following contributions:**
 

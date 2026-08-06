@@ -2,9 +2,29 @@
 
 A map of every doc across both repos, so you can find things without holding
 paths in your head. This is a **navigation** doc — for *what's actually
-built*, see `FEATURES.md`; for *paper-specific* working notes, see
-`PAPER_NOTES.md`; for *picking up a stalled session cold*, see `HANDOFF.md`.
-Those three don't duplicate each other or this file — each has one job.
+built*, see `project-status/FEATURES.md`; for *paper-specific* working notes,
+see `paper/PAPER_NOTES.md`; for *picking up a stalled session cold*, see
+`project-status/HANDOFF.md`. Those three don't duplicate each other or this
+file — each has one job.
+
+**Reorganized 2026-08-06:** top-level files grouped into `guides/`
+(tester-facing onboarding/walkthroughs), `project-status/` (Claude/Mani-facing
+snapshots of where things stand), and `paper/` (everything CHI-submission
+related). `offices/` and `examples/` — pre-current-framework prototypes and
+design-exploration drafts, superseded by DisSysLab's real gallery apps and by
+working directly in Cowork instead of a claude.ai Project — moved to
+`archive/`, with `archive/README.md` explaining what superseded each piece.
+Nothing was deleted; everything is still findable via this index or git
+history.
+
+**Also worth flagging plainly, not just in `project-status/`:**
+`project-status/FEATURES.md`, `ROADMAP.md`, `HANDOFF.md`, and
+`guides/gallery_overview.md` all predate the biggest recent stretch of work —
+`mac_speed_suite`'s multi-strategy rebuild, `adaptive_tutor`,
+`salton_sea_dashboard`, and both Cowork skills (`backtest-strategy-builder`,
+`tutor-subject-builder`) don't appear in any of them. Treat those four files
+as historical snapshots of an earlier state, not current status, until
+they're refreshed.
 
 **Keeping this current:** when you (or a session with me) add a new doc
 anywhere in either repo, add one line for it here. That's the whole
@@ -15,105 +35,93 @@ maintenance cost — a habit, not a project.
 ## Start here
 
 - **`README.md`** — the front door. Stage 1 (describe it, no install) / Stage 2
-  (run it for real) walkthrough, investment-club example throughout.
-- **`FEATURES.md`** — what's actually built vs. scoped vs. designed, across
-  both repos, verified against real code as of 2026-07-21.
-- **`ROADMAP.md`** — the single, priority-ordered to-do list (added
-  2026-07-23): what to build next and in what order, plus what was
-  deliberately decided *not* to pursue and why (so those questions don't
-  get silently re-opened).
-- **`HANDOFF.md`** — written for a fresh Claude session with no memory of prior
-  work, to pick a stalled thread back up cold. **Dated 2026-07-16 — five days
-  stale as of this index.** Worth refreshing given how much happened since
-  (Stage 1/2 README rewrite, both microcourses, the checkpoint/trace design,
-  the CHI 2027 paper notes, `kmchandy.github.io` cleanup). Ask me to update it
-  next time we talk.
+  (run it for real) walkthrough, investment-club example throughout. **Note:**
+  its Stage 1/2 instructions still point at `offices/claude_project/...`
+  paths, which are now under `archive/offices/claude_project/` — this file
+  hasn't been updated since the reorg. Likely to be superseded outright once
+  the planned new user manual (backtesting as the running example) exists,
+  rather than patched in place — flagged, not fixed, pending that decision.
+- **`project-status/FEATURES.md`** — what's actually built vs. scoped vs.
+  designed, across both repos, verified against real code as of 2026-07-21.
+  **Stale** — see note above.
+- **`project-status/ROADMAP.md`** — the single, priority-ordered to-do list
+  (added 2026-07-23). **Stale** — see note above.
+- **`project-status/HANDOFF.md`** — written for a fresh Claude session with no
+  memory of prior work, to pick a stalled thread back up cold. Dated
+  2026-07-16 — was already flagged stale as of the last INDEX revision, and is
+  now three weeks further out of date.
 
 ---
 
 ## Strategic / paper
 
-- **`PAPER_NOTES.md`** — working notes for the CHI 2027 submission (deadline
-  **September 10, 2026**). Checkpoint-explainer design, the logical-clock
-  trace design and its confirmed decisions, the "bridges" theme fit, open
-  novelty-claim verification needed before submission.
+- **`paper/PAPER_NOTES.md`** — working notes for the CHI 2027 submission
+  (deadline **September 10, 2026**, gated on real tester feedback landing by
+  **August 25** — see PAPER_NOTES §9 for the go/no-go decision). Checkpoint-
+  explainer design, the logical-clock trace design, the "framework builds
+  frameworks" / **higher-order office** pillar (mac_speed_suite,
+  adaptive_tutor), the three-condition framework-value-add argument now in
+  `draft_v3.md`'s introduction, and open novelty-claim verification needed
+  before submission.
+- **`paper/FRAMEWORK_EXTENSION_PATTERN.md`** — the abstract recipe behind the
+  higher-order-office pattern (five ingredients, worked through for
+  mac_speed_suite, adaptive_tutor, and a hypothetical cockpit/dashboard case),
+  generalized from `paper/PAPER_NOTES.md`'s per-domain sections.
+- **`paper/draft_v3.md`** — the paper draft itself.
 - **`DisSysLab/docs/internals/URGENT_termination_detection_coordinator_bug.md`**
   — explicitly says it "underpins the paper's termination-detection claim."
   Resolved 2026-07-15, but re-verify before leaning on it in the writeup,
   since the fix is recent.
-- **`offices/claude_project/cold_tests/README.md`** + `cold_tests/transcripts/`
-  (9 cases) — a real, rigorous evaluation protocol (pre-registered outcomes,
-  uncontaminated fresh subagents). This is validity evidence for the paper,
-  easy to forget it already exists.
+- **`archive/offices/claude_project/cold_tests/README.md`** +
+  `cold_tests/transcripts/` (9 cases) — a real, rigorous evaluation protocol
+  (pre-registered outcomes, uncontaminated fresh subagents). This is validity
+  evidence for the paper, easy to forget it already exists now that it's
+  under `archive/`.
 
-## Tester-facing / onboarding
+## Tester-facing / onboarding (all under `guides/` as of the 2026-08-06 reorg)
 
-- **`README.md`** — see above.
-- **`GETTING_THE_FILES.md`** — how a first-time tester with no repo gets the
-  files (ZIP download or clone), including the GitHub-bootstrap problem.
-- **`STAGE2_WALKTHROUGH.md`** — a second full Stage 2 example (fractions
-  tutor), the Cowork-based route rather than a plain terminal.
-- **`INVESTMENT_CLUB_WALKTHROUGH.md`** — the investment-club story alone,
-  start to finish, no setup/troubleshooting text in between.
-- **`DEBUG_TRACE_AND_CHECKPOINT_WALKTHROUGH.md`** — extreme-step-by-step
+- **`README.md`** — see above (top level, not moved).
+- **`guides/GETTING_THE_FILES.md`** — how a first-time tester with no repo
+  gets the files (ZIP download or clone), including the GitHub-bootstrap
+  problem.
+- **`guides/STAGE2_WALKTHROUGH.md`** — a second full Stage 2 example
+  (fractions tutor), the Cowork-based route rather than a plain terminal.
+- **`guides/INVESTMENT_CLUB_WALKTHROUGH.md`** — the investment-club story
+  alone, start to finish, no setup/troubleshooting text in between.
+- **`guides/DEBUG_TRACE_AND_CHECKPOINT_WALKTHROUGH.md`** — extreme-step-by-step
   teaching doc for `dsl run --trace`, `dsl explain-trace`, `dsl run
   --snapshot-interval`, and `dsl show-checkpoint`, using `recovery_demo`
-  (the π example). Added 2026-07-22, same day the trace/checkpoint-explainer
-  features it documents were built and verified.
-- **`stage1_microcourse.html`** / **`stage2_microcourse.html`** — the 2-minute
-  visual versions of Stage 1 / Stage 2. Live at
-  `kmchandy.github.io/OfficeSpeak/` (also present in this repo).
-- **`gallery_microcourse.html`** — added 2026-07-26: a third microcourse, same
-  visual format, browsing the full breadth of what's built — all 33 DisSysLab
-  offices grouped by shape/cost tier, plus real, unedited excerpts from 3 of
-  the 9 `cold_tests/transcripts/` cases. Answers the gap that `README.md`
-  linked `FEATURES.md` as plain text and never linked the cold-test
-  transcripts at all. Live at `kmchandy.github.io/OfficeSpeak/` alongside the
-  other two (also present in this repo).
-- **`gallery_overview.md`** — added 2026-07-26: the reading version of the
-  same gallery, linked right next to `gallery_microcourse.html` from
-  `README.md`. A quick-index table plus narrative sections organized by the
-  four "which shape is like yours" categories and by domain (news/markets,
-  personal/productivity, perception, deliberating teams, small patterns,
-  real transcripts) — meant to actually be searched, not just skimmed.
-- **`DEMO_RECORDING_SCRIPT.md`** — shot list for a recruitment video (not yet
-  recorded; recruiting by phone call instead for now).
-- **`TESTER_MANUAL.md`** — now a short stub pointing back to `README.md`
+  (the π example).
+- **`stage1_microcourse.html`** / **`stage2_microcourse.html`** (top level,
+  not moved — see "known loose ends") — the 2-minute visual versions of
+  Stage 1 / Stage 2. Live at `kmchandy.github.io/OfficeSpeak/`.
+- **`gallery_microcourse.html`** (top level, not moved) — a third
+  microcourse, browsing the full breadth of what's built as of 2026-07-26 —
+  all 33 DisSysLab offices grouped by shape/cost tier at that time, plus
+  real, unedited excerpts from 3 of the 9 `cold_tests/transcripts/` cases.
+  Predates everything built since (see staleness note above).
+- **`guides/gallery_overview.md`** — the reading version of the same gallery.
+  **Stale** — see note above; doesn't mention mac_speed_suite's multi-strategy
+  form, adaptive_tutor, or salton_sea_dashboard.
+- **`project-status/DEMO_RECORDING_SCRIPT.md`** — shot list for a recruitment
+  video (not yet recorded; recruiting by phone call instead, and by direct
+  outreach to testers, for now). Moved to `project-status/` rather than
+  `guides/` since it's planning material, not tester-facing content.
+- **`guides/TESTER_MANUAL.md`** — a short stub pointing back to `README.md`
   (its content was merged into README during the Stage 1/2 restructure).
 
-## OfficeSpeak's own operating instructions (Claude-facing, not tester-facing)
+## OfficeSpeak's own operating instructions (Claude-facing, not tester-facing) — ARCHIVED
 
-- **`offices/claude_project/start_instructions.md`** — the actual custom
-  instructions pasted into the claude.ai Project. (Renamed from
-  `start_instructions_v3.md`; old v1/v2/CHECKPOINT versions deleted.)
-- **`offices/claude_project/project_instructions.md`** — defines the
-  Pat-facing assistant persona and job.
-- **`offices/claude_project/OfficeSpeak_gallery.md`** /
-  **`start_gallery/`** — the worked examples uploaded as Project knowledge.
-- **`offices/claude_project/phase3_source_sink_matching.md`**,
-  **`phase3_approval.md`**, **`phase3_al_howto.md`**,
-  **`phase3_assistant_instructions.md`** — the Stage 2 (Al-facing) process:
-  matching, approval, and a real end-to-end walkthrough with real commands.
-- **`offices/claude_project/phase3_backends_and_deployment.md`** — added
-  2026-07-23 (ROADMAP.md item 2): backend/model choice for judgment
-  workers and deploying an office to keep running past the terminal
-  session (nohup/tmux, a process supervisor, and how that interacts with
-  checkpoint/resume). Not a required gate like matching/approval, but
-  real ongoing use almost always needs it.
-- **`offices/claude_project/phase3_composition.md`** — added 2026-07-24
-  (ROADMAP.md item 1): reusing an already-built, already-tested office as
-  a single worker (`kind="department"`) inside a new one. Al-only, tested
-  end-to-end (single- and multi-port cases); Pat's Stage 1 conversation is
-  unchanged. See also `backlog_generated_coordinators.md`, whose open
-  taxonomy question this resolves.
-- **`offices/claude_project/SETUP.md`** — one-time setup + repeatable
-  per-demo loop (operational, for running demos yourself).
-- **`offices/claude_project/backlog_generated_coordinators.md`** — an
-  **open, undecided** backlog item: whether to let Claude generate a custom
-  multi-inbox coordinator, vs. the current rule that all coordinators are
-  registered/predefined. Not yet folded into `start_instructions.md`.
-- **`offices/claude_project/investment_club_handoff.py`** — the verified
-  reference hand-off file backing README's Stage 2 numbers.
+Everything below moved to `archive/offices/claude_project/` on 2026-08-06:
+superseded by working directly in Cowork sessions, which is how every
+current gallery app (`mac_speed_suite`, `adaptive_tutor`,
+`salton_sea_dashboard`) was actually built. See `archive/README.md` for the
+full explanation. Kept for provenance and because `cold_tests/transcripts/`
+(above) still has paper-evidentiary value.
+
+- `start_instructions.md`, `project_instructions.md`, `OfficeSpeak_gallery.md`
+  / `start_gallery/`, `phase3_*.md`, `SETUP.md`,
+  `backlog_generated_coordinators.md`, `investment_club_handoff.py`.
 
 ## Technical design docs (DisSysLab)
 
@@ -133,7 +141,7 @@ maintenance cost — a habit, not a project.
   *deterministic* coordination primitive; `fair_merge` is the one exception.
 - `debugging_aids_decision.md` — the three debugging aids as one family: (a)
   isolated worker testing (built), (b) channel-count liveness (scoped), (c)
-  the logical-clock trace (designed) — cross-referenced as of this session.
+  the logical-clock trace (designed).
 - `replay_debug_mode_decision.md` — the *harder*, different feature (exact
   bit-for-bit replay from a checkpoint for engineers); scoped, not built.
 - `URGENT_termination_detection_coordinator_bug.md` — resolved 2026-07-15.
@@ -146,26 +154,34 @@ an office), `EXTENDING.md` (local-to-your-office vs. up-into-the-framework),
 
 ## Gallery apps & examples (DisSysLab)
 
-Full list with one-line descriptions is in `FEATURES.md` §4 (33 total: 24
-apps + 9 examples) — not repeated here to avoid the two files drifting out of
-sync. Categories: news/market monitoring (largest cluster), personal/
-productivity, perception (audio/image), multi-agent structure demos and
-validation fixtures, direct-`office.md` examples, and the `my_first_office`
-starter.
+The real, current gallery lives entirely in DisSysLab, not here:
+`dissyslab/gallery/apps/` (full offices, including `mac_speed_suite`,
+`adaptive_tutor`, and `salton_sea_dashboard`, none of which are reflected in
+`project-status/FEATURES.md`'s count yet) and each app's `skill_for_testers/`
+for the two packaged Cowork skills. `guides/gallery_overview.md` is the
+readable index, but see the staleness note above before trusting its count.
+
+`examples/` in *this* repo (the older, pre-current-framework design drafts)
+moved to `archive/examples/` — see `archive/README.md`.
 
 ---
 
 ## Known loose ends (things flagged but not resolved)
 
-- `backlog_generated_coordinators.md` — undecided design question, see above.
-- `HANDOFF.md` — stale, needs a refresh.
+- `README.md` still documents the archived `claude_project/` Stage 1/2 flow —
+  flagged above, not yet fixed; likely superseded by the planned new manual
+  rather than patched.
+- `backlog_generated_coordinators.md` (now `archive/offices/claude_project/`)
+  — undecided design question, unresolved before the archive.
+- `project-status/HANDOFF.md`, `FEATURES.md`, `ROADMAP.md`,
+  `guides/gallery_overview.md` — all stale, need a refresh (see top of this
+  file).
 - Debugging aid (b) and debug-mode exact replay — decided not to pursue
-  (`ROADMAP.md` has the reasoning); aid (c) is built.
+  (`project-status/ROADMAP.md` has the reasoning); aid (c) is built.
 - **`index.html`, `stage1_microcourse.html`, `stage2_microcourse.html` exist as
   copies in two repos** — this `OfficeSpeak` repo (where they're edited) and
-  `kmchandy.github.io/OfficeSpeak/` (what's actually served at
-  kmchandy.github.io/OfficeSpeak/). Nothing keeps them in sync automatically;
-  they've already drifted once (`stage2_microcourse.html`, caught and fixed
-  2026-07-23). Whoever edits one of these three files needs to copy the
-  change to the other repo too, and both repos need to be committed and
-  pushed before anything is actually live — see `ROADMAP.md` item 1.
+  `kmchandy.github.io/OfficeSpeak/` (what's actually served). Nothing keeps
+  them in sync automatically; they've already drifted once before. Whoever
+  edits one of these three files needs to copy the change to the other repo
+  too, and both repos need to be committed and pushed before anything is
+  actually live.

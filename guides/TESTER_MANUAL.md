@@ -1,6 +1,6 @@
 # This page moved
 
-The tester's manual now lives at **[`README.md`](README.md)** — the same
+The tester's manual now lives at **[`README.md`](../README.md)** — the same
 content (the investment-club walkthrough, Stage 1 and Stage 2), just
 promoted to the front page so anyone landing on the repo sees it first.
 
