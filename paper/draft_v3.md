@@ -19,17 +19,10 @@ Distributed systems — software that runs continuously, keeps state, and coordi
 
 ## 1. Introduction
 
-Organizations, such as banks, have long used distributed systems for applications such as credit-card processing. 
+Large language models can help individuals, who don't have expertise, build and run systems in which multiple agents run concurrently. An LLM can help an investment club generate a system that watches market data, economic news, and social feeds, weighs different investment
+strategies, and makes recommendations. An environmental scientist can build a system that monitors multiple sensors and warns when pollution levels endanger health. A parent can build a concurrent system tutor her children and tailor the system to her children's specific needs.
 
-
-Individuals can benefit from
-them too. A member of a local investment club wants a system that watches
-market data, economic news, and social feeds, weighs different investment
-strategies, and makes recommendations. A facilities manager wants one
-that fuses HVAC readings, utility sensors, and email into plan updates.
-These apps are smaller and simpler than an organization's, but they are
-persistent, multi-agent, and stateful — a service that keeps running and
-keeps state, not a script that runs once and exits.
+Distributed systems that monitor and respond to data sources run continuously. They need features such as distribued termination detection, checkpointing, and rollback-recovery. Distributed systems are often non-deterministic -- different runs of the same system produce different execution traces - and so debugging by re-running systems is harder. Running, testing, and debugging distributed systems are more difficult than sequential programs. A user can prompt an LLM to generate a distributed system and also ask the LLM to test the system, provide debugging support, implement termination detection, run global snapshots, and explain system executions. An LLM is less likely to introduce errors if it uses the same tested methods and algorithms for every distributed system that it generates and helps to debug and maintain. OfficeSpeak is a library of Python functions and natural language prompts that is used by LLMs to build and help debug and run distributed systems.
 
 How can a non-programmer build, debug, and maintain a distributed system
 for herself? One answer is to have a large language model generate
