@@ -12,48 +12,17 @@ evidenced today are marked accordingly; nothing is claimed as built or
 measured unless it is.*
 
 ## Abstract
+Distributed systems — software that runs continuously, keeps state, and coordinates several agents — could benefit individuals and small-business owners the way they've long benefited corporations, but building, testing, and maintaining one requires distributed-systems expertise that most people, including most programmers, don't have. We present OfficeSpeak, a library — a set of Python coordination functions plus natural-language instructions to a large language model — that lets someone without that expertise describe, build, debug, and maintain a distributed system through an ongoing English conversation. An LLM assembles each system from a fixed set of coordination primitives rather than generating coordination logic from scratch every time — logic an LLM is liable to get subtly wrong if asked to rederive it fresh for each new system. The library, coupled with the LLM, explains what it built and what it assumed in English, and the user corrects it in English rather than in code. The same conversational pattern is used after the system is running: a user can ask OfficeSpeak to explain a saved checkpoint or a recorded run's execution log in English, rather than interpreting raw concurrency traces themselves. The paper has a worked example in which this disclosure-and-correction loop surfaces and fixes a real distributed-data defect. Feedback from users will be added.
 
-Distributed systems — programs that run continuously, keep state, react to
-asynchronous inputs, and coordinate several agents — have been used by
-corporations for decades. Small-business owners and individuals with 
-limited programming skills can benefit from them too. 
-Large language models (LLMs) can generate
 
-A challenge for
-non-programmers is not only to build distributed systems, but also to
-debug and maintain them. Large language models can generate code, but
-generating stateful, concurrent systems is more difficult than generating
-sequential programs, and existing multi-agent LLM frameworks that target
-this space either lack consistent state-recovery guarantees under
-concurrency or require writing real code.
 
-This paper presents **OfficeSpeak**, a system that converses in English
-with non-programmers to build, understand, debug, and maintain
-distributed systems. The user describes an *office* — a team of workers,
-each with a role stated in English. OfficeSpeak assembles a network of
-message-passing agents and explains it back in English, including an
-explicit, numbered list of what it assumed and could not determine from
-the description alone; the user corrects it in English and the system
-rebuilds. The same conversational register extends to debugging and
-maintenance: the user can ask OfficeSpeak to explain a saved checkpoint or
-a run's recorded execution history, and get an answer grounded in the
-same distributed-systems theory (Lamport clocks, global snapshots)
-that makes the underlying guarantees correct — surfaced as English, not
-hidden as implementation detail. OfficeSpeak generates code for agents but
-not for their coordination; a small library of trusted coordination
-primitives gives every generated system distributed termination detection
-and consistent global-snapshot checkpointing that the user never
-specifies. We position these properties against current multi-agent and
-workflow frameworks that either do not provide them under concurrency or
-provide them only to programmers, and report preliminary evidence — a
-worked example, a pre-registered held-out test protocol, and verified
-technical demonstrations — toward a fuller evaluation with real
-non-programmer users.
 
 ## 1. Introduction
 
-Organizations, such as banks, have long used distributed systems for
-applications such as credit-card processing. Individuals can benefit from
+Organizations, such as banks, have long used distributed systems for applications such as credit-card processing. 
+
+
+Individuals can benefit from
 them too. A member of a local investment club wants a system that watches
 market data, economic news, and social feeds, weighs different investment
 strategies, and makes recommendations. A facilities manager wants one
