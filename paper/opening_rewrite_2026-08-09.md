@@ -7,7 +7,7 @@ edits these changes create in text that follows.*
 
 ---
 
-## Block 1 — Abstract (replaces the current abstract)
+##  Abstract
 
 Distributed systems that coordinate multiple agents and runs continuously have been used by large organizations for decades.
 An investment club, a field scientist, or a parent benefift from such systems too; however,
