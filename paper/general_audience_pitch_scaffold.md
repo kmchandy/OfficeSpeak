@@ -99,8 +99,11 @@ exist because of that third point, not the first two.
 
 ## 5. What this looks like today
 
-*[Three real, working examples — keep each to a short paragraph. Ground
-every claim in what's actually built; don't oversell any of these.]*
+*[Two working examples and one that isn't working yet — keep each to a
+short paragraph. Ground every claim in what's actually built; don't
+oversell any of these. The third entry is included because environmental
+monitoring is an application space a reader may recognise as theirs, not
+because it runs today; if that trade doesn't seem worth it, cut it.]*
 
 **Backtesting trading strategies** *(mac_speed_suite)*. A working office
 that pulls real stock price history, runs several strategies (moving
@@ -113,13 +116,19 @@ hand-worked example (or a cheaper sanity check, tester's choice) before
 it's wired in. Two outside testers with real trading/quant backgrounds
 are trying this now.
 
-**Environmental monitoring** *(the Salton Sea dashboard)*. A working office
-that fuses wind data from a real NOAA/JPL buoy source with hydrogen-sulfide
-sensor readings into a daily brief — real wind data today, a synthetic
-stand-in for the H2S sensor while a real data-license conversation is in
-progress. *[No packaged "add-a-sensor" skill exists for this one yet —
-say so plainly if this section is included; it's the natural next skill
-to build, not a gap to paper over.]*
+**Environmental monitoring** *(the Salton Sea dashboard)* — **in progress;
+not a working office yet.** The data side is real: a source that scrapes
+NASA/JPL's two moored buoys on the sea for live wind speed and direction,
+confirmed working and covered by an offline parser check, plus a synthetic
+stand-in for hydrogen sulfide while the CARB site-id mapping is unresolved.
+Sample dashboard output exists. What does not work is the office itself —
+the wind source isn't registered with the framework, so `office.md` doesn't
+compile, and the dashboards produced so far came from a standalone script
+rather than from a running office. *[Include this only if you're willing to
+say the above plainly. A reader who tries the example and finds it doesn't
+run costs more than the section gains. There's also no packaged
+"add-a-sensor" skill for it, which is the natural next step once the office
+compiles.]*
 
 **Practice tutoring** *(adaptive_tutor)*. A working office that quizzes a
 student, adapts to what they get wrong, and now covers fractions,

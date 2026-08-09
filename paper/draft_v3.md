@@ -22,7 +22,12 @@ Distributed systems — software that runs continuously, keeps state, and coordi
 Large language models can help people without distributed-systems expertise build and run systems in which multiple agents work concurrently. An LLM can help a member of an investment club build a system that watches market data, economic news, and social feeds, weighs different investment
 strategies, and makes recommendations. It can help an environmental scientist build a system that monitors multiple sensors and warns when pollution levels endanger health. It can help a parent build a system that tutors her children, tailored to each child's needs.
 
-A distributed system that continuously monitors and responds to data needs support most one-off scripts don't: termination detection, checkpointing, and rollback-recovery. Distributed systems are also often non-deterministic — different runs of the same system can produce different execution traces — which makes debugging by simply re-running the system unreliable. A user can ask an LLM not just to generate a distributed system, but to test it, debug it, detect when it's done, take a consistent snapshot of its state, and explain what happened during a run. An LLM is less likely to introduce errors if it reuses the same tested methods and algorithms for every distributed system it builds, debugs, and maintains, rather than rederiving them each time. OfficeSpeak is a library — Python functions plus natural-language prompts — that an LLM uses to build, debug, and run distributed systems this way.
+A distributed system that continuously monitors and responds to data needs support most one-off scripts don't: termination detection, checkpointing, and rollback-recovery. Distributed systems are also often non-deterministic — different runs of the same system can produce different execution traces — which makes debugging by simply re-running the system unreliable. A user can ask an LLM not just to generate a distributed system, but to test it, debug it, detect when it's done, take a consistent snapshot of its state, and explain what happened during a run. An LLM is less likely to introduce errors if it reuses the same tested methods and algorithms for every distributed system it builds, debugs, and maintains, rather than rederiving them each time. OfficeSpeak is a library — Python functions plus natural-language prompts — that an LLM uses to build, debug, and run distributed systems in this way.
+
+A small stock-trading firm is building a distributed system that helps individual traders specify their own stock-selection strategies; back-test strategies over historical data; and then recommend trades as new data arrives. The app allows traders to describe their strategies in English. The distributed system structure is the same for all traders though their strategies are different. The app adds functions specifically for the trading application to the OfficeSpeak library, and the enhanced library gives the firm control over the overall structure of the computations that traders execute while allowing each trader to use an LLM to specify the trader's own strategy.
+
+The tasks that evaluate and execute trading strategies have the same structure - determine buy/sell signals based on trends, and re-price portfolios that executes trades. The developer of the 
+
 
 How can a non-programmer build, debug, and maintain a distributed system
 for herself? One answer is to have a large language model generate
@@ -537,9 +542,9 @@ say plainly what is not yet run.
   exercised, not a description of an intended one.
 - *Termination detection* under a coordinator-heavy office with feedback
   loops: a real correctness bug here was found and fixed shortly before
-  this writing, with a full regression suite (446 tests) passing at the
-  time of the fix — evidence the property is taken as seriously as a
-  claim, not asserted and left unchecked.
+  this writing, with the full regression suite passing at the time of the
+  fix — evidence the property is taken as seriously as a claim, not
+  asserted and left unchecked.
 
 **Proposed, not yet run — and why that's stated here rather than
 elsewhere.** Two different kinds of evidence are still missing, and they
