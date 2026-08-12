@@ -91,10 +91,13 @@ heaviest:
 - "Use a 50-day and a 200-day moving average instead of the current speeds."
 - "Set transaction costs to 10 basis points and re-run — how much does that change
   the ranking?"
-- "Switch the validation from walk-forward to Monte Carlo." *(This is a one-line
-  gate swap in `office.md`: `GATE is a monte_carlo_gate(n_samples=200).` — a
-  perfect showcase because the entire rest of the office is unchanged. One English
-  sentence, one line, a completely different scientific question answered.)*
+- "Give me more Monte Carlo samples for a tighter robustness band" / "skip the
+  Monte Carlo this time — just run the fast walk-forward." *(The default
+  `validation_gate` runs BOTH validations in one pass, so this is not a swap but a
+  single-kwarg dial on one line of `office.md` — `validation_gate(n_samples=500)`
+  or `validation_gate(monte_carlo=False)`. A plain-English request maps to a bounded,
+  safe edit while the rest of the office is untouched; one sentence, one kwarg, a
+  visibly different robustness band.)*
 
 **B2. Add a new strategy to the office (new role, existing pipeline).** The app was
 deliberately built with a reuse contract: every strategy is one
@@ -213,8 +216,9 @@ themselves the argument. Candidates to include:
   claim visible.
 - A **git diff** of the office files Cowork changed in response to an English
   request (shows the mapping from sentence → bounded, safe code edit).
-- A before/after of the walk-forward ranking when the gate is swapped to Monte
-  Carlo — one line changed, a different scientific question answered.
+- A before/after of the Monte Carlo robustness bands when Vikram asks for more
+  samples (or of the report with one half turned off) — one kwarg changed in
+  `office.md`, a visibly different result.
 
 The paper point: every claim about accessibility is backed by an artifact a
 skeptical reviewer can inspect — the report, the transcript, the diff.
