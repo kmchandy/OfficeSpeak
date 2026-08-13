@@ -305,13 +305,13 @@ paper:
 
 ---
 
-## 5. A second pillar: the framework builds frameworks (Vikram / mac_speed_suite) — added 2026-08-02
+## 5. A second pillar: the framework builds frameworks (the tester / mac_speed_suite) — added 2026-08-02
 
 ### What this is, and how it surfaced
 
 Separately from the checkpoint/trace work above, a second demo was built this
 session end-to-end: `DisSysLab/dissyslab/gallery/apps/mac_speed_suite`, a
-trend-following backtesting office built for a finance tester ("Vikram," see
+trend-following backtesting office built for a finance tester ("the tester," see
 `OfficeSpeak/paper/transcript_sp100_trend_following.md`) who asked for several
 traditional trend-following rules (Man/AQR/Mulvaney-style moving-average
 crossover, the Turtle system, Donchian channels) backtested and ranked across
@@ -338,7 +338,7 @@ finished, unrelated pipelines — the "what can you build" argument. This is a
 different kind of demonstration: not one more office, but an office that is
 itself an extensible *framework* — a documented contract a further plain-English
 conversation can safely extend with a new strategy without touching the shared
-machinery. Concretely: Mani plans to hand Vikram the existing contract and ask
+machinery. Concretely: Mani plans to hand the tester the existing contract and ask
 him, unaided, to add a new strategy via a Claude conversation of his own — if
 that works, it's evidence that OfficeSpeak's plain-English building process
 can be turned on *extending* an existing system, not only on building one from
@@ -350,7 +350,7 @@ fixed pipeline per conversation, not a reusable extension point.
 Sections 2–4 above share one theoretical throughline: Lamport's 1978
 happened-before relation and the 1985 Chandy-Lamport snapshot algorithm,
 translated into English by the checkpoint explainer and the activity-log/trace
-feature. The Vikram/mac_speed_suite pillar rests on a different kind of
+feature. The the tester/mac_speed_suite pillar rests on a different kind of
 formalism — a software-architecture discipline (separation of concerns, a
 typed extension contract), not a named distributed-systems result. It
 shouldn't be forced into the same lineage. It reads better as a second,
@@ -369,7 +369,7 @@ non-programmer's conversation safely extending a running system).
   argued for.
 - **External validation.** Every example so far — recovery_demo,
   mac_speed_suite, the gallery — was built with Mani or Claude driving.
-  Plan (Mani, 2026-08-02): ask Vikram to add a new strategy himself, via his
+  Plan (Mani, 2026-08-02): ask the tester to add a new strategy himself, via his
   own Claude conversation grounded in the existing contract, unaided. If it
   works, this is the evaluation evidence the pillar currently lacks — a real
   outside domain expert extending a running distributed system through plain
@@ -383,7 +383,7 @@ non-programmer's conversation safely extending a running system).
   (`SKILL.md` + a bundled no-lookahead checker script, tested internally
   first via two dry-run cases -- a momentum strategy and an RSI
   mean-reversion strategy -- comparing skill-guided vs. unaided attempts
-  before sending it to anyone). Being sent to Vikram and a second fintech
+  before sending it to anyone). Being sent to the tester and a second fintech
   contact, each independently, with instructions limited to setup only
   (install the skill, connect the public DisSysLab repo) -- deliberately
   not walked through how to add a strategy, since that's the actual thing
@@ -391,7 +391,7 @@ non-programmer's conversation safely extending a running system).
   real instance of an outside domain expert extending this system
   unaided, rather than a fifth internally-built case study.
 - **All three external testers confirmed asked, as of 2026-08-05
-  (Mani).** Vikram and Sebu for `backtest-strategy-builder`; Sachin
+  (Mani).** the tester and the trader for `backtest-strategy-builder`; Sachin
   (a parent who separately wanted a tutor for his daughter -- see
   `OfficeSpeak/archive/offices/phase2_demo/README.md`) for the new
   `tutor-subject-builder` skill below. None of the three has returned
@@ -415,7 +415,7 @@ non-programmer's conversation safely extending a running system).
   is itself evidence for why external, adversarial-ish testing (even
   internal dry runs) matters before claiming a contract "just works."
 - **Persistence and checkpointing, if this pillar is to touch pillar one.**
-  Vikram's actual next request: run these strategies as a continuous
+  The tester's actual next request: run these strategies as a continuous
   distributed system, reading stock prices daily, not a one-shot batch
   backtest. That reframes mac_speed_suite from a batch job into a long-running
   office — which is exactly where pillar one's checkpoint/snapshot and
@@ -476,7 +476,7 @@ crisis.
 
 **Sachin** (a parent who wanted a tutor for his daughter -- the same person
 `phase2_demo/README.md` was originally written for) is the third external
-tester, alongside Vikram and Sebu, given the packaged `tutor-subject-builder`
+tester, alongside the tester and the trader, given the packaged `tutor-subject-builder`
 skill + a cover note mirroring the one sent for backtesting. As with the
 other two, no feedback yet as of this writing.
 
@@ -527,8 +527,8 @@ not redoing.
   hiding); the fresh-subagent `telling_time` test for
   `tutor-subject-builder`; and, in the "proposed, not yet run" bucket
   alongside the hedge-fund-manager/environmental-sensor-network conversations
-  already listed there, the three pending tester results (Vikram, Sebu,
-  Sachin). Note for Mani: Vikram's *original* strategy request (the thing
+  already listed there, the three pending tester results (the tester, the trader,
+  Sachin). Note for Mani: the tester's *original* strategy request (the thing
   that became mac_speed_suite) may already double as evidence for
   contribution 1 (a real domain expert describing an office he wanted) --
   worth checking whether that transcript still exists and fits v3's existing
@@ -612,8 +612,8 @@ without a test catching it.
 
 ## 9. Go/no-go decision point for CHI 2027 -- set 2026-08-06
 
-Mani's decision, stated plainly: wait for real tester feedback -- Sebu and
-Vikram on `backtest-strategy-builder`, Sachin on `tutor-subject-builder`,
+Mani's decision, stated plainly: wait for real tester feedback -- the trader and
+The tester on `backtest-strategy-builder`, Sachin on `tutor-subject-builder`,
 and possibly Professor Sinclair on the Salton Sea dashboard (pending the
 Aeroqual Cloud API integration). **If feedback lands by August 25**, submit
 to CHI 2027 (Sept 10 deadline -- 16 days to write up whatever the feedback

@@ -216,7 +216,7 @@ themselves the argument. Candidates to include:
   claim visible.
 - A **git diff** of the office files Cowork changed in response to an English
   request (shows the mapping from sentence → bounded, safe code edit).
-- A before/after of the Monte Carlo robustness bands when Vikram asks for more
+- A before/after of the Monte Carlo robustness bands when the tester asks for more
   samples (or of the report with one half turned off) — one kwarg changed in
   `office.md`, a visibly different result.
 

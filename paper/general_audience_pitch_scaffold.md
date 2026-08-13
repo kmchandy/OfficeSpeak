@@ -169,7 +169,7 @@ one, and it only gets written for domains where someone's actually asked.
 ## [Notes to self — resolve before sending to anyone]
 
 - Title: pick one of the three above, or something else entirely.
-- Decide whether to name real testers (Vikram, Sebu, Sachin) by name/role
+- Decide whether to name real testers (the tester, the trader, Sachin) by name/role
   or keep them anonymous ("two testers with trading backgrounds," etc.) —
   hasn't been asked of them for this specific use.
 - Target length once drafted: this reads fast only if each section stays
