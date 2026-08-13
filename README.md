@@ -8,6 +8,19 @@ the team back to you, and lets you correct it in plain English. Information
 comes in through **sources** and results go out through **sinks**. OfficeSpeak
 runs on the [DisSysLab](https://github.com/kmchandy/DisSysLab) runtime.
 
+## Two kinds of thing you can do here
+
+OfficeSpeak is mostly about **building** an office by describing it — Stage 1 and
+Stage 2 below. But once an office has been built and *tested*, it can become a
+**finished app you just talk to**: you describe what you want done and tune it in
+plain English, and never see the office at all. The flagship is the
+**[trend-following backtester](https://github.com/kmchandy/DisSysLab/tree/main/dissyslab/gallery/apps/mac_speed_suite)**
+(in the DisSysLab repo): domain experts test trading strategies by describing
+them to Claude Cowork. It is the worked example of the idea in
+[`paper/COWORK_SHOWCASE.md`](paper/COWORK_SHOWCASE.md) — a library of functions +
+prompts + a skill, assembled once and tuned by anyone in English. See
+**[what you can say to it](https://github.com/kmchandy/DisSysLab/blob/main/dissyslab/gallery/apps/mac_speed_suite/skill_for_testers/COWORK_EXAMPLES.md)**.
+
 **New here?** See [the OfficeSpeak site](https://kmchandy.github.io/OfficeSpeak/)
 for an overview of what's already built, or jump straight to the two-minute
 visual walkthroughs:
