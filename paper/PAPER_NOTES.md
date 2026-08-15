@@ -652,3 +652,63 @@ trusted primitives, English debugging, separation of concerns, and the
 still-unwritten higher-order-office contribution 6) remain the
 human-centered, evidenced claims; this paragraph explains why they're
 worth having.
+
+## 11. The adoption spine: provision -> trust -> habit (three beats) -- 2026-08-15
+
+The main story stated as the order in which a user *experiences* the
+value -- the sequence to optimize for adoption, not the order of the
+contribution list. Three beats, not one:
+
+1. **Wow -- provision.** From one English sentence the app did the whole
+   thing: it built and ran the distributed computation (offices,
+   termination detection, checkpointing) *and* the application-space work
+   (backtest math, the event-sourced ledger, the screening pipeline) that
+   the user would otherwise have to build and that Cowork-alone would have
+   to re-derive, per request, correctly. This is the felt advantage of
+   Cowork + the two infrastructure layers over Cowork alone.
+
+2. **Trust -- verification.** And it proved it wasn't fooling me: the
+   substrate ran a check the agent cannot supply about its own output --
+   the no-look-ahead / ground-truth check is the paradigm case. In a
+   high-stakes domain (money, health) trust is not a nicety; it is a
+   *precondition* for adoption -- nobody adopts a trading tool they don't
+   trust.
+
+3. **Habit -- retention.** A reason to come back: the paper-trader's "what
+   do I hold tomorrow," run daily. One-time wow is not adoption; recurring
+   utility is what makes it stick.
+
+**Why the ordering matters, and which beat is durable.** Provision wins
+the first visit and is the advantage users *feel* -- but it partly erodes
+as base models improve (a stronger Cowork may one day synthesize
+cross-process termination detection reliably). Verification is
+structural and does not erode: even a perfect generator cannot certify a
+*global* invariant about its own output without performing the substrate's
+global check. So provision wins the demonstration; verification wins the
+argument; habit is what converts a demonstration into use.
+
+**Relation to sec 10 (value-add conditions).** provision ~ condition 2
+(expensive/risky to regenerate correctly); trust ~ condition 3 (checkable
+against the contract by something other than trusting the session). The
+three-beat adds the third, human/adoption dimension -- habit -- on top of
+the software-economics inequality, and orders the two economic conditions
+by *felt experience* rather than logical necessity. Sec 10 says why the
+framework has value; sec 11 says the order in which a user feels it.
+
+**Relation to the overarching theme (Mani, 2026-08-15).** The
+architecture is three layers: **Cowork** (the agent the user brings) +
+**distributed infrastructure** (the framework -- offices, termination
+detection, checkpointing, inter-process plumbing: *system*-level
+correctness) + **application-space infrastructure** (the domain library --
+backtest/ledger/look-ahead for trading; cheminformatics/docking/cost-gating
+for drug discovery: *domain*-level correctness). Provision comes from
+*both* infrastructure layers; trust comes from the checks each layer
+supplies. Keep the paper on this spine and do not dilute it.
+
+**Demonstration plan (adopt-first, students in Jan as the real base).**
+Three apps are the instances that make the pattern rhyme: (a) the trading
+pair -- backtester + paper-trader; (b) a drug-discovery app; (c) a third
+app retelling the same structure in another problem space. Students study
+the three to see what *they* can build. Each app earns its place only by
+showing the *same* spine (provision -> trust -> habit) in a *different*
+problem space -- an instance of the one story, never a feature list.
