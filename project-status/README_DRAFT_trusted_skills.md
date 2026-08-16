@@ -1,6 +1,8 @@
-<!-- DRAFT — the working front door for the single repo. This file supersedes
-     the earlier README_trusted_skills.md, which was deleted on 2026-08-16;
-     there is no other copy. Not yet installed as the repo's public README.md.
+<!-- DRAFT — Claude's working copy of the front door. Edit this one.
+     README_trusted_skills.md in the same directory is Mani's, is
+     authoritative, and should not be edited by a session unless he asks.
+     The two diverge in wording on purpose (see below); neither has been
+     installed as the repo's public README.md, and which wording wins is open.
 
      Revision 2026-08-16b. Two changes from the previous draft:
      (1) "trusted skill" is no longer used as a defined term in body text.

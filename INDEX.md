@@ -63,15 +63,22 @@ session to start. Read them in this order:
   in Phase 0 — framing only; no files have been moved.** Also records what must
   *not* happen yet: no Phase 2 migration during the active tester round, and
   the PyPI package name never changes.
-- **`project-status/README_DRAFT_trusted_skills.md`** — the drafted public front
-  door for the single repo, all sections written. Supersedes an earlier
-  `README_trusted_skills.md`, since deleted. Decision recorded in its header:
-  "trusted skill" is no longer used as a defined term in body text — the
-  artifacts are *skills* in the standard Agent Skills sense (now a cross-vendor
-  open format, not Anthropic-specific), and a section states the two properties
-  that actually distinguish these ones: the agent composes machinery it does
-  not write, and the checks run on code the skill's author never saw. Two
-  `[CHECK]` markers flag claims not yet verified against the code.
+  **Two drafts of the front door exist on purpose — different hands, not a
+  mistake:**
+
+- **`project-status/README_trusted_skills.md`** — **Mani's. Authoritative.
+  A session should not edit this file** unless Mani asks for it directly.
+  Uses "trusted skill" as a defined term throughout.
+- **`project-status/README_DRAFT_trusted_skills.md`** — Claude's working copy,
+  all sections written; this is the one to edit. Its wording diverges from
+  Mani's by design: "trusted skill" is not used as a defined term in body text
+  — the artifacts are *skills* in the standard Agent Skills sense (now a
+  cross-vendor open format, not Anthropic-specific), and a section states the
+  two properties that actually distinguish these ones: the agent composes
+  machinery it does not write, and the checks run on code the skill's author
+  never saw. Two `[CHECK]` markers flag claims not yet verified against the
+  code. Neither file has been installed as the repo's public `README.md`;
+  which wording wins is still open.
 - **`project-status/ASPIRATIONAL_README.md`** — **private, not for the public
   repo.** The picture rather than the plan: what becomes reachable when a
   capable agent stands on a floor it can trust — the fourth beat (growth) after
