@@ -51,6 +51,34 @@ maintenance cost — a habit, not a project.
   2026-07-16 — was already flagged stale as of the last INDEX revision, and is
   now three weeks further out of date.
 
+### The Trusted Skills restructure (2026-08-15/16) — current, not stale
+
+These are the newest docs in either repo and the right place for a fresh
+session to start. Read them in this order:
+
+- **`project-status/RESTRUCTURE_PLAN.md`** — the decisions locked 2026-08-15:
+  project story/name (**Trusted Skills**), the target tree (`dissyslab/` library
+  at root, `skills/` for the foundation + domain skills, `workshop/` for the
+  student tier), and a four-phase reversible-first migration sequence. **We are
+  in Phase 0 — framing only; no files have been moved.** Also records what must
+  *not* happen yet: no Phase 2 migration during the active tester round, and
+  the PyPI package name never changes.
+- **`project-status/README_DRAFT_trusted_skills.md`** — the drafted public front
+  door for the single repo, all sections written. Supersedes an earlier
+  `README_trusted_skills.md`, since deleted. Decision recorded in its header:
+  "trusted skill" is no longer used as a defined term in body text — the
+  artifacts are *skills* in the standard Agent Skills sense (now a cross-vendor
+  open format, not Anthropic-specific), and a section states the two properties
+  that actually distinguish these ones: the agent composes machinery it does
+  not write, and the checks run on code the skill's author never saw. Two
+  `[CHECK]` markers flag claims not yet verified against the code.
+- **`project-status/ASPIRATIONAL_README.md`** — **private, not for the public
+  repo.** The picture rather than the plan: what becomes reachable when a
+  capable agent stands on a floor it can trust — the fourth beat (growth) after
+  provision/trust/habit, and a gallery of futures that do not exist yet. Read
+  it alongside the draft README; it carries the *why* the public page
+  deliberately leaves out.
+
 ---
 
 ## Strategic / paper
