@@ -1,11 +1,21 @@
 # Index — where everything lives
 
 A map of every doc across both repos, so you can find things without holding
-paths in your head. This is a **navigation** doc — for *what's actually
-built*, see `project-status/FEATURES.md`; for *paper-specific* working notes,
-see `paper/PAPER_NOTES.md`; for *picking up a stalled session cold*, see
-`project-status/HANDOFF.md`. Those three don't duplicate each other or this
-file — each has one job.
+paths in your head. This is a **navigation** doc.
+
+> **Start here if you are a fresh session:
+> `project-status/PLAN_2026-08.md`.** It is the plan of record as of
+> 2026-08-17 and it supersedes every other plan in this repo. The CHI paper is
+> dropped and the project is narrowed to one goal: a first-year builds an app
+> they care about, then studies the algorithms underneath it. The four
+> superseded planning docs moved to `archive/project-status-2026-08/`, which
+> has a README saying what replaced each. Do not take direction from
+> `paper/`, `FEATURES.md`, or `ASPIRATIONAL_README.md` — none of them are
+> plans.
+
+For *what's actually built* (stale, 2026-07-21) see
+`project-status/FEATURES.md`; for the paper's working notes, kept as a record
+of a dropped submission, see `paper/PAPER_NOTES.md`.
 
 **Reorganized 2026-08-06:** top-level files grouped into `guides/`
 (tester-facing onboarding/walkthroughs), `project-status/` (Claude/Mani-facing
@@ -44,25 +54,25 @@ maintenance cost — a habit, not a project.
 - **`project-status/FEATURES.md`** — what's actually built vs. scoped vs.
   designed, across both repos, verified against real code as of 2026-07-21.
   **Stale** — see note above.
-- **`project-status/ROADMAP.md`** — the single, priority-ordered to-do list
-  (added 2026-07-23). **Stale** — see note above.
-- **`project-status/HANDOFF.md`** — written for a fresh Claude session with no
-  memory of prior work, to pick a stalled thread back up cold. Dated
-  2026-07-16 — was already flagged stale as of the last INDEX revision, and is
-  now three weeks further out of date.
+- **`archive/project-status-2026-08/`** — `ROADMAP.md`, `HANDOFF.md`,
+  `RESTRUCTURE_PLAN.md`, and `DEMO_RECORDING_SCRIPT.md`, all retired
+  2026-08-17. The README there says what superseded each and what is still
+  worth reading in them (chiefly HANDOFF's implementation history, and
+  RESTRUCTURE_PLAN's two surviving constraints: never rename the PyPI package,
+  and don't move the trading apps while testers hold links to them).
 
-### The Trusted Skills restructure (2026-08-15/16) — current, not stale
+### Current — the plan and the front-door drafts
 
-These are the newest docs in either repo and the right place for a fresh
-session to start. Read them in this order:
-
-- **`project-status/RESTRUCTURE_PLAN.md`** — the decisions locked 2026-08-15:
-  project story/name (**Trusted Skills**), the target tree (`dissyslab/` library
-  at root, `skills/` for the foundation + domain skills, `workshop/` for the
-  student tier), and a four-phase reversible-first migration sequence. **We are
-  in Phase 0 — framing only; no files have been moved.** Also records what must
-  *not* happen yet: no Phase 2 migration during the active tester round, and
-  the PyPI package name never changes.
+- **`project-status/PLAN_2026-08.md`** — **the plan of record** (2026-08-17).
+  What changed (paper dropped; the claim narrowed to non-comparative — a
+  trusted skill *offered as an alternative*, with its force coming from n > 1;
+  "distributed" not yet honest until office-per-process lands; the Lovable
+  objection conceded where it lands). The single metric. What was scrapped.
+  Then four items in order, split into prerequisites for the course
+  (foundation skill + static wiring check; runtime hang diagnosis) and content
+  for the course (office-per-process; on-ramp Cowork skills). Item 1 is
+  specified in full — file shape, what SKILL.md carries, the eight wiring
+  faults W1–W8 with why each matters, output format, and acceptance criteria.
   **Two drafts of the front door exist on purpose — different hands, not a
   mistake:**
 
